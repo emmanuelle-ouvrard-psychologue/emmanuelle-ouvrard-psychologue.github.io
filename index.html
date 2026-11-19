@@ -28,7 +28,7 @@
   --font-sans: "Source Sans 3", system-ui, sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 body {
   font-family: var(--font-sans);
   background: var(--bg);
@@ -44,7 +44,7 @@ a:hover { text-decoration: underline; }
 /* Nav */
 nav {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(250,247,242,.92);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
   padding: .85rem 1.5rem;
@@ -79,7 +79,7 @@ nav {
 
 /* Hero */
 .hero {
-  padding: 4.5rem 1.5rem 3.5rem;
+  padding: 4.25rem 1.5rem 3.25rem;
   max-width: 1100px; margin: 0 auto;
   display: grid; grid-template-columns: 1.15fr .85fr; gap: 3rem; align-items: center;
 }
@@ -92,12 +92,12 @@ nav {
 }
 .hero h1 {
   font-family: var(--font-serif);
-  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  font-size: clamp(2.35rem, 5vw, 3.25rem);
   font-weight: 600; line-height: 1.15;
   letter-spacing: -.02em; margin-bottom: .9rem;
 }
 .hero .lead {
-  font-size: 1.15rem; color: var(--muted);
+  font-size: 1.12rem; color: var(--muted);
   max-width: 34rem; margin-bottom: 1.8rem;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
@@ -109,7 +109,7 @@ nav {
   transition: transform .15s, box-shadow .15s, background .15s;
 }
 .btn:hover { transform: translateY(-1px); }
-.btn-primary { background: var(--sage); color: #fff; box-shadow: 0 4px 14px rgba(107,127,106,.25); }
+.btn-primary { background: var(--sage); color: #fff; box-shadow: 0 4px 14px color-mix(in srgb, var(--sage) 25%, transparent); }
 .btn-primary:hover { background: var(--sage-dark); }
 .btn-secondary { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
 .btn-secondary:hover { border-color: var(--clay); }
@@ -131,12 +131,12 @@ nav {
   overflow: hidden;
 }
 .hero-card .photo span {
-  width: 80px; height: 80px; border-radius: 50%;
+  width: 88px; height: 88px; border-radius: 50%;
   background: var(--card);
   display: grid; place-items: center;
-  font-size: 2rem; box-shadow: var(--shadow);
+  font-size: 2.2rem; box-shadow: var(--shadow);
 }
-.hero-meta { display: flex; flex-direction: column; gap: .55rem; }
+.hero-meta { display: flex; flex-direction: column; gap: .5rem; }
 .hero-meta div {
   display: flex; align-items: center; gap: .55rem;
   font-size: .92rem; color: var(--muted);
@@ -144,7 +144,7 @@ nav {
 .hero-meta strong { color: var(--ink); font-weight: 600; }
 
 /* Sections */
-section { padding: 3.5rem 1.5rem; }
+section { padding: 3.4rem 1.5rem; }
 .wrap { max-width: 1000px; margin: 0 auto; }
 .section-label {
   font-size: .78rem; font-weight: 700; letter-spacing: .12em;
@@ -153,7 +153,7 @@ section { padding: 3.5rem 1.5rem; }
 }
 h2 {
   font-family: var(--font-serif);
-  font-size: clamp(1.85rem, 3.5vw, 2.4rem);
+  font-size: clamp(1.8rem, 3.5vw, 2.35rem);
   font-weight: 600; line-height: 1.2;
   margin-bottom: .75rem;
 }
@@ -185,7 +185,7 @@ h2 {
 }
 .card h3 {
   font-family: var(--font-serif);
-  font-size: 1.35rem; font-weight: 600;
+  font-size: 1.3rem; font-weight: 600;
   margin-bottom: .45rem;
 }
 .card p { color: var(--muted); font-size: .95rem; }
@@ -229,6 +229,36 @@ h2 {
 }
 .approach-item span { color: var(--muted); font-size: .9rem; }
 
+/* Steps */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  counter-reset: step;
+}
+.step {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.3rem;
+  position: relative;
+}
+.step::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  top: -12px; left: 1.2rem;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--sage); color: #fff;
+  font-size: .85rem; font-weight: 700;
+  display: grid; place-items: center;
+}
+.step h3 {
+  font-family: var(--font-serif);
+  font-size: 1.2rem; margin: .4rem 0 .35rem;
+}
+.step p { color: var(--muted); font-size: .92rem; }
+
 /* Tarifs */
 .price-grid {
   display: grid;
@@ -244,7 +274,7 @@ h2 {
 }
 .price-card.featured {
   border-color: var(--sage);
-  box-shadow: 0 8px 28px rgba(107,127,106,.12);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--sage) 12%, transparent);
 }
 .price-card .tag {
   position: absolute; top: -11px; left: 1.2rem;
@@ -311,7 +341,7 @@ h2 {
 }
 .contact-card h3 {
   font-family: var(--font-serif);
-  font-size: 1.4rem; margin-bottom: 1rem;
+  font-size: 1.35rem; margin-bottom: 1rem;
 }
 .contact-row {
   display: flex; gap: .75rem; margin-bottom: .9rem;
@@ -335,9 +365,21 @@ h2 {
 }
 .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
   outline: none; border-color: var(--clay);
-  box-shadow: 0 0 0 3px rgba(196,165,116,.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--clay) 20%, transparent);
 }
 .form-note { font-size: .82rem; color: var(--soft); margin-top: .6rem; }
+
+/* Confidentialité note */
+.note-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--sage);
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  margin-top: 1.5rem;
+  font-size: .95rem;
+  color: var(--muted);
+}
 
 /* Footer */
 footer {
@@ -363,7 +405,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 }
 #lockBtn:hover { transform: scale(1.06); }
 #creator {
-  position: fixed; top: 0; right: 0; width: min(380px, 94vw);
+  position: fixed; top: 0; right: 0; width: min(420px, 96vw);
   height: 100vh; background: var(--card);
   border-left: 1px solid var(--line);
   z-index: 1000; display: none; flex-direction: column;
@@ -375,17 +417,31 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   background: linear-gradient(135deg, #3f3a35, #1c1917);
   color: #fff; font-weight: 700;
   display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
 }
 #creator .ch button {
   background: rgba(255,255,255,.15); border: none; color: #fff;
   width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1rem;
 }
-#creator .cb { padding: 1.15rem; overflow-y: auto; flex: 1; }
+#creator .ctabs {
+  display: flex; gap: .25rem; padding: .6rem .8rem;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto; flex-shrink: 0;
+  background: var(--sand);
+}
+#creator .ctab {
+  border: none; background: transparent;
+  padding: .4rem .75rem; border-radius: 8px;
+  font-size: .82rem; font-weight: 600; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+}
+#creator .ctab.active { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+#creator .cb { padding: 1rem 1.15rem; overflow-y: auto; flex: 1; }
 #creator .cf {
   padding: .9rem 1.15rem; border-top: 1px solid var(--line);
-  display: flex; gap: .5rem; flex-wrap: wrap;
+  display: flex; gap: .5rem; flex-wrap: wrap; flex-shrink: 0;
 }
-#creator label { display: block; font-size: .85rem; font-weight: 600; margin: .6rem 0 .25rem; color: var(--muted); }
+#creator label { display: block; font-size: .82rem; font-weight: 600; margin: .7rem 0 .25rem; color: var(--muted); }
 #creator input, #creator textarea, #creator select {
   width: 100%; padding: .55rem .7rem; border: 1px solid var(--line);
   border-radius: 8px; font-family: inherit; font-size: .9rem; background: var(--bg);
@@ -393,6 +449,31 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 #creator .msg { font-size: .82rem; color: var(--sage-dark); margin-left: auto; align-self: center; }
 .login-box { text-align: center; padding: 2rem 1rem; }
 .login-box p { color: var(--muted); margin-bottom: 1rem; font-size: .95rem; }
+.color-row { display: flex; gap: .5rem; align-items: center; margin-bottom: .4rem; }
+.color-row input[type="color"] {
+  width: 42px; height: 36px; padding: 0; border: 1px solid var(--line);
+  border-radius: 8px; cursor: pointer; background: none;
+}
+.color-row input[type="text"] { flex: 1; }
+.icon-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: .35rem;
+  margin: .4rem 0 .8rem;
+}
+.icon-grid button {
+  aspect-ratio: 1; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg); font-size: 1.25rem; cursor: pointer;
+}
+.icon-grid button:hover, .icon-grid button.selected {
+  border-color: var(--sage); background: var(--sand);
+}
+.panel { display: none; }
+.panel.active { display: block; }
+.group-title {
+  font-size: .75rem; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--clay-dark);
+  margin: 1.1rem 0 .4rem; padding-bottom: .3rem;
+  border-bottom: 1px solid var(--line);
+}
 
 /* Responsive */
 @media (max-width: 820px) {
@@ -411,68 +492,68 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
 <nav>
   <a class="brand" href="#top">
-    <span class="brand-mark">EO</span>
-    Emmanuelle Ouvrard
+    <span class="brand-mark" data-key="brandMark">EO</span>
+    <span data-key="siteName">Emmanuelle Ouvrard</span>
   </a>
   <div class="nav-links">
-    <a href="#approche">Approche</a>
-    <a href="#publics">Publics</a>
-    <a href="#monsoutien">MonSoutienPsy</a>
-    <a href="#tarifs">Tarifs</a>
-    <a href="#faq">FAQ</a>
-    <a class="nav-cta" href="#rdv">Prendre RDV</a>
+    <a href="#approche" data-key="navApproche">Approche</a>
+    <a href="#publics" data-key="navPublics">Publics</a>
+    <a href="#monsoutien" data-key="navMsp">MonSoutienPsy</a>
+    <a href="#tarifs" data-key="navTarifs">Tarifs</a>
+    <a href="#faq" data-key="navFaq">FAQ</a>
+    <a class="nav-cta" href="#rdv" data-key="navRdv">Prendre RDV</a>
   </div>
 </nav>
 
 <header class="hero" id="top">
   <div>
-    <div class="hero-badge">Psychologue · ADELI en cours d’affichage</div>
-    <h1>Un espace d’écoute<br>bienveillant et sécurisant</h1>
-    <p class="lead">
+    <div class="hero-badge" data-key="badge">Psychologue · ADELI en cours d’affichage</div>
+    <h1 data-key="title">Un espace d’écoute<br>bienveillant et sécurisant</h1>
+    <p class="lead" data-key="lead">
       J’accompagne les adultes, les étudiants et les enfants dans les moments de doute, de transition ou de souffrance. 
       Conventionnée <strong>MonSoutienPsy</strong>.
     </p>
     <div class="hero-actions">
-      <a class="btn btn-primary" href="#rdv">Prendre rendez-vous</a>
-      <a class="btn btn-secondary" href="#apropos">En savoir plus</a>
+      <a class="btn btn-primary" href="#rdv" data-key="btnPrimary">Prendre rendez-vous</a>
+      <a class="btn btn-secondary" href="#apropos" data-key="btnSecondary">En savoir plus</a>
     </div>
   </div>
   <div class="hero-card">
-    <div class="photo"><span>🌿</span></div>
+    <div class="photo"><span data-key="heroIcon">🌿</span></div>
     <div class="hero-meta">
-      <div><strong>Emmanuelle Ouvrard</strong></div>
-      <div>Psychologue clinicienne</div>
-      <div>✓ Conventionnée MonSoutienPsy</div>
-      <div>✓ Accueil des enfants formé</div>
-      <div>✓ Consultations étudiants</div>
-      <div>✓ Présentiel & visio</div>
+      <div><strong data-key="heroName">Emmanuelle Ouvrard</strong></div>
+      <div data-key="heroRole">Psychologue clinicienne</div>
+      <div data-key="heroPoint1">✓ Conventionnée MonSoutienPsy</div>
+      <div data-key="heroPoint2">✓ Accueil des enfants formé</div>
+      <div data-key="heroPoint3">✓ Consultations étudiants</div>
+      <div data-key="heroPoint4">✓ Présentiel & visio</div>
     </div>
   </div>
 </header>
 
 <section id="apropos">
   <div class="wrap">
-    <p class="section-label">Qui suis-je</p>
-    <h2>Une présence attentive, sans jugement</h2>
-    <p class="section-intro">
+    <p class="section-label" data-key="aboutLabel">Qui suis-je</p>
+    <h2 data-key="aboutTitle">Une présence attentive, sans jugement</h2>
+    <p class="section-intro" data-key="aboutIntro">
       Je suis psychologue, formée à l’écoute clinique et à l’accompagnement des parcours de vie. 
       Mon travail s’appuie sur une posture d’accueil, de respect du rythme de chacun et d’alliance thérapeutique.
     </p>
     <div class="grid-3">
       <div class="card">
-        <div class="card-icon">🎓</div>
-        <h3>Formation solide</h3>
-        <p>Parcours universitaire en psychologie clinique, avec une attention particulière à la psychopathologie et aux dispositifs de soin.</p>
+        <div class="card-icon" data-key="card1Icon">🎓</div>
+        <h3 data-key="card1Title">Formation solide</h3>
+        <p data-key="card1Text">Parcours universitaire en psychologie clinique, avec une attention particulière à la psychopathologie et aux dispositifs de soin.</p>
       </div>
       <div class="card">
-        <div class="card-icon">🧒</div>
-        <h3>Enfants & adolescents</h3>
-        <p>Formation spécifique à l’accueil et à l’accompagnement des enfants. Espace adapté, langage accessible, travail possible avec les parents.</p>
+        <div class="card-icon" data-key="card2Icon">🧒</div>
+        <h3 data-key="card2Title">Enfants & adolescents</h3>
+        <p data-key="card2Text">Formation spécifique à l’accueil et à l’accompagnement des enfants. Espace adapté, langage accessible, travail possible avec les parents.</p>
       </div>
       <div class="card">
-        <div class="card-icon">💚</div>
-        <h3>MonSoutienPsy</h3>
-        <p>Conventionnée dans le dispositif national : jusqu’à 12 séances remboursées par an, sur orientation d’un médecin.</p>
+        <div class="card-icon" data-key="card3Icon">💚</div>
+        <h3 data-key="card3Title">MonSoutienPsy</h3>
+        <p data-key="card3Text">Conventionnée dans le dispositif national : jusqu’à 12 séances remboursées par an, sur orientation d’un médecin.</p>
       </div>
     </div>
   </div>
@@ -481,47 +562,47 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 <section class="band" id="publics">
   <div class="band-inner wrap" style="padding: 3rem 1.5rem;">
     <div>
-      <p class="section-label">Pour qui</p>
-      <h2>Adultes, étudiants, enfants</h2>
-      <p class="section-intro" style="margin-bottom: 1.2rem;">
+      <p class="section-label" data-key="publicsLabel">Pour qui</p>
+      <h2 data-key="publicsTitle">Adultes, étudiants, enfants</h2>
+      <p class="section-intro" style="margin-bottom: 1.2rem;" data-key="publicsIntro">
         Chaque âge de la vie a ses défis. Je propose un cadre adapté à votre situation, que vous veniez seul·e, en tant que parent, ou pour votre enfant.
       </p>
-      <a class="btn btn-primary" href="#rdv">Réserver une première séance</a>
+      <a class="btn btn-primary" href="#rdv" data-key="publicsBtn">Réserver une première séance</a>
     </div>
     <ul class="band-list">
-      <li><span class="check">✓</span><span><strong>Adultes</strong> — anxiété, burn-out, deuil, estime de soi, transitions de vie, relations</span></li>
-      <li><span class="check">✓</span><span><strong>Étudiants</strong> — stress, orientation, isolement, pression, confiance, phobie sociale</span></li>
-      <li><span class="check">✓</span><span><strong>Enfants</strong> — difficultés scolaires, émotions, sommeil, séparation, harcèlement</span></li>
-      <li><span class="check">✓</span><span><strong>Parents</strong> — soutien à la parentalité, guidance, compréhension du comportement de l’enfant</span></li>
+      <li><span class="check">✓</span><span data-key="public1"><strong>Adultes</strong> — anxiété, burn-out, deuil, estime de soi, transitions de vie, relations</span></li>
+      <li><span class="check">✓</span><span data-key="public2"><strong>Étudiants</strong> — stress, orientation, isolement, pression, confiance, phobie sociale</span></li>
+      <li><span class="check">✓</span><span data-key="public3"><strong>Enfants</strong> — difficultés scolaires, émotions, sommeil, séparation, harcèlement</span></li>
+      <li><span class="check">✓</span><span data-key="public4"><strong>Parents</strong> — soutien à la parentalité, guidance, compréhension du comportement de l’enfant</span></li>
     </ul>
   </div>
 </section>
 
 <section id="monsoutien">
   <div class="wrap">
-    <p class="section-label">Dispositif</p>
-    <h2>MonSoutienPsy</h2>
-    <p class="section-intro">
+    <p class="section-label" data-key="mspLabel">Dispositif</p>
+    <h2 data-key="mspTitle">MonSoutienPsy</h2>
+    <p class="section-intro" data-key="mspIntro">
       Le dispositif national permet un accès facilité à un psychologue, avec un reste à charge réduit ou nul selon votre situation.
     </p>
     <div class="grid-3">
       <div class="card">
-        <div class="card-icon">📋</div>
-        <h3>Comment ça marche ?</h3>
-        <p>Votre médecin (généraliste, pédiatre, etc.) vous oriente vers un psychologue partenaire. Vous pouvez ensuite prendre rendez-vous directement.</p>
+        <div class="card-icon" data-key="msp1Icon">📋</div>
+        <h3 data-key="msp1Title">Comment ça marche ?</h3>
+        <p data-key="msp1Text">Votre médecin (généraliste, pédiatre, etc.) vous oriente vers un psychologue partenaire. Vous pouvez ensuite prendre rendez-vous directement.</p>
       </div>
       <div class="card">
-        <div class="card-icon">💶</div>
-        <h3>Combien de séances ?</h3>
-        <p>Jusqu’à <strong>12 séances par an</strong> peuvent être prises en charge. Le tarif est fixé par le dispositif (remboursement Sécurité sociale + mutuelle selon contrats).</p>
+        <div class="card-icon" data-key="msp2Icon">💶</div>
+        <h3 data-key="msp2Title">Combien de séances ?</h3>
+        <p data-key="msp2Text">Jusqu’à <strong>12 séances par an</strong> peuvent être prises en charge. Le tarif est fixé par le dispositif (remboursement Sécurité sociale + mutuelle selon contrats).</p>
       </div>
       <div class="card">
-        <div class="card-icon">🎓</div>
-        <h3>Étudiants aussi</h3>
-        <p>Les étudiants peuvent bénéficier de MonSoutienPsy. N’hésitez pas à en parler à votre médecin ou au service de santé universitaire.</p>
+        <div class="card-icon" data-key="msp3Icon">🎓</div>
+        <h3 data-key="msp3Title">Étudiants aussi</h3>
+        <p data-key="msp3Text">Les étudiants peuvent bénéficier de MonSoutienPsy. N’hésitez pas à en parler à votre médecin ou au service de santé universitaire.</p>
       </div>
     </div>
-    <p style="margin-top: 1.5rem; color: var(--muted); font-size: .95rem;">
+    <p style="margin-top: 1.5rem; color: var(--muted); font-size: .95rem;" data-key="mspNote">
       Je suis conventionnée MonSoutienPsy. Lors de la prise de rendez-vous, indiquez simplement que vous venez dans ce cadre (avec l’orientation médicale).
     </p>
   </div>
@@ -529,78 +610,109 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
 <section id="approche" style="background: var(--sand);">
   <div class="wrap">
-    <p class="section-label">Méthode</p>
-    <h2>Mon approche</h2>
-    <p class="section-intro">
+    <p class="section-label" data-key="approcheLabel">Méthode</p>
+    <h2 data-key="approcheTitle">Mon approche</h2>
+    <p class="section-intro" data-key="approcheIntro">
       Je travaille dans une perspective intégrative : écoute clinique, outils issus des thérapies cognitivo-comportementales et humanistes, et attention au corps et aux émotions.
     </p>
     <div class="approach-grid">
       <div class="approach-item">
-        <strong>Alliance</strong>
-        <span>Un climat de confiance, de confidentialité et de non-jugement.</span>
+        <strong data-key="app1Title">Alliance</strong>
+        <span data-key="app1Text">Un climat de confiance, de confidentialité et de non-jugement.</span>
       </div>
       <div class="approach-item">
-        <strong>Rythme respecté</strong>
-        <span>Pas de méthode imposée : on avance à votre rythme, avec vos objectifs.</span>
+        <strong data-key="app2Title">Rythme respecté</strong>
+        <span data-key="app2Text">Pas de méthode imposée : on avance à votre rythme, avec vos objectifs.</span>
       </div>
       <div class="approach-item">
-        <strong>Outils concrets</strong>
-        <span>Respiration, reformulation, exposition progressive, travail sur les pensées…</span>
+        <strong data-key="app3Title">Outils concrets</strong>
+        <span data-key="app3Text">Respiration, reformulation, exposition progressive, travail sur les pensées…</span>
       </div>
       <div class="approach-item">
-        <strong>Enfants</strong>
-        <span>Jeux, dessin, métaphores et échanges adaptés à l’âge, avec ou sans les parents.</span>
+        <strong data-key="app4Title">Enfants</strong>
+        <span data-key="app4Text">Jeux, dessin, métaphores et échanges adaptés à l’âge, avec ou sans les parents.</span>
       </div>
       <div class="approach-item">
-        <strong>Présentiel & visio</strong>
-        <span>Cabinet et consultations en ligne selon vos contraintes.</span>
+        <strong data-key="app5Title">Présentiel & visio</strong>
+        <span data-key="app5Text">Cabinet et consultations en ligne selon vos contraintes.</span>
       </div>
       <div class="approach-item">
-        <strong>Éthique</strong>
-        <span>Secret professionnel, respect du code de déontologie des psychologues.</span>
+        <strong data-key="app6Title">Éthique</strong>
+        <span data-key="app6Text">Secret professionnel, respect du code de déontologie des psychologues.</span>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="deroulement">
+  <div class="wrap">
+    <p class="section-label" data-key="stepsLabel">Parcours</p>
+    <h2 data-key="stepsTitle">Comment se déroule un accompagnement ?</h2>
+    <p class="section-intro" data-key="stepsIntro">
+      Un cadre clair, souple et adapté à votre demande. Voici les grandes étapes.
+    </p>
+    <div class="steps">
+      <div class="step">
+        <h3 data-key="step1Title">Premier contact</h3>
+        <p data-key="step1Text">Vous m’écrivez ou prenez rendez-vous. On clarifie ensemble le cadre (MonSoutienPsy ou libre, présentiel/visio).</p>
+      </div>
+      <div class="step">
+        <h3 data-key="step2Title">Première séance</h3>
+        <p data-key="step2Text">Temps d’accueil et d’écoute. On pose ensemble les objectifs et le rythme qui vous conviennent.</p>
+      </div>
+      <div class="step">
+        <h3 data-key="step3Title">Suivi</h3>
+        <p data-key="step3Text">Séances régulières ou espacées selon vos besoins. Ajustements au fil de l’eau.</p>
+      </div>
+      <div class="step">
+        <h3 data-key="step4Title">Fin & bilan</h3>
+        <p data-key="step4Text">On fait le point ensemble. Vous décidez de la suite en toute liberté.</p>
+      </div>
+    </div>
+    <div class="note-box" data-key="confidentialite">
+      <strong>Confidentialité</strong> — Tout ce qui se dit en séance est protégé par le secret professionnel. Je m’engage à respecter le code de déontologie des psychologues.
     </div>
   </div>
 </section>
 
 <section id="tarifs">
   <div class="wrap">
-    <p class="section-label">Pratique</p>
-    <h2>Tarifs & modalités</h2>
-    <p class="section-intro">Les tarifs peuvent évoluer. Les montants exacts vous seront confirmés lors de la prise de rendez-vous.</p>
+    <p class="section-label" data-key="tarifsLabel">Pratique</p>
+    <h2 data-key="tarifsTitle">Tarifs & modalités</h2>
+    <p class="section-intro" data-key="tarifsIntro">Les tarifs peuvent évoluer. Les montants exacts vous seront confirmés lors de la prise de rendez-vous.</p>
     <div class="price-grid">
       <div class="price-card featured">
-        <span class="tag">MonSoutienPsy</span>
-        <h3>Séance MonSoutienPsy</h3>
-        <div class="amount">Tarif conventionné <small>/ séance</small></div>
+        <span class="tag" data-key="price1Tag">MonSoutienPsy</span>
+        <h3 data-key="price1Title">Séance MonSoutienPsy</h3>
+        <div class="amount" data-key="price1Amount">Tarif conventionné <small>/ séance</small></div>
         <ul>
-          <li>Jusqu’à 12 séances / an</li>
-          <li>Orientation médicale requise</li>
-          <li>Remboursement selon parcours de soins</li>
-          <li>Adultes, adolescents, enfants</li>
+          <li data-key="price1L1">Jusqu’à 12 séances / an</li>
+          <li data-key="price1L2">Orientation médicale requise</li>
+          <li data-key="price1L3">Remboursement selon parcours de soins</li>
+          <li data-key="price1L4">Adultes, adolescents, enfants</li>
         </ul>
       </div>
       <div class="price-card">
-        <h3>Consultation libre</h3>
-        <div class="amount">À partir de 60 € <small>/ séance</small></div>
+        <h3 data-key="price2Title">Consultation libre</h3>
+        <div class="amount" data-key="price2Amount">À partir de 60 € <small>/ séance</small></div>
         <ul>
-          <li>Adultes & étudiants</li>
-          <li>Durée indicative 45–50 min</li>
-          <li>Présentiel ou visio</li>
-          <li>Possibilité de facture pour mutuelle</li>
+          <li data-key="price2L1">Adultes & étudiants</li>
+          <li data-key="price2L2">Durée indicative 45–50 min</li>
+          <li data-key="price2L3">Présentiel ou visio</li>
+          <li data-key="price2L4">Possibilité de facture pour mutuelle</li>
         </ul>
       </div>
       <div class="price-card">
-        <h3>Enfant / adolescent</h3>
-        <div class="amount">À partir de 60 € <small>/ séance</small></div>
+        <h3 data-key="price3Title">Enfant / adolescent</h3>
+        <div class="amount" data-key="price3Amount">À partir de 60 € <small>/ séance</small></div>
         <ul>
-          <li>Espace adapté</li>
-          <li>Temps d’échange possible avec le parent</li>
-          <li>Également possible en MonSoutienPsy</li>
+          <li data-key="price3L1">Espace adapté</li>
+          <li data-key="price3L2">Temps d’échange possible avec le parent</li>
+          <li data-key="price3L3">Également possible en MonSoutienPsy</li>
         </ul>
       </div>
     </div>
-    <p style="margin-top: 1.4rem; font-size: .9rem; color: var(--soft);">
+    <p style="margin-top: 1.4rem; font-size: .9rem; color: var(--soft);" data-key="tarifsNote">
       Les tarifs « consultation libre » sont indicatifs et peuvent varier selon la durée ou le type d’accompagnement. 
       Les séances MonSoutienPsy suivent le barème national en vigueur.
     </p>
@@ -609,23 +721,23 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
 <section id="rdv" style="background: var(--sand);">
   <div class="wrap">
-    <p class="section-label">Contact</p>
-    <h2>Prendre rendez-vous</h2>
-    <p class="section-intro">Premier contact sans engagement. Décrivez brièvement votre besoin : je vous répondrai dans les meilleurs délais.</p>
+    <p class="section-label" data-key="rdvLabel">Contact</p>
+    <h2 data-key="rdvTitle">Prendre rendez-vous</h2>
+    <p class="section-intro" data-key="rdvIntro">Premier contact sans engagement. Décrivez brièvement votre besoin : je vous répondrai dans les meilleurs délais.</p>
     <div class="contact-grid">
       <div class="contact-card">
-        <h3>Écrire un message</h3>
+        <h3 data-key="formTitle">Écrire un message</h3>
         <form id="contactForm" onsubmit="return handleForm(event)">
           <div class="form-row">
-            <label for="fName">Prénom & nom</label>
+            <label for="fName" data-key="labelName">Prénom & nom</label>
             <input id="fName" name="name" required placeholder="Camille Dupont">
           </div>
           <div class="form-row">
-            <label for="fEmail">E-mail</label>
+            <label for="fEmail" data-key="labelEmail">E-mail</label>
             <input id="fEmail" name="email" type="email" required placeholder="camille@email.com">
           </div>
           <div class="form-row">
-            <label for="fWho">Vous consultez pour</label>
+            <label for="fWho" data-key="labelWho">Vous consultez pour</label>
             <select id="fWho" name="who">
               <option value="adulte">Moi-même (adulte)</option>
               <option value="etudiant">Étudiant·e</option>
@@ -634,7 +746,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
             </select>
           </div>
           <div class="form-row">
-            <label for="fType">Cadre souhaité</label>
+            <label for="fType" data-key="labelType">Cadre souhaité</label>
             <select id="fType" name="type">
               <option value="msp">MonSoutienPsy (avec orientation médicale)</option>
               <option value="libre">Consultation libre</option>
@@ -642,53 +754,53 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
             </select>
           </div>
           <div class="form-row">
-            <label for="fMsg">Message</label>
+            <label for="fMsg" data-key="labelMsg">Message</label>
             <textarea id="fMsg" name="message" rows="4" placeholder="Quelques mots sur ce qui vous amène…"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%">Envoyer la demande</button>
-          <p class="form-note">Ce formulaire est une démonstration. En production, branchez-le à un service d’e-mail (Formspree, Netlify Forms, etc.).</p>
+          <button type="submit" class="btn btn-primary" style="width:100%" data-key="formBtn">Envoyer la demande</button>
+          <p class="form-note" data-key="formNote">Ce formulaire est une démonstration. En production, branchez-le à un service d’e-mail (Formspree, Netlify Forms, etc.).</p>
           <p id="formOk" style="display:none;margin-top:.8rem;color:var(--sage-dark);font-weight:600">✓ Message enregistré localement. Merci !</p>
         </form>
       </div>
       <div>
         <div class="contact-card" style="margin-bottom:1rem">
-          <h3>Coordonnées</h3>
+          <h3 data-key="coordsTitle">Coordonnées</h3>
           <div class="contact-row">
-            <span class="ico">📍</span>
+            <span class="ico" data-key="icoAddress">📍</span>
             <div>
-              <strong>Cabinet</strong><br>
-              <span id="cAddress">Adresse à préciser — France</span>
+              <strong data-key="labelAddress">Cabinet</strong><br>
+              <span id="cAddress" data-key="address">Adresse à préciser — France</span>
             </div>
           </div>
           <div class="contact-row">
-            <span class="ico">✉️</span>
+            <span class="ico" data-key="icoEmail">✉️</span>
             <div>
-              <strong>E-mail</strong><br>
-              <span id="cEmail">contact@emmanuelle-ouvrard.fr</span>
+              <strong data-key="labelEmailC">E-mail</strong><br>
+              <span id="cEmail" data-key="email">contact@emmanuelle-ouvrard.fr</span>
             </div>
           </div>
           <div class="contact-row">
-            <span class="ico">📞</span>
+            <span class="ico" data-key="icoPhone">📞</span>
             <div>
-              <strong>Téléphone</strong><br>
-              <span id="cPhone">Sur demande lors du premier contact</span>
+              <strong data-key="labelPhone">Téléphone</strong><br>
+              <span id="cPhone" data-key="phone">Sur demande lors du premier contact</span>
             </div>
           </div>
           <div class="contact-row">
-            <span class="ico">🕒</span>
+            <span class="ico" data-key="icoHours">🕒</span>
             <div>
-              <strong>Horaires</strong><br>
-              <span id="cHours">Sur rendez-vous — jours de semaine</span>
+              <strong data-key="labelHours">Horaires</strong><br>
+              <span id="cHours" data-key="hours">Sur rendez-vous — jours de semaine</span>
             </div>
           </div>
         </div>
         <div class="contact-card">
-          <h3>Avant la première séance</h3>
-          <p style="color:var(--muted);font-size:.92rem;margin-bottom:.8rem">
+          <h3 data-key="beforeTitle">Avant la première séance</h3>
+          <p style="color:var(--muted);font-size:.92rem;margin-bottom:.8rem" data-key="beforeText">
             Si vous venez dans le cadre <strong>MonSoutienPsy</strong>, munissez-vous de l’orientation de votre médecin. 
             Pour les enfants, la présence d’au moins un parent est généralement souhaitée pour la première rencontre.
           </p>
-          <a class="btn btn-ghost" href="#faq">Voir la FAQ</a>
+          <a class="btn btn-ghost" href="#faq" data-key="beforeBtn">Voir la FAQ</a>
         </div>
       </div>
     </div>
@@ -697,44 +809,44 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
 <section id="faq">
   <div class="wrap">
-    <p class="section-label">Questions</p>
-    <h2>Foire aux questions</h2>
+    <p class="section-label" data-key="faqLabel">Questions</p>
+    <h2 data-key="faqTitle">Foire aux questions</h2>
     <div class="faq-list" style="margin-top:1.5rem">
       <div class="faq-item">
-        <button class="faq-q" type="button">Comment se passe une première séance ? <span>+</span></button>
-        <div class="faq-a">Nous prenons le temps de faire connaissance, de comprendre ce qui vous amène et de définir ensemble un cadre (objectifs, rythme, présentiel ou visio). Rien n’est imposé.</div>
+        <button class="faq-q" type="button"><span data-key="faq1Q">Comment se passe une première séance ?</span> <span>+</span></button>
+        <div class="faq-a" data-key="faq1A">Nous prenons le temps de faire connaissance, de comprendre ce qui vous amène et de définir ensemble un cadre (objectifs, rythme, présentiel ou visio). Rien n’est imposé.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button">Faut-il une orientation médicale pour MonSoutienPsy ? <span>+</span></button>
-        <div class="faq-a">Oui. Un médecin (généraliste, pédiatre, psychiatre, etc.) doit vous orienter vers un psychologue partenaire du dispositif. Conservez le document d’orientation pour le premier rendez-vous.</div>
+        <button class="faq-q" type="button"><span data-key="faq2Q">Faut-il une orientation médicale pour MonSoutienPsy ?</span> <span>+</span></button>
+        <div class="faq-a" data-key="faq2A">Oui. Un médecin (généraliste, pédiatre, psychiatre, etc.) doit vous orienter vers un psychologue partenaire du dispositif. Conservez le document d’orientation pour le premier rendez-vous.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button">Proposez-vous des consultations pour les enfants ? <span>+</span></button>
-        <div class="faq-a">Oui. J’ai reçu une formation pour accueillir les enfants. L’espace et les outils sont adaptés à leur âge. Un échange avec le(s) parent(s) fait souvent partie du parcours.</div>
+        <button class="faq-q" type="button"><span data-key="faq3Q">Proposez-vous des consultations pour les enfants ?</span> <span>+</span></button>
+        <div class="faq-a" data-key="faq3A">Oui. J’ai reçu une formation pour accueillir les enfants. L’espace et les outils sont adaptés à leur âge. Un échange avec le(s) parent(s) fait souvent partie du parcours.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button">Les étudiants sont-ils les bienvenus ? <span>+</span></button>
-        <div class="faq-a">Absolument. Le stress des études, l’isolement, les questions d’orientation ou d’estime de soi sont des motifs fréquents. MonSoutienPsy est également accessible aux étudiants.</div>
+        <button class="faq-q" type="button"><span data-key="faq4Q">Les étudiants sont-ils les bienvenus ?</span> <span>+</span></button>
+        <div class="faq-a" data-key="faq4A">Absolument. Le stress des études, l’isolement, les questions d’orientation ou d’estime de soi sont des motifs fréquents. MonSoutienPsy est également accessible aux étudiants.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button">Les séances en visio sont-elles possibles ? <span>+</span></button>
-        <div class="faq-a">Oui, selon les situations et les disponibilités. La visio peut convenir pour le suivi ou lorsque le déplacement est difficile. La première rencontre peut se faire en présentiel si vous le souhaitez.</div>
+        <button class="faq-q" type="button"><span data-key="faq5Q">Les séances en visio sont-elles possibles ?</span> <span>+</span></button>
+        <div class="faq-a" data-key="faq5A">Oui, selon les situations et les disponibilités. La visio peut convenir pour le suivi ou lorsque le déplacement est difficile. La première rencontre peut se faire en présentiel si vous le souhaitez.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button">Combien de temps dure un accompagnement ? <span>+</span></button>
-        <div class="faq-a">Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un travail plus long. Nous en discutons régulièrement pour ajuster.</div>
+        <button class="faq-q" type="button"><span data-key="faq6Q">Combien de temps dure un accompagnement ?</span> <span>+</span></button>
+        <div class="faq-a" data-key="faq6A">Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un travail plus long. Nous en discutons régulièrement pour ajuster.</div>
       </div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="brand-f">Emmanuelle Ouvrard</div>
-  <p>Psychologue · Accompagnement adultes, étudiants & enfants</p>
-  <p style="margin-top:.5rem">Conventionnée MonSoutienPsy</p>
+  <div class="brand-f" data-key="footerName">Emmanuelle Ouvrard</div>
+  <p data-key="footerTagline">Psychologue · Accompagnement adultes, étudiants & enfants</p>
+  <p style="margin-top:.5rem" data-key="footerMsp">Conventionnée MonSoutienPsy</p>
   <div class="legal">
-    Site vitrine — les informations pratiques (adresse, tarifs exacts, n° ADELI) sont à finaliser dans l’espace créateur.<br>
-    © <span id="y"></span> Emmanuelle Ouvrard — Tous droits réservés
+    <span data-key="footerLegal">Site vitrine — les informations pratiques (adresse, tarifs exacts, n° ADELI) sont à finaliser dans l’espace créateur.</span><br>
+    © <span id="y"></span> <span data-key="footerCopy">Emmanuelle Ouvrard — Tous droits réservés</span>
   </div>
 </footer>
 
@@ -744,6 +856,12 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   <div class="ch">
     <span>Espace créateur</span>
     <button type="button" id="cClose">✕</button>
+  </div>
+  <div class="ctabs" id="cTabs" style="display:none">
+    <button class="ctab active" data-panel="textes">Textes</button>
+    <button class="ctab" data-panel="couleurs">Couleurs</button>
+    <button class="ctab" data-panel="icones">Icônes</button>
+    <button class="ctab" data-panel="contact">Contact</button>
   </div>
   <div class="cb" id="cBody"></div>
   <div class="cf" id="cFoot" style="display:none">
@@ -775,41 +893,230 @@ try {
   console.warn("Firebase non initialisé — renseignez firebaseConfig", err);
 }
 
-const STORAGE = "eo_psy_cfg_v1";
+const STORAGE = "eo_psy_cfg_v2";
 
 const DEFAULTS = {
+  // Identité
   siteName: "Emmanuelle Ouvrard",
-  title: "Un espace d’écoute bienveillant et sécurisant",
+  brandMark: "EO",
+  badge: "Psychologue · ADELI en cours d’affichage",
+  title: "Un espace d’écoute\nbienveillant et sécurisant",
   lead: "J’accompagne les adultes, les étudiants et les enfants dans les moments de doute, de transition ou de souffrance. Conventionnée MonSoutienPsy.",
-  email: "contact@emmanuelle-ouvrard.fr",
-  phone: "Sur demande lors du premier contact",
+  btnPrimary: "Prendre rendez-vous",
+  btnSecondary: "En savoir plus",
+  heroIcon: "🌿",
+  heroName: "Emmanuelle Ouvrard",
+  heroRole: "Psychologue clinicienne",
+  heroPoint1: "✓ Conventionnée MonSoutienPsy",
+  heroPoint2: "✓ Accueil des enfants formé",
+  heroPoint3: "✓ Consultations étudiants",
+  heroPoint4: "✓ Présentiel & visio",
+
+  // Nav
+  navApproche: "Approche",
+  navPublics: "Publics",
+  navMsp: "MonSoutienPsy",
+  navTarifs: "Tarifs",
+  navFaq: "FAQ",
+  navRdv: "Prendre RDV",
+
+  // À propos
+  aboutLabel: "Qui suis-je",
+  aboutTitle: "Une présence attentive, sans jugement",
+  aboutIntro: "Je suis psychologue, formée à l’écoute clinique et à l’accompagnement des parcours de vie. Mon travail s’appuie sur une posture d’accueil, de respect du rythme de chacun et d’alliance thérapeutique.",
+  card1Icon: "🎓", card1Title: "Formation solide", card1Text: "Parcours universitaire en psychologie clinique, avec une attention particulière à la psychopathologie et aux dispositifs de soin.",
+  card2Icon: "🧒", card2Title: "Enfants & adolescents", card2Text: "Formation spécifique à l’accueil et à l’accompagnement des enfants. Espace adapté, langage accessible, travail possible avec les parents.",
+  card3Icon: "💚", card3Title: "MonSoutienPsy", card3Text: "Conventionnée dans le dispositif national : jusqu’à 12 séances remboursées par an, sur orientation d’un médecin.",
+
+  // Publics
+  publicsLabel: "Pour qui",
+  publicsTitle: "Adultes, étudiants, enfants",
+  publicsIntro: "Chaque âge de la vie a ses défis. Je propose un cadre adapté à votre situation, que vous veniez seul·e, en tant que parent, ou pour votre enfant.",
+  publicsBtn: "Réserver une première séance",
+  public1: "Adultes — anxiété, burn-out, deuil, estime de soi, transitions de vie, relations",
+  public2: "Étudiants — stress, orientation, isolement, pression, confiance, phobie sociale",
+  public3: "Enfants — difficultés scolaires, émotions, sommeil, séparation, harcèlement",
+  public4: "Parents — soutien à la parentalité, guidance, compréhension du comportement de l’enfant",
+
+  // MonSoutienPsy
+  mspLabel: "Dispositif",
+  mspTitle: "MonSoutienPsy",
+  mspIntro: "Le dispositif national permet un accès facilité à un psychologue, avec un reste à charge réduit ou nul selon votre situation.",
+  msp1Icon: "📋", msp1Title: "Comment ça marche ?", msp1Text: "Votre médecin (généraliste, pédiatre, etc.) vous oriente vers un psychologue partenaire. Vous pouvez ensuite prendre rendez-vous directement.",
+  msp2Icon: "💶", msp2Title: "Combien de séances ?", msp2Text: "Jusqu’à 12 séances par an peuvent être prises en charge. Le tarif est fixé par le dispositif (remboursement Sécurité sociale + mutuelle selon contrats).",
+  msp3Icon: "🎓", msp3Title: "Étudiants aussi", msp3Text: "Les étudiants peuvent bénéficier de MonSoutienPsy. N’hésitez pas à en parler à votre médecin ou au service de santé universitaire.",
+  mspNote: "Je suis conventionnée MonSoutienPsy. Lors de la prise de rendez-vous, indiquez simplement que vous venez dans ce cadre (avec l’orientation médicale).",
+
+  // Approche
+  approcheLabel: "Méthode",
+  approcheTitle: "Mon approche",
+  approcheIntro: "Je travaille dans une perspective intégrative : écoute clinique, outils issus des thérapies cognitivo-comportementales et humanistes, et attention au corps et aux émotions.",
+  app1Title: "Alliance", app1Text: "Un climat de confiance, de confidentialité et de non-jugement.",
+  app2Title: "Rythme respecté", app2Text: "Pas de méthode imposée : on avance à votre rythme, avec vos objectifs.",
+  app3Title: "Outils concrets", app3Text: "Respiration, reformulation, exposition progressive, travail sur les pensées…",
+  app4Title: "Enfants", app4Text: "Jeux, dessin, métaphores et échanges adaptés à l’âge, avec ou sans les parents.",
+  app5Title: "Présentiel & visio", app5Text: "Cabinet et consultations en ligne selon vos contraintes.",
+  app6Title: "Éthique", app6Text: "Secret professionnel, respect du code de déontologie des psychologues.",
+
+  // Étapes
+  stepsLabel: "Parcours",
+  stepsTitle: "Comment se déroule un accompagnement ?",
+  stepsIntro: "Un cadre clair, souple et adapté à votre demande. Voici les grandes étapes.",
+  step1Title: "Premier contact", step1Text: "Vous m’écrivez ou prenez rendez-vous. On clarifie ensemble le cadre (MonSoutienPsy ou libre, présentiel/visio).",
+  step2Title: "Première séance", step2Text: "Temps d’accueil et d’écoute. On pose ensemble les objectifs et le rythme qui vous conviennent.",
+  step3Title: "Suivi", step3Text: "Séances régulières ou espacées selon vos besoins. Ajustements au fil de l’eau.",
+  step4Title: "Fin & bilan", step4Text: "On fait le point ensemble. Vous décidez de la suite en toute liberté.",
+  confidentialite: "Confidentialité — Tout ce qui se dit en séance est protégé par le secret professionnel. Je m’engage à respecter le code de déontologie des psychologues.",
+
+  // Tarifs
+  tarifsLabel: "Pratique",
+  tarifsTitle: "Tarifs & modalités",
+  tarifsIntro: "Les tarifs peuvent évoluer. Les montants exacts vous seront confirmés lors de la prise de rendez-vous.",
+  price1Tag: "MonSoutienPsy",
+  price1Title: "Séance MonSoutienPsy",
+  price1Amount: "Tarif conventionné / séance",
+  price1L1: "Jusqu’à 12 séances / an",
+  price1L2: "Orientation médicale requise",
+  price1L3: "Remboursement selon parcours de soins",
+  price1L4: "Adultes, adolescents, enfants",
+  price2Title: "Consultation libre",
+  price2Amount: "À partir de 60 € / séance",
+  price2L1: "Adultes & étudiants",
+  price2L2: "Durée indicative 45–50 min",
+  price2L3: "Présentiel ou visio",
+  price2L4: "Possibilité de facture pour mutuelle",
+  price3Title: "Enfant / adolescent",
+  price3Amount: "À partir de 60 € / séance",
+  price3L1: "Espace adapté",
+  price3L2: "Temps d’échange possible avec le parent",
+  price3L3: "Également possible en MonSoutienPsy",
+  tarifsNote: "Les tarifs « consultation libre » sont indicatifs et peuvent varier selon la durée ou le type d’accompagnement. Les séances MonSoutienPsy suivent le barème national en vigueur.",
+
+  // RDV / Contact
+  rdvLabel: "Contact",
+  rdvTitle: "Prendre rendez-vous",
+  rdvIntro: "Premier contact sans engagement. Décrivez brièvement votre besoin : je vous répondrai dans les meilleurs délais.",
+  formTitle: "Écrire un message",
+  labelName: "Prénom & nom",
+  labelEmail: "E-mail",
+  labelWho: "Vous consultez pour",
+  labelType: "Cadre souhaité",
+  labelMsg: "Message",
+  formBtn: "Envoyer la demande",
+  formNote: "Ce formulaire est une démonstration. En production, branchez-le à un service d’e-mail (Formspree, Netlify Forms, etc.).",
+  coordsTitle: "Coordonnées",
+  labelAddress: "Cabinet",
   address: "Adresse à préciser — France",
+  labelEmailC: "E-mail",
+  email: "contact@emmanuelle-ouvrard.fr",
+  labelPhone: "Téléphone",
+  phone: "Sur demande lors du premier contact",
+  labelHours: "Horaires",
   hours: "Sur rendez-vous — jours de semaine",
-  badge: "Psychologue · ADELI en cours d’affichage"
+  icoAddress: "📍", icoEmail: "✉️", icoPhone: "📞", icoHours: "🕒",
+  beforeTitle: "Avant la première séance",
+  beforeText: "Si vous venez dans le cadre MonSoutienPsy, munissez-vous de l’orientation de votre médecin. Pour les enfants, la présence d’au moins un parent est généralement souhaitée pour la première rencontre.",
+  beforeBtn: "Voir la FAQ",
+
+  // FAQ
+  faqLabel: "Questions",
+  faqTitle: "Foire aux questions",
+  faq1Q: "Comment se passe une première séance ?",
+  faq1A: "Nous prenons le temps de faire connaissance, de comprendre ce qui vous amène et de définir ensemble un cadre (objectifs, rythme, présentiel ou visio). Rien n’est imposé.",
+  faq2Q: "Faut-il une orientation médicale pour MonSoutienPsy ?",
+  faq2A: "Oui. Un médecin (généraliste, pédiatre, psychiatre, etc.) doit vous orienter vers un psychologue partenaire du dispositif. Conservez le document d’orientation pour le premier rendez-vous.",
+  faq3Q: "Proposez-vous des consultations pour les enfants ?",
+  faq3A: "Oui. J’ai reçu une formation pour accueillir les enfants. L’espace et les outils sont adaptés à leur âge. Un échange avec le(s) parent(s) fait souvent partie du parcours.",
+  faq4Q: "Les étudiants sont-ils les bienvenus ?",
+  faq4A: "Absolument. Le stress des études, l’isolement, les questions d’orientation ou d’estime de soi sont des motifs fréquents. MonSoutienPsy est également accessible aux étudiants.",
+  faq5Q: "Les séances en visio sont-elles possibles ?",
+  faq5A: "Oui, selon les situations et les disponibilités. La visio peut convenir pour le suivi ou lorsque le déplacement est difficile. La première rencontre peut se faire en présentiel si vous le souhaitez.",
+  faq6Q: "Combien de temps dure un accompagnement ?",
+  faq6A: "Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un travail plus long. Nous en discutons régulièrement pour ajuster.",
+
+  // Footer
+  footerName: "Emmanuelle Ouvrard",
+  footerTagline: "Psychologue · Accompagnement adultes, étudiants & enfants",
+  footerMsp: "Conventionnée MonSoutienPsy",
+  footerLegal: "Site vitrine — les informations pratiques (adresse, tarifs exacts, n° ADELI) sont à finaliser dans l’espace créateur.",
+  footerCopy: "Emmanuelle Ouvrard — Tous droits réservés",
+
+  // Couleurs
+  colors: {
+    ink: "#1c1917",
+    muted: "#57534e",
+    soft: "#78716c",
+    bg: "#faf7f2",
+    card: "#ffffff",
+    sand: "#f5f0e8",
+    clay: "#c4a574",
+    clayDark: "#a68b5b",
+    sage: "#6b7f6a",
+    sageDark: "#556654",
+    blush: "#e8d5c4",
+    line: "#e7e0d5"
+  }
 };
 
-let cfg = { ...DEFAULTS };
+let cfg = structuredClone(DEFAULTS);
 try {
   const raw = localStorage.getItem(STORAGE);
-  if (raw) cfg = { ...DEFAULTS, ...JSON.parse(raw) };
+  if (raw) {
+    const parsed = JSON.parse(raw);
+    cfg = { ...structuredClone(DEFAULTS), ...parsed, colors: { ...DEFAULTS.colors, ...(parsed.colors || {}) } };
+  }
 } catch (e) {}
 
+function applyColors() {
+  const r = document.documentElement.style;
+  const c = cfg.colors || DEFAULTS.colors;
+  r.setProperty("--ink", c.ink);
+  r.setProperty("--muted", c.muted);
+  r.setProperty("--soft", c.soft);
+  r.setProperty("--bg", c.bg);
+  r.setProperty("--card", c.card);
+  r.setProperty("--sand", c.sand);
+  r.setProperty("--clay", c.clay);
+  r.setProperty("--clay-dark", c.clayDark);
+  r.setProperty("--sage", c.sage);
+  r.setProperty("--sage-dark", c.sageDark);
+  r.setProperty("--blush", c.blush);
+  r.setProperty("--line", c.line);
+}
+
 function apply() {
-  const set = (sel, val) => { const el = document.querySelector(sel); if (el && val != null) el.textContent = val; };
-  document.querySelectorAll(".brand").forEach(el => {
-    if (el.querySelector(".brand-mark")) {
-      el.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = " " + (cfg.siteName || DEFAULTS.siteName); });
+  applyColors();
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (cfg[key] != null) {
+      // Preserve <br> in title
+      if (key === "title") {
+        el.innerHTML = String(cfg[key]).replace(/\n/g, "<br>");
+      } else if (key === "lead" && cfg[key].includes("MonSoutienPsy")) {
+        el.innerHTML = String(cfg[key]).replace(/MonSoutienPsy/g, "<strong>MonSoutienPsy</strong>");
+      } else if (key.startsWith("public") && cfg[key].includes(" — ")) {
+        const [strong, rest] = cfg[key].split(" — ");
+        el.innerHTML = `<strong>${strong}</strong> — ${rest}`;
+      } else if (key === "price1Amount" || key === "price2Amount" || key === "price3Amount") {
+        const parts = String(cfg[key]).split(" / ");
+        if (parts.length === 2) {
+          el.innerHTML = `${parts[0]} <small>/ ${parts[1]}</small>`;
+        } else {
+          el.textContent = cfg[key];
+        }
+      } else if (key === "confidentialite") {
+        el.innerHTML = String(cfg[key]).replace(/^Confidentialité/, "<strong>Confidentialité</strong>");
+      } else {
+        el.textContent = cfg[key];
+      }
     }
   });
-  set(".hero h1", cfg.title);
-  set(".hero .lead", cfg.lead);
-  set("#cEmail", cfg.email);
-  set("#cPhone", cfg.phone);
-  set("#cAddress", cfg.address);
-  set("#cHours", cfg.hours);
-  set(".hero-badge", cfg.badge);
-  const bf = document.querySelector(".brand-f");
-  if (bf) bf.textContent = cfg.siteName || DEFAULTS.siteName;
+  // Sync contact ids
+  const map = { address: "cAddress", email: "cEmail", phone: "cPhone", hours: "cHours" };
+  Object.entries(map).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (el && cfg[k] != null) el.textContent = cfg[k];
+  });
 }
 
 apply();
@@ -837,11 +1144,15 @@ window.handleForm = function(e) {
   return false;
 };
 
-// ========== Espace créateur — clé vérifiée via Firebase ==========
+// ========== Espace créateur ==========
 const creator = document.getElementById("creator");
 const cBody = document.getElementById("cBody");
 const cFoot = document.getElementById("cFoot");
+const cTabs = document.getElementById("cTabs");
 let unlocked = sessionStorage.getItem("eo_creator_ok") === "1";
+let currentPanel = "textes";
+
+const ICONS = ["🌿","🎓","🧒","💚","📋","💶","📍","✉️","📞","🕒","🧠","🤝","🌱","✨","💬","🧘","📖","🏠","⏰","✅","🔒","💚","🌸","🍃","🕊️","🤍","🪴","🪨","🌊","☀️"];
 
 async function sha256(text) {
   const data = new TextEncoder().encode(text);
@@ -851,7 +1162,6 @@ async function sha256(text) {
 
 async function checkKey(key) {
   if (!db) throw new Error("Firebase non configuré");
-  // Document attendu : collection "config", document "creator", champ "keyHash" (SHA-256 de la clé)
   const snap = await getDoc(doc(db, "config", "creator"));
   if (!snap.exists()) throw new Error("Document config/creator introuvable dans Firestore");
   const stored = (snap.data().keyHash || "").toLowerCase().trim();
@@ -861,6 +1171,7 @@ async function checkKey(key) {
 }
 
 function showLogin() {
+  cTabs.style.display = "none";
   cFoot.style.display = "none";
   cBody.innerHTML = `
     <div class="login-box">
@@ -905,31 +1216,281 @@ function showLogin() {
 }
 
 function esc(s) {
-  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function field(key, label, type = "text", rows = 2) {
+  const val = cfg[key] ?? "";
+  if (type === "textarea") {
+    return `<label>${label}</label><textarea data-edit="${key}" rows="${rows}">${esc(val)}</textarea>`;
+  }
+  return `<label>${label}</label><input data-edit="${key}" value="${esc(val)}">`;
+}
+
+function colorField(key, label) {
+  const val = (cfg.colors && cfg.colors[key]) || DEFAULTS.colors[key];
+  return `<div class="color-row">
+    <input type="color" data-color="${key}" value="${val}">
+    <input type="text" data-color-text="${key}" value="${val}" style="font-family:monospace;font-size:.85rem">
+    <span style="font-size:.8rem;color:var(--muted);min-width:4.5rem">${label}</span>
+  </div>`;
+}
+
+function iconPicker(key, label) {
+  const current = cfg[key] || "🌿";
+  const buttons = ICONS.map(ic =>
+    `<button type="button" data-icon-for="${key}" data-icon="${ic}" class="${ic === current ? "selected" : ""}">${ic}</button>`
+  ).join("");
+  return `<label>${label}</label>
+    <input data-edit="${key}" value="${esc(current)}" style="margin-bottom:.35rem">
+    <div class="icon-grid">${buttons}</div>`;
+}
+
+function buildTextesPanel() {
+  return `
+    <div class="group-title">Identité & Hero</div>
+    ${field("siteName", "Nom affiché")}
+    ${field("brandMark", "Initiales (logo)")}
+    ${field("badge", "Badge sous le titre")}
+    ${field("title", "Titre principal (utilisez \\n pour saut de ligne)", "textarea", 2)}
+    ${field("lead", "Texte d’introduction", "textarea", 3)}
+    ${field("btnPrimary", "Bouton principal")}
+    ${field("btnSecondary", "Bouton secondaire")}
+    ${field("heroName", "Nom (carte hero)")}
+    ${field("heroRole", "Rôle")}
+    ${field("heroPoint1", "Point 1")}
+    ${field("heroPoint2", "Point 2")}
+    ${field("heroPoint3", "Point 3")}
+    ${field("heroPoint4", "Point 4")}
+
+    <div class="group-title">Navigation</div>
+    ${field("navApproche", "Lien Approche")}
+    ${field("navPublics", "Lien Publics")}
+    ${field("navMsp", "Lien MonSoutienPsy")}
+    ${field("navTarifs", "Lien Tarifs")}
+    ${field("navFaq", "Lien FAQ")}
+    ${field("navRdv", "Bouton RDV")}
+
+    <div class="group-title">Qui suis-je</div>
+    ${field("aboutLabel", "Label section")}
+    ${field("aboutTitle", "Titre")}
+    ${field("aboutIntro", "Introduction", "textarea", 3)}
+    ${field("card1Title", "Carte 1 — titre")}
+    ${field("card1Text", "Carte 1 — texte", "textarea", 2)}
+    ${field("card2Title", "Carte 2 — titre")}
+    ${field("card2Text", "Carte 2 — texte", "textarea", 2)}
+    ${field("card3Title", "Carte 3 — titre")}
+    ${field("card3Text", "Carte 3 — texte", "textarea", 2)}
+
+    <div class="group-title">Publics</div>
+    ${field("publicsLabel", "Label")}
+    ${field("publicsTitle", "Titre")}
+    ${field("publicsIntro", "Introduction", "textarea", 2)}
+    ${field("publicsBtn", "Bouton")}
+    ${field("public1", "Ligne Adultes")}
+    ${field("public2", "Ligne Étudiants")}
+    ${field("public3", "Ligne Enfants")}
+    ${field("public4", "Ligne Parents")}
+
+    <div class="group-title">MonSoutienPsy</div>
+    ${field("mspLabel", "Label")}
+    ${field("mspTitle", "Titre")}
+    ${field("mspIntro", "Introduction", "textarea", 2)}
+    ${field("msp1Title", "Carte 1 — titre")}
+    ${field("msp1Text", "Carte 1 — texte", "textarea", 2)}
+    ${field("msp2Title", "Carte 2 — titre")}
+    ${field("msp2Text", "Carte 2 — texte", "textarea", 2)}
+    ${field("msp3Title", "Carte 3 — titre")}
+    ${field("msp3Text", "Carte 3 — texte", "textarea", 2)}
+    ${field("mspNote", "Note bas de section", "textarea", 2)}
+
+    <div class="group-title">Approche</div>
+    ${field("approcheLabel", "Label")}
+    ${field("approcheTitle", "Titre")}
+    ${field("approcheIntro", "Introduction", "textarea", 2)}
+    ${field("app1Title", "Item 1 — titre")} ${field("app1Text", "Item 1 — texte")}
+    ${field("app2Title", "Item 2 — titre")} ${field("app2Text", "Item 2 — texte")}
+    ${field("app3Title", "Item 3 — titre")} ${field("app3Text", "Item 3 — texte")}
+    ${field("app4Title", "Item 4 — titre")} ${field("app4Text", "Item 4 — texte")}
+    ${field("app5Title", "Item 5 — titre")} ${field("app5Text", "Item 5 — texte")}
+    ${field("app6Title", "Item 6 — titre")} ${field("app6Text", "Item 6 — texte")}
+
+    <div class="group-title">Déroulement</div>
+    ${field("stepsLabel", "Label")}
+    ${field("stepsTitle", "Titre")}
+    ${field("stepsIntro", "Introduction", "textarea", 2)}
+    ${field("step1Title", "Étape 1 — titre")} ${field("step1Text", "Étape 1 — texte", "textarea", 2)}
+    ${field("step2Title", "Étape 2 — titre")} ${field("step2Text", "Étape 2 — texte", "textarea", 2)}
+    ${field("step3Title", "Étape 3 — titre")} ${field("step3Text", "Étape 3 — texte", "textarea", 2)}
+    ${field("step4Title", "Étape 4 — titre")} ${field("step4Text", "Étape 4 — texte", "textarea", 2)}
+    ${field("confidentialite", "Encadré confidentialité", "textarea", 2)}
+
+    <div class="group-title">Tarifs</div>
+    ${field("tarifsLabel", "Label")}
+    ${field("tarifsTitle", "Titre")}
+    ${field("tarifsIntro", "Introduction", "textarea", 2)}
+    ${field("price1Tag", "Tag carte 1")}
+    ${field("price1Title", "Carte 1 — titre")}
+    ${field("price1Amount", "Carte 1 — montant")}
+    ${field("price1L1", "Carte 1 — ligne 1")}
+    ${field("price1L2", "Carte 1 — ligne 2")}
+    ${field("price1L3", "Carte 1 — ligne 3")}
+    ${field("price1L4", "Carte 1 — ligne 4")}
+    ${field("price2Title", "Carte 2 — titre")}
+    ${field("price2Amount", "Carte 2 — montant")}
+    ${field("price2L1", "Carte 2 — ligne 1")}
+    ${field("price2L2", "Carte 2 — ligne 2")}
+    ${field("price2L3", "Carte 2 — ligne 3")}
+    ${field("price2L4", "Carte 2 — ligne 4")}
+    ${field("price3Title", "Carte 3 — titre")}
+    ${field("price3Amount", "Carte 3 — montant")}
+    ${field("price3L1", "Carte 3 — ligne 1")}
+    ${field("price3L2", "Carte 3 — ligne 2")}
+    ${field("price3L3", "Carte 3 — ligne 3")}
+    ${field("tarifsNote", "Note bas de section", "textarea", 2)}
+
+    <div class="group-title">FAQ</div>
+    ${field("faqLabel", "Label")}
+    ${field("faqTitle", "Titre")}
+    ${field("faq1Q", "Q1")} ${field("faq1A", "R1", "textarea", 2)}
+    ${field("faq2Q", "Q2")} ${field("faq2A", "R2", "textarea", 2)}
+    ${field("faq3Q", "Q3")} ${field("faq3A", "R3", "textarea", 2)}
+    ${field("faq4Q", "Q4")} ${field("faq4A", "R4", "textarea", 2)}
+    ${field("faq5Q", "Q5")} ${field("faq5A", "R5", "textarea", 2)}
+    ${field("faq6Q", "Q6")} ${field("faq6A", "R6", "textarea", 2)}
+
+    <div class="group-title">Pied de page</div>
+    ${field("footerName", "Nom")}
+    ${field("footerTagline", "Accroche")}
+    ${field("footerMsp", "Ligne MonSoutienPsy")}
+    ${field("footerLegal", "Texte légal", "textarea", 2)}
+    ${field("footerCopy", "Copyright")}
+  `;
+}
+
+function buildCouleursPanel() {
+  return `
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Modifiez les couleurs du thème. Les changements s’appliquent immédiatement après sauvegarde.</p>
+    <div class="group-title">Couleurs principales</div>
+    ${colorField("sage", "Primaire (sage)")}
+    ${colorField("sageDark", "Primaire foncé")}
+    ${colorField("clay", "Accent (clay)")}
+    ${colorField("clayDark", "Accent foncé")}
+    <div class="group-title">Fonds & textes</div>
+    ${colorField("bg", "Fond page")}
+    ${colorField("sand", "Fond sections")}
+    ${colorField("card", "Cartes")}
+    ${colorField("ink", "Texte principal")}
+    ${colorField("muted", "Texte secondaire")}
+    ${colorField("soft", "Texte léger")}
+    ${colorField("blush", "Dégradé photo")}
+    ${colorField("line", "Bordures")}
+    <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">Astuce : utilisez des teintes douces et peu saturées pour un rendu rassurant, adapté à un cabinet de psychologie.</p>
+  `;
+}
+
+function buildIconesPanel() {
+  return `
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Choisissez une icône dans la grille ou tapez un emoji librement.</p>
+    ${iconPicker("heroIcon", "Icône hero (carte photo)")}
+    ${iconPicker("card1Icon", "Carte « Formation »")}
+    ${iconPicker("card2Icon", "Carte « Enfants »")}
+    ${iconPicker("card3Icon", "Carte « MonSoutienPsy »")}
+    ${iconPicker("msp1Icon", "MSP — Comment ça marche")}
+    ${iconPicker("msp2Icon", "MSP — Séances")}
+    ${iconPicker("msp3Icon", "MSP — Étudiants")}
+    ${iconPicker("icoAddress", "Coordonnées — Adresse")}
+    ${iconPicker("icoEmail", "Coordonnées — E-mail")}
+    ${iconPicker("icoPhone", "Coordonnées — Téléphone")}
+    ${iconPicker("icoHours", "Coordonnées — Horaires")}
+  `;
+}
+
+function buildContactPanel() {
+  return `
+    <div class="group-title">Coordonnées affichées</div>
+    ${field("address", "Adresse du cabinet")}
+    ${field("email", "E-mail")}
+    ${field("phone", "Téléphone")}
+    ${field("hours", "Horaires")}
+    <div class="group-title">Textes contact</div>
+    ${field("rdvLabel", "Label section")}
+    ${field("rdvTitle", "Titre")}
+    ${field("rdvIntro", "Introduction", "textarea", 2)}
+    ${field("formTitle", "Titre formulaire")}
+    ${field("coordsTitle", "Titre coordonnées")}
+    ${field("beforeTitle", "Titre « Avant la séance »")}
+    ${field("beforeText", "Texte « Avant la séance »", "textarea", 3)}
+    ${field("beforeBtn", "Bouton FAQ")}
+    ${field("formBtn", "Bouton envoyer")}
+    ${field("formNote", "Note sous le formulaire", "textarea", 2)}
+  `;
 }
 
 function showEditor() {
+  cTabs.style.display = "flex";
   cFoot.style.display = "flex";
-  cBody.innerHTML = `
-    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Modifiez les textes principaux puis cliquez sur <strong>Sauvegarder</strong>.</p>
-    <label>Nom affiché</label>
-    <input id="eName" value="${esc(cfg.siteName)}">
-    <label>Badge sous le titre (ex. Psychologue · n° ADELI)</label>
-    <input id="eBadge" value="${esc(cfg.badge)}">
-    <label>Titre principal (hero)</label>
-    <textarea id="eTitle" rows="2">${esc(cfg.title)}</textarea>
-    <label>Texte d’introduction</label>
-    <textarea id="eLead" rows="4">${esc(cfg.lead)}</textarea>
-    <label>E-mail de contact</label>
-    <input id="eEmail" value="${esc(cfg.email)}">
-    <label>Téléphone</label>
-    <input id="ePhone" value="${esc(cfg.phone)}">
-    <label>Adresse du cabinet</label>
-    <input id="eAddress" value="${esc(cfg.address)}">
-    <label>Horaires</label>
-    <input id="eHours" value="${esc(cfg.hours)}">
-    <p style="margin-top:1.2rem;font-size:.82rem;color:var(--soft)">Clé d’accès gérée dans Firebase (Firestore → config/creator → keyHash). Aucun secret dans le code source.</p>
-  `;
+  renderPanel(currentPanel);
+  // Tabs
+  cTabs.querySelectorAll(".ctab").forEach(tab => {
+    tab.onclick = () => {
+      cTabs.querySelectorAll(".ctab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      currentPanel = tab.dataset.panel;
+      // Save current edits before switching
+      collectEdits();
+      renderPanel(currentPanel);
+    };
+  });
+}
+
+function renderPanel(name) {
+  let html = "";
+  if (name === "textes") html = buildTextesPanel();
+  else if (name === "couleurs") html = buildCouleursPanel();
+  else if (name === "icones") html = buildIconesPanel();
+  else if (name === "contact") html = buildContactPanel();
+  cBody.innerHTML = html;
+
+  // Color sync
+  cBody.querySelectorAll("[data-color]").forEach(input => {
+    const key = input.dataset.color;
+    const text = cBody.querySelector(`[data-color-text="${key}"]`);
+    input.oninput = () => { if (text) text.value = input.value; };
+    if (text) text.oninput = () => { if (/^#[0-9a-fA-F]{6}$/.test(text.value)) input.value = text.value; };
+  });
+
+  // Icon pickers
+  cBody.querySelectorAll("[data-icon-for]").forEach(btn => {
+    btn.onclick = () => {
+      const key = btn.dataset.iconFor;
+      const icon = btn.dataset.icon;
+      const input = cBody.querySelector(`[data-edit="${key}"]`);
+      if (input) input.value = icon;
+      cBody.querySelectorAll(`[data-icon-for="${key}"]`).forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+    };
+  });
+}
+
+function collectEdits() {
+  cBody.querySelectorAll("[data-edit]").forEach(el => {
+    const key = el.dataset.edit;
+    cfg[key] = el.value;
+  });
+  cBody.querySelectorAll("[data-color]").forEach(el => {
+    const key = el.dataset.color;
+    if (!cfg.colors) cfg.colors = {};
+    cfg.colors[key] = el.value;
+  });
+  // also text color inputs
+  cBody.querySelectorAll("[data-color-text]").forEach(el => {
+    const key = el.dataset.colorText;
+    if (/^#[0-9a-fA-F]{6}$/.test(el.value)) {
+      if (!cfg.colors) cfg.colors = {};
+      cfg.colors[key] = el.value;
+    }
+  });
 }
 
 document.getElementById("lockBtn").onclick = () => {
@@ -937,18 +1498,14 @@ document.getElementById("lockBtn").onclick = () => {
   if (unlocked) showEditor();
   else showLogin();
 };
-document.getElementById("cClose").onclick = () => creator.classList.remove("open");
+document.getElementById("cClose").onclick = () => {
+  if (unlocked) collectEdits();
+  creator.classList.remove("open");
+};
 
 document.getElementById("cSave").onclick = () => {
   if (!unlocked) return;
-  cfg.siteName = document.getElementById("eName").value.trim() || DEFAULTS.siteName;
-  cfg.badge = document.getElementById("eBadge").value.trim() || DEFAULTS.badge;
-  cfg.title = document.getElementById("eTitle").value.trim() || DEFAULTS.title;
-  cfg.lead = document.getElementById("eLead").value.trim() || DEFAULTS.lead;
-  cfg.email = document.getElementById("eEmail").value.trim() || DEFAULTS.email;
-  cfg.phone = document.getElementById("ePhone").value.trim() || DEFAULTS.phone;
-  cfg.address = document.getElementById("eAddress").value.trim() || DEFAULTS.address;
-  cfg.hours = document.getElementById("eHours").value.trim() || DEFAULTS.hours;
+  collectEdits();
   localStorage.setItem(STORAGE, JSON.stringify(cfg));
   apply();
   document.getElementById("cMsg").textContent = "✓ Enregistré";
@@ -956,14 +1513,14 @@ document.getElementById("cSave").onclick = () => {
 };
 
 document.getElementById("cReset").onclick = () => {
-  if (!confirm("Remettre les textes par défaut ?")) return;
-  cfg = { ...DEFAULTS };
+  if (!confirm("Remettre tous les textes, couleurs et icônes par défaut ?")) return;
+  cfg = structuredClone(DEFAULTS);
   localStorage.removeItem(STORAGE);
   apply();
-  showEditor();
+  renderPanel(currentPanel);
   document.getElementById("cMsg").textContent = "Réinitialisé";
+  setTimeout(() => document.getElementById("cMsg").textContent = "", 2000);
 };
 </script>
 </body>
 </html>
-
