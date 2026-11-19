@@ -1911,19 +1911,36 @@ function saveLocalReqs(list) {
 
 async function fetchRequests() {
   await ensureFirebase();
-  let list = [];
+  let remote = [];
+  let remoteErr = null;
   if (db) {
     try {
-      const q = FS.query(FS.collection(db, "rdv_requests"), FS.orderBy("createdAt", "desc"));
-      const snap = await getDocs(q);
-      list = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
+      // Sans orderBy d'abord (évite l'échec si index manquant), puis tri local
+      const snap = await FS.getDocs(FS.collection(db, "rdv_requests"));
+      remote = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
     } catch (e) {
-      console.warn("Firestore read failed, fallback local", e);
+      remoteErr = e;
+      console.warn("Firestore read failed", e);
+      try {
+        const snap = await FS.getDocs(FS.collection(db, "rdv_requests"));
+        remote = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
+      } catch (e2) {
+        console.warn("Firestore read retry failed", e2);
+      }
     }
   }
-  if (!list.length) {
-    list = loadLocalReqs().map((r, i) => ({ ...r, id: r.id || `local_${i}`, _source: "local" }));
-  }
+  const local = loadLocalReqs().map((r, i) => ({ ...r, id: r.id || ("local_" + i), _source: "local" }));
+  // Fusion par id (firebase prioritaire)
+  const map = new Map();
+  local.forEach(r => map.set(String(r.id), r));
+  remote.forEach(r => map.set(String(r.id), r));
+  const list = Array.from(map.values());
+  list.sort((a, b) => {
+    const ta = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : Date.parse(a.createdAt || 0) || 0;
+    const tb = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : Date.parse(b.createdAt || 0) || 0;
+    return tb - ta;
+  });
+  list._remoteErr = remoteErr;
   return list;
 }
 
@@ -2834,7 +2851,7 @@ async function findByToken(token) {
   if (db) {
     try {
       const q = FS.query(FS.collection(db, "rdv_requests"), FS.where("token", "==", token));
-      const snap = await getDocs(q);
+      const snap = await FS.getDocs(q);
       if (!snap.empty) {
         const d = snap.docs[0];
         return { id: d.id, ...d.data(), _source: "firebase" };
@@ -3179,8 +3196,14 @@ function buildContactPanel() {
 async function showEditor() {
   cTabs.style.display = "flex";
   cFoot.style.display = "flex";
-  cachedReqs = await fetchRequests();
+  try {
+    cachedReqs = await fetchRequests();
+  } catch (e) {
+    console.error("fetchRequests", e);
+    cachedReqs = loadLocalReqs();
+  }
   updateBadges(cachedReqs);
+  if (!currentPanel) currentPanel = "demandes";
   renderPanel(currentPanel);
   cTabs.querySelectorAll(".ctab").forEach(tab => {
     tab.onclick = () => {
@@ -3195,8 +3218,15 @@ async function showEditor() {
 
 async function renderPanel(name) {
   if (name === "demandes") {
-    cBody.innerHTML = `<p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Les demandes arrivent ici. Comparez les 3 créneaux avec Doctolib, puis répondez.</p>` + buildDemandesPanel();
-    bindDemandesEvents();
+    try {
+      const panel = buildDemandesPanel();
+      cBody.innerHTML = `<p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Les demandes arrivent ici. Comparez les 3 créneaux avec Doctolib, puis répondez.</p>
+        <p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">${cachedReqs.length} demande(s) chargée(s)</p>` + panel;
+      bindDemandesEvents();
+    } catch (e) {
+      console.error(e);
+      cBody.innerHTML = `<p style="color:#b91c1c">Erreur d’affichage des demandes : ${esc(String(e.message || e))}</p>`;
+    }
     cFoot.style.display = "none";
     return;
   }
