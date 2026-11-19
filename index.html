@@ -1048,7 +1048,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
             <span class="ico" data-key="icoEmail">✉️</span>
             <div>
               <strong data-key="labelEmailC">E-mail</strong><br>
-              <span id="cEmail" data-key="email">contact@emmanuelle-ouvrard.fr</span>
+              <span id="cEmail" data-key="email">vincent.legall974@gmail.com</span>
             </div>
           </div>
           <div class="contact-row">
@@ -1134,7 +1134,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
     <h3>Éditeur du site</h3>
     <p data-key="legalEditor">Emmanuelle Ouvrard — Psychologue<br>
     Adresse du cabinet : à compléter<br>
-    E-mail : contact@emmanuelle-ouvrard.fr<br>
+    E-mail : vincent.legall974@gmail.com<br>
     Numéro ADELI : en cours d’affichage</p>
     <h3>Activité professionnelle</h3>
     <p data-key="legalActivity">Exercice de la psychologie conformément au code de déontologie des psychologues. Conventionnée MonSoutienPsy.</p>
@@ -1303,7 +1303,8 @@ const DEFAULTS = {
   labelAddress: "Cabinet",
   address: "Adresse à préciser — France",
   labelEmailC: "E-mail",
-  email: "contact@emmanuelle-ouvrard.fr",
+  email: "vincent.legall974@gmail.com",
+  notificationEmail: "vincent.legall974@gmail.com",
   labelPhone: "Téléphone",
   phone: "Sur demande lors du premier contact",
   labelHours: "Horaires",
@@ -1336,7 +1337,7 @@ const DEFAULTS = {
   etudiantText: "Les étudiants peuvent bénéficier de MonSoutienPsy (orientation médicale) et, selon leur établissement, de dispositifs de soutien psychologique universitaires. N’hésitez pas à indiquer votre statut étudiant lors de la prise de rendez-vous : le cadre peut être adapté (horaires, rythme, sujets liés aux études).",
   faq7Q: "Comment se passe le paiement ?",
   faq7A: "Pour MonSoutienPsy : le tarif est fixé par le dispositif ; une partie est prise en charge par l’Assurance Maladie et éventuellement votre mutuelle (selon votre contrat), après orientation médicale. Pour une consultation libre : le règlement se fait en fin de séance (espèces, chèque ou virement — les modalités exactes vous seront confirmées). Une facture peut être fournie pour votre mutuelle.",
-  legalEditor: "Emmanuelle Ouvrard — Psychologue\nAdresse du cabinet : à compléter\nE-mail : contact@emmanuelle-ouvrard.fr\nNuméro ADELI : en cours d’affichage",
+  legalEditor: "Emmanuelle Ouvrard — Psychologue\nAdresse du cabinet : à compléter\nE-mail : vincent.legall974@gmail.com\nNuméro ADELI : en cours d’affichage",
   legalActivity: "Exercice de la psychologie conformément au code de déontologie des psychologues. Conventionnée MonSoutienPsy.",
   legalHost: "Le site est hébergé par l’hébergeur choisi lors de la mise en ligne (à compléter : nom, adresse, contact de l’hébergeur).",
   legalRgpd: "Les informations envoyées via le formulaire de contact (nom, e-mail, téléphone, message, créneaux souhaités) sont utilisées uniquement pour répondre à votre demande de rendez-vous. Elles ne sont pas revendues. Conformément au RGPD, vous pouvez demander l’accès, la rectification ou la suppression de vos données en écrivant à l’adresse e-mail indiquée ci-dessus.",
@@ -1552,6 +1553,7 @@ window.handleForm = async function(e) {
   ok.style.display = "none";
   err.style.display = "none";
 
+  // 1) Enregistrement local / Firebase (tableau de bord créateur)
   let saved = false;
   if (db) {
     try {
@@ -1570,9 +1572,66 @@ window.handleForm = async function(e) {
     saveLocalReqs(list);
   }
 
+  // 2) Envoi e-mail via FormSubmit (adresse configurable)
+  const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
+  let emailOk = false;
+  let emailMsg = "";
+  if (toEmail && toEmail.includes("@")) {
+    try {
+      const whoLabel = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" }[data.who] || data.who;
+      const typeLabel = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" }[data.type] || data.type;
+      const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          _subject: "Nouvelle demande de RDV — " + data.name,
+          _template: "table",
+          _captcha: "false",
+          name: data.name,
+          email: data.email,
+          phone: data.phone || "(non renseigné)",
+          consult_pour: whoLabel,
+          cadre: typeLabel,
+          creneau_1: data.slot1,
+          creneau_2: data.slot2,
+          creneau_3: data.slot3,
+          message: data.message || "(aucun)",
+          _replyto: data.email
+        })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok) {
+        emailOk = true;
+      } else {
+        emailMsg = json.message || "Envoi e-mail non confirmé";
+        console.warn("FormSubmit response", json);
+      }
+    } catch (e) {
+      console.warn("FormSubmit error", e);
+      emailMsg = "Réseau : e-mail non envoyé, mais la demande est bien enregistrée.";
+    }
+  } else {
+    emailMsg = "Aucun e-mail de notification configuré (espace créateur → Contact).";
+  }
+
   ok.style.display = "block";
+  if (emailOk) {
+    ok.textContent = "✓ Demande bien reçue. Un e-mail a été envoyé. Merci, je vous recontacte rapidement.";
+  } else if (emailMsg) {
+    ok.textContent = "✓ Demande enregistrée. (" + emailMsg + ")";
+  } else {
+    ok.textContent = "✓ Demande bien reçue. Merci, je vous recontacte rapidement.";
+  }
   form.reset();
-  // refresh badge
+  // reset flex buttons
+  document.querySelectorAll(".flex-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll('input[type="date"], input[type="time"]').forEach(inp => {
+    inp.disabled = false;
+    inp.dataset.flex = "0";
+  });
   fetchRequests().then(updateBadges);
   return false;
 };
@@ -1886,12 +1945,18 @@ function buildIconesPanel() {
 
 function buildContactPanel() {
   return `
+    <div class="group-title">E-mail de notification (demandes RDV)</div>
+    ${field("notificationEmail", "Adresse qui reçoit les demandes de rendez-vous")}
+    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">
+      Les nouvelles demandes sont envoyées à cet e-mail (via FormSubmit). Vous pouvez le changer ici à tout moment.
+      <strong>Première utilisation :</strong> FormSubmit envoie un e-mail de confirmation à cette adresse — cliquez sur le lien une seule fois pour activer.
+    </p>
     <div class="group-title">Doctolib</div>
     ${field("doctolibUrl", "Lien page Doctolib (https://www.doctolib.fr/...)")}
     ${field("doctolibText", "Texte à côté du bouton Doctolib", "textarea", 2)}
     <p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">Si le lien est renseigné, un bouton « Réserver sur Doctolib » apparaît dans le hero et dans la section RDV.</p>
     <div class="group-title">Coordonnées</div>
-    ${field("address", "Adresse")} ${field("email", "E-mail")}
+    ${field("address", "Adresse")} ${field("email", "E-mail affiché sur le site")}
     ${field("phone", "Téléphone")} ${field("hours", "Horaires")}
     <div class="group-title">Textes contact</div>
     ${field("rdvLabel", "Label")} ${field("rdvTitle", "Titre")}
