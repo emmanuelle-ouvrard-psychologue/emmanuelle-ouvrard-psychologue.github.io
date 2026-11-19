@@ -41,7 +41,6 @@ img { max-width: 100%; display: block; }
 a { color: var(--sage-dark); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* Nav */
 nav {
   position: sticky; top: 0; z-index: 100;
   background: color-mix(in srgb, var(--bg) 92%, transparent);
@@ -77,7 +76,6 @@ nav {
 }
 .nav-cta:hover { background: var(--sage-dark) !important; }
 
-/* Hero */
 .hero {
   padding: 4.25rem 1.5rem 3.25rem;
   max-width: 1100px; margin: 0 auto;
@@ -114,6 +112,11 @@ nav {
 .btn-secondary { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
 .btn-secondary:hover { border-color: var(--clay); }
 .btn-ghost { background: transparent; color: var(--sage-dark); border: 1px solid var(--sage); }
+.btn-doctolib {
+  background: #0078c9; color: #fff !important;
+  box-shadow: 0 4px 14px rgba(0,120,201,.2);
+}
+.btn-doctolib:hover { background: #0062a3; }
 .hero-card {
   background: var(--card);
   border-radius: 24px;
@@ -143,7 +146,6 @@ nav {
 }
 .hero-meta strong { color: var(--ink); font-weight: 600; }
 
-/* Sections */
 section { padding: 3.4rem 1.5rem; }
 .wrap { max-width: 1000px; margin: 0 auto; }
 .section-label {
@@ -162,7 +164,6 @@ h2 {
   max-width: 38rem; margin-bottom: 2rem;
 }
 
-/* Cards grid */
 .grid-3 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -190,7 +191,6 @@ h2 {
 }
 .card p { color: var(--muted); font-size: .95rem; }
 
-/* Highlight band */
 .band {
   background: var(--sand);
   border-top: 1px solid var(--line);
@@ -211,7 +211,6 @@ h2 {
   display: grid; place-items: center; font-size: .7rem; margin-top: .15rem;
 }
 
-/* Approach */
 .approach-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -229,7 +228,6 @@ h2 {
 }
 .approach-item span { color: var(--muted); font-size: .9rem; }
 
-/* Steps */
 .steps {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -259,7 +257,6 @@ h2 {
 }
 .step p { color: var(--muted); font-size: .92rem; }
 
-/* Tarifs */
 .price-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -300,7 +297,6 @@ h2 {
 }
 .price-card ul li::before { content: "· "; color: var(--clay); font-weight: 700; }
 
-/* FAQ */
 .faq-list { display: flex; flex-direction: column; gap: .6rem; }
 .faq-item {
   background: var(--card);
@@ -317,8 +313,8 @@ h2 {
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
 }
 .faq-q:hover { background: var(--sand); }
-.faq-q span { color: var(--clay); font-size: 1.2rem; transition: transform .2s; }
-.faq-item.open .faq-q span { transform: rotate(45deg); }
+.faq-q span.plus { color: var(--clay); font-size: 1.2rem; transition: transform .2s; }
+.faq-item.open .faq-q span.plus { transform: rotate(45deg); }
 .faq-a {
   display: none;
   padding: 0 1.25rem 1.15rem;
@@ -326,10 +322,9 @@ h2 {
 }
 .faq-item.open .faq-a { display: block; }
 
-/* Contact */
 .contact-grid {
   display: grid;
-  grid-template-columns: 1.1fr .9fr;
+  grid-template-columns: 1.15fr .85fr;
   gap: 2rem;
 }
 .contact-card {
@@ -368,8 +363,32 @@ h2 {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--clay) 20%, transparent);
 }
 .form-note { font-size: .82rem; color: var(--soft); margin-top: .6rem; }
+.slots-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .6rem;
+}
+.slot-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+}
+.slot-label {
+  font-size: .8rem; font-weight: 600; color: var(--clay-dark);
+  margin-bottom: .2rem;
+}
+.doctolib-box {
+  background: #f0f7fc;
+  border: 1px solid #c5e0f5;
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.2rem;
+  display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between;
+}
+.doctolib-box p {
+  font-size: .92rem; color: #1e3a5f; margin: 0; flex: 1; min-width: 180px;
+}
 
-/* Confidentialité note */
 .note-box {
   background: var(--card);
   border: 1px solid var(--line);
@@ -381,7 +400,6 @@ h2 {
   color: var(--muted);
 }
 
-/* Footer */
 footer {
   background: var(--ink); color: #a8a29e;
   padding: 2.5rem 1.5rem 1.5rem;
@@ -404,8 +422,15 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   display: grid; place-items: center;
 }
 #lockBtn:hover { transform: scale(1.06); }
+#lockBtn .badge-count {
+  position: absolute; top: -4px; right: -4px;
+  background: #dc2626; color: #fff;
+  font-size: .65rem; font-weight: 700;
+  min-width: 18px; height: 18px; border-radius: 999px;
+  display: none; place-items: center; padding: 0 4px;
+}
 #creator {
-  position: fixed; top: 0; right: 0; width: min(420px, 96vw);
+  position: fixed; top: 0; right: 0; width: min(460px, 96vw);
   height: 100vh; background: var(--card);
   border-left: 1px solid var(--line);
   z-index: 1000; display: none; flex-direction: column;
@@ -431,11 +456,18 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 }
 #creator .ctab {
   border: none; background: transparent;
-  padding: .4rem .75rem; border-radius: 8px;
-  font-size: .82rem; font-weight: 600; color: var(--muted);
+  padding: .4rem .7rem; border-radius: 8px;
+  font-size: .8rem; font-weight: 600; color: var(--muted);
   cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .35rem;
 }
 #creator .ctab.active { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+#creator .ctab .dot {
+  background: #dc2626; color: #fff;
+  font-size: .65rem; font-weight: 700;
+  min-width: 16px; height: 16px; border-radius: 999px;
+  display: inline-grid; place-items: center; padding: 0 3px;
+}
 #creator .cb { padding: 1rem 1.15rem; overflow-y: auto; flex: 1; }
 #creator .cf {
   padding: .9rem 1.15rem; border-top: 1px solid var(--line);
@@ -466,8 +498,6 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 .icon-grid button:hover, .icon-grid button.selected {
   border-color: var(--sage); background: var(--sand);
 }
-.panel { display: none; }
-.panel.active { display: block; }
 .group-title {
   font-size: .75rem; font-weight: 700; letter-spacing: .06em;
   text-transform: uppercase; color: var(--clay-dark);
@@ -475,12 +505,71 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   border-bottom: 1px solid var(--line);
 }
 
-/* Responsive */
+/* Demandes RDV admin */
+.req-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: .85rem;
+  background: var(--bg);
+}
+.req-card.pending { border-left: 4px solid #d97706; }
+.req-card.replied { border-left: 4px solid var(--sage); opacity: .9; }
+.req-card .req-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem;
+  margin-bottom: .5rem;
+}
+.req-card .req-name { font-weight: 700; font-size: 1rem; }
+.req-card .req-date { font-size: .78rem; color: var(--soft); }
+.req-card .req-meta { font-size: .85rem; color: var(--muted); margin-bottom: .4rem; }
+.req-card .req-slots {
+  background: var(--card);
+  border-radius: 8px;
+  padding: .6rem .75rem;
+  margin: .5rem 0;
+  font-size: .88rem;
+}
+.req-card .req-slots strong { display: block; font-size: .78rem; color: var(--clay-dark); margin-bottom: .25rem; }
+.req-card .req-msg {
+  font-size: .9rem; color: var(--ink);
+  margin: .5rem 0;
+  white-space: pre-wrap;
+}
+.req-card .req-actions {
+  display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem;
+}
+.req-card .req-actions button, .req-card .req-actions a {
+  font-size: .8rem; padding: .35rem .7rem; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card);
+  cursor: pointer; font-family: inherit; font-weight: 600;
+  text-decoration: none; color: var(--ink);
+}
+.req-card .req-actions .btn-reply {
+  background: var(--sage); color: #fff; border-color: var(--sage);
+}
+.req-reply-box {
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px dashed var(--line);
+}
+.req-reply-box textarea {
+  width: 100%; min-height: 80px; margin-bottom: .5rem;
+  padding: .55rem .7rem; border: 1px solid var(--line);
+  border-radius: 8px; font-family: inherit; font-size: .9rem; background: var(--card);
+}
+.status-pill {
+  font-size: .7rem; font-weight: 700; padding: .15rem .5rem;
+  border-radius: 999px; text-transform: uppercase; letter-spacing: .03em;
+}
+.status-pill.pending { background: #fef3c7; color: #92400e; }
+.status-pill.replied { background: #d1fae5; color: #065f46; }
+
 @media (max-width: 820px) {
   .hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 2.5rem; }
   .band-inner { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
   .nav-links a:not(.nav-cta) { display: none; }
+  .slot-row { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
   .hero-actions { flex-direction: column; }
@@ -515,10 +604,12 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="#rdv" data-key="btnPrimary">Prendre rendez-vous</a>
+      <a class="btn btn-doctolib" id="doctolibBtn" href="#" target="_blank" rel="noopener" style="display:none">Réserver sur Doctolib</a>
       <a class="btn btn-secondary" href="#apropos" data-key="btnSecondary">En savoir plus</a>
     </div>
   </div>
   <div class="hero-card">
+    <!-- Carte de présentation : photo + points clés de confiance (formation, publics, modalités) -->
     <div class="photo"><span data-key="heroIcon">🌿</span></div>
     <div class="hero-meta">
       <div><strong data-key="heroName">Emmanuelle Ouvrard</strong></div>
@@ -723,10 +814,16 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   <div class="wrap">
     <p class="section-label" data-key="rdvLabel">Contact</p>
     <h2 data-key="rdvTitle">Prendre rendez-vous</h2>
-    <p class="section-intro" data-key="rdvIntro">Premier contact sans engagement. Décrivez brièvement votre besoin : je vous répondrai dans les meilleurs délais.</p>
+    <p class="section-intro" data-key="rdvIntro">Proposez jusqu’à 3 créneaux qui vous conviennent. Je vérifierai mon agenda (Doctolib) et vous confirmerai le créneau possible.</p>
     <div class="contact-grid">
       <div class="contact-card">
-        <h3 data-key="formTitle">Écrire un message</h3>
+        <h3 data-key="formTitle">Demande de rendez-vous</h3>
+
+        <div class="doctolib-box" id="doctolibBox" style="display:none">
+          <p data-key="doctolibText">Vous préférez réserver en ligne directement ? Utilisez Doctolib.</p>
+          <a class="btn btn-doctolib" id="doctolibBtn2" href="#" target="_blank" rel="noopener" style="padding:.55rem 1.1rem;font-size:.9rem">Ouvrir Doctolib</a>
+        </div>
+
         <form id="contactForm" onsubmit="return handleForm(event)">
           <div class="form-row">
             <label for="fName" data-key="labelName">Prénom & nom</label>
@@ -735,6 +832,10 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
           <div class="form-row">
             <label for="fEmail" data-key="labelEmail">E-mail</label>
             <input id="fEmail" name="email" type="email" required placeholder="camille@email.com">
+          </div>
+          <div class="form-row">
+            <label for="fPhone" data-key="labelPhoneF">Téléphone (optionnel)</label>
+            <input id="fPhone" name="phone" type="tel" placeholder="06 12 34 56 78">
           </div>
           <div class="form-row">
             <label for="fWho" data-key="labelWho">Vous consultez pour</label>
@@ -753,13 +854,43 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
               <option value="info">Je ne sais pas encore</option>
             </select>
           </div>
+
           <div class="form-row">
-            <label for="fMsg" data-key="labelMsg">Message</label>
-            <textarea id="fMsg" name="message" rows="4" placeholder="Quelques mots sur ce qui vous amène…"></textarea>
+            <label data-key="labelSlots">3 créneaux souhaités (par ordre de préférence)</label>
+            <div class="slots-grid">
+              <div>
+                <div class="slot-label">1er choix</div>
+                <div class="slot-row">
+                  <input type="date" name="slot1date" required>
+                  <input type="time" name="slot1time" required>
+                </div>
+              </div>
+              <div>
+                <div class="slot-label">2e choix</div>
+                <div class="slot-row">
+                  <input type="date" name="slot2date" required>
+                  <input type="time" name="slot2time" required>
+                </div>
+              </div>
+              <div>
+                <div class="slot-label">3e choix</div>
+                <div class="slot-row">
+                  <input type="date" name="slot3date" required>
+                  <input type="time" name="slot3time" required>
+                </div>
+              </div>
+            </div>
+            <p class="form-note" data-key="slotsNote">Indiquez 3 propositions. Je comparerai avec mon agenda et vous confirmerai le créneau disponible.</p>
+          </div>
+
+          <div class="form-row">
+            <label for="fMsg" data-key="labelMsg">Message (optionnel)</label>
+            <textarea id="fMsg" name="message" rows="3" placeholder="Quelques mots sur ce qui vous amène…"></textarea>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%" data-key="formBtn">Envoyer la demande</button>
-          <p class="form-note" data-key="formNote">Ce formulaire est une démonstration. En production, branchez-le à un service d’e-mail (Formspree, Netlify Forms, etc.).</p>
-          <p id="formOk" style="display:none;margin-top:.8rem;color:var(--sage-dark);font-weight:600">✓ Message enregistré localement. Merci !</p>
+          <p class="form-note" data-key="formNote">Votre demande est enregistrée. Vous recevrez une réponse par e-mail dès que possible.</p>
+          <p id="formOk" style="display:none;margin-top:.8rem;color:var(--sage-dark);font-weight:600">✓ Demande bien reçue. Merci, je vous recontacte rapidement.</p>
+          <p id="formErr" style="display:none;margin-top:.8rem;color:#b91c1c;font-weight:600"></p>
         </form>
       </div>
       <div>
@@ -813,28 +944,28 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
     <h2 data-key="faqTitle">Foire aux questions</h2>
     <div class="faq-list" style="margin-top:1.5rem">
       <div class="faq-item">
-        <button class="faq-q" type="button"><span data-key="faq1Q">Comment se passe une première séance ?</span> <span>+</span></button>
+        <button class="faq-q" type="button"><span data-key="faq1Q">Comment se passe une première séance ?</span> <span class="plus">+</span></button>
         <div class="faq-a" data-key="faq1A">Nous prenons le temps de faire connaissance, de comprendre ce qui vous amène et de définir ensemble un cadre (objectifs, rythme, présentiel ou visio). Rien n’est imposé.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button"><span data-key="faq2Q">Faut-il une orientation médicale pour MonSoutienPsy ?</span> <span>+</span></button>
+        <button class="faq-q" type="button"><span data-key="faq2Q">Faut-il une orientation médicale pour MonSoutienPsy ?</span> <span class="plus">+</span></button>
         <div class="faq-a" data-key="faq2A">Oui. Un médecin (généraliste, pédiatre, psychiatre, etc.) doit vous orienter vers un psychologue partenaire du dispositif. Conservez le document d’orientation pour le premier rendez-vous.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button"><span data-key="faq3Q">Proposez-vous des consultations pour les enfants ?</span> <span>+</span></button>
+        <button class="faq-q" type="button"><span data-key="faq3Q">Proposez-vous des consultations pour les enfants ?</span> <span class="plus">+</span></button>
         <div class="faq-a" data-key="faq3A">Oui. J’ai reçu une formation pour accueillir les enfants. L’espace et les outils sont adaptés à leur âge. Un échange avec le(s) parent(s) fait souvent partie du parcours.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button"><span data-key="faq4Q">Les étudiants sont-ils les bienvenus ?</span> <span>+</span></button>
+        <button class="faq-q" type="button"><span data-key="faq4Q">Les étudiants sont-ils les bienvenus ?</span> <span class="plus">+</span></button>
         <div class="faq-a" data-key="faq4A">Absolument. Le stress des études, l’isolement, les questions d’orientation ou d’estime de soi sont des motifs fréquents. MonSoutienPsy est également accessible aux étudiants.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button"><span data-key="faq5Q">Les séances en visio sont-elles possibles ?</span> <span>+</span></button>
+        <button class="faq-q" type="button"><span data-key="faq5Q">Les séances en visio sont-elles possibles ?</span> <span class="plus">+</span></button>
         <div class="faq-a" data-key="faq5A">Oui, selon les situations et les disponibilités. La visio peut convenir pour le suivi ou lorsque le déplacement est difficile. La première rencontre peut se faire en présentiel si vous le souhaitez.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button"><span data-key="faq6Q">Combien de temps dure un accompagnement ?</span> <span>+</span></button>
-        <div class="faq-a" data-key="faq6A">Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un travail plus long. Nous en discutons régulièrement pour ajuster.</div>
+        <button class="faq-q" type="button"><span data-key="faq6Q">Combien de temps dure un accompagnement ?</span> <span class="plus">+</span></button>
+        <div class="faq-a" data-key="faq6A">Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un suivi plus long. Nous en discutons régulièrement pour ajuster.</div>
       </div>
     </div>
   </div>
@@ -850,7 +981,10 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   </div>
 </footer>
 
-<button id="lockBtn" title="Espace créateur" aria-label="Espace créateur">🔒</button>
+<button id="lockBtn" title="Espace créateur" aria-label="Espace créateur">
+  🔒
+  <span class="badge-count" id="lockBadge">0</span>
+</button>
 
 <div id="creator">
   <div class="ch">
@@ -858,7 +992,8 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
     <button type="button" id="cClose">✕</button>
   </div>
   <div class="ctabs" id="cTabs" style="display:none">
-    <button class="ctab active" data-panel="textes">Textes</button>
+    <button class="ctab active" data-panel="demandes">Demandes <span class="dot" id="tabDot" style="display:none">0</span></button>
+    <button class="ctab" data-panel="textes">Textes</button>
     <button class="ctab" data-panel="couleurs">Couleurs</button>
     <button class="ctab" data-panel="icones">Icônes</button>
     <button class="ctab" data-panel="contact">Contact</button>
@@ -872,9 +1007,8 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 </div>
 
 <script type="module">
-// ========== Firebase (remplacez par VOTRE config) ==========
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, addDoc, getDocs, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBUZJOAct8owIJpHrgefe_SgoXH_MjDd9A",
@@ -890,13 +1024,13 @@ try {
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
 } catch (err) {
-  console.warn("Firebase non initialisé — renseignez firebaseConfig", err);
+  console.warn("Firebase non initialisé", err);
 }
 
-const STORAGE = "eo_psy_cfg_v2";
+const STORAGE = "eo_psy_cfg_v3";
+const LOCAL_REQS = "eo_rdv_requests_v1";
 
 const DEFAULTS = {
-  // Identité
   siteName: "Emmanuelle Ouvrard",
   brandMark: "EO",
   badge: "Psychologue · ADELI en cours d’affichage",
@@ -911,24 +1045,18 @@ const DEFAULTS = {
   heroPoint2: "✓ Accueil des enfants formé",
   heroPoint3: "✓ Consultations étudiants",
   heroPoint4: "✓ Présentiel & visio",
-
-  // Nav
   navApproche: "Approche",
   navPublics: "Publics",
   navMsp: "MonSoutienPsy",
   navTarifs: "Tarifs",
   navFaq: "FAQ",
   navRdv: "Prendre RDV",
-
-  // À propos
   aboutLabel: "Qui suis-je",
   aboutTitle: "Une présence attentive, sans jugement",
   aboutIntro: "Je suis psychologue, formée à l’écoute clinique et à l’accompagnement des parcours de vie. Mon travail s’appuie sur une posture d’accueil, de respect du rythme de chacun et d’alliance thérapeutique.",
   card1Icon: "🎓", card1Title: "Formation solide", card1Text: "Parcours universitaire en psychologie clinique, avec une attention particulière à la psychopathologie et aux dispositifs de soin.",
   card2Icon: "🧒", card2Title: "Enfants & adolescents", card2Text: "Formation spécifique à l’accueil et à l’accompagnement des enfants. Espace adapté, langage accessible, travail possible avec les parents.",
   card3Icon: "💚", card3Title: "MonSoutienPsy", card3Text: "Conventionnée dans le dispositif national : jusqu’à 12 séances remboursées par an, sur orientation d’un médecin.",
-
-  // Publics
   publicsLabel: "Pour qui",
   publicsTitle: "Adultes, étudiants, enfants",
   publicsIntro: "Chaque âge de la vie a ses défis. Je propose un cadre adapté à votre situation, que vous veniez seul·e, en tant que parent, ou pour votre enfant.",
@@ -937,8 +1065,6 @@ const DEFAULTS = {
   public2: "Étudiants — stress, orientation, isolement, pression, confiance, phobie sociale",
   public3: "Enfants — difficultés scolaires, émotions, sommeil, séparation, harcèlement",
   public4: "Parents — soutien à la parentalité, guidance, compréhension du comportement de l’enfant",
-
-  // MonSoutienPsy
   mspLabel: "Dispositif",
   mspTitle: "MonSoutienPsy",
   mspIntro: "Le dispositif national permet un accès facilité à un psychologue, avec un reste à charge réduit ou nul selon votre situation.",
@@ -946,8 +1072,6 @@ const DEFAULTS = {
   msp2Icon: "💶", msp2Title: "Combien de séances ?", msp2Text: "Jusqu’à 12 séances par an peuvent être prises en charge. Le tarif est fixé par le dispositif (remboursement Sécurité sociale + mutuelle selon contrats).",
   msp3Icon: "🎓", msp3Title: "Étudiants aussi", msp3Text: "Les étudiants peuvent bénéficier de MonSoutienPsy. N’hésitez pas à en parler à votre médecin ou au service de santé universitaire.",
   mspNote: "Je suis conventionnée MonSoutienPsy. Lors de la prise de rendez-vous, indiquez simplement que vous venez dans ce cadre (avec l’orientation médicale).",
-
-  // Approche
   approcheLabel: "Méthode",
   approcheTitle: "Mon approche",
   approcheIntro: "Je travaille dans une perspective intégrative : écoute clinique, outils issus des thérapies cognitivo-comportementales et humanistes, et attention au corps et aux émotions.",
@@ -957,8 +1081,6 @@ const DEFAULTS = {
   app4Title: "Enfants", app4Text: "Jeux, dessin, métaphores et échanges adaptés à l’âge, avec ou sans les parents.",
   app5Title: "Présentiel & visio", app5Text: "Cabinet et consultations en ligne selon vos contraintes.",
   app6Title: "Éthique", app6Text: "Secret professionnel, respect du code de déontologie des psychologues.",
-
-  // Étapes
   stepsLabel: "Parcours",
   stepsTitle: "Comment se déroule un accompagnement ?",
   stepsIntro: "Un cadre clair, souple et adapté à votre demande. Voici les grandes étapes.",
@@ -967,8 +1089,6 @@ const DEFAULTS = {
   step3Title: "Suivi", step3Text: "Séances régulières ou espacées selon vos besoins. Ajustements au fil de l’eau.",
   step4Title: "Fin & bilan", step4Text: "On fait le point ensemble. Vous décidez de la suite en toute liberté.",
   confidentialite: "Confidentialité — Tout ce qui se dit en séance est protégé par le secret professionnel. Je m’engage à respecter le code de déontologie des psychologues.",
-
-  // Tarifs
   tarifsLabel: "Pratique",
   tarifsTitle: "Tarifs & modalités",
   tarifsIntro: "Les tarifs peuvent évoluer. Les montants exacts vous seront confirmés lors de la prise de rendez-vous.",
@@ -991,19 +1111,22 @@ const DEFAULTS = {
   price3L2: "Temps d’échange possible avec le parent",
   price3L3: "Également possible en MonSoutienPsy",
   tarifsNote: "Les tarifs « consultation libre » sont indicatifs et peuvent varier selon la durée ou le type d’accompagnement. Les séances MonSoutienPsy suivent le barème national en vigueur.",
-
-  // RDV / Contact
   rdvLabel: "Contact",
   rdvTitle: "Prendre rendez-vous",
-  rdvIntro: "Premier contact sans engagement. Décrivez brièvement votre besoin : je vous répondrai dans les meilleurs délais.",
-  formTitle: "Écrire un message",
+  rdvIntro: "Proposez jusqu’à 3 créneaux qui vous conviennent. Je vérifierai mon agenda (Doctolib) et vous confirmerai le créneau possible.",
+  formTitle: "Demande de rendez-vous",
   labelName: "Prénom & nom",
   labelEmail: "E-mail",
+  labelPhoneF: "Téléphone (optionnel)",
   labelWho: "Vous consultez pour",
   labelType: "Cadre souhaité",
-  labelMsg: "Message",
+  labelSlots: "3 créneaux souhaités (par ordre de préférence)",
+  slotsNote: "Indiquez 3 propositions. Je comparerai avec mon agenda et vous confirmerai le créneau disponible.",
+  labelMsg: "Message (optionnel)",
   formBtn: "Envoyer la demande",
-  formNote: "Ce formulaire est une démonstration. En production, branchez-le à un service d’e-mail (Formspree, Netlify Forms, etc.).",
+  formNote: "Votre demande est enregistrée. Vous recevrez une réponse par e-mail dès que possible.",
+  doctolibUrl: "",
+  doctolibText: "Vous préférez réserver en ligne directement ? Utilisez Doctolib.",
   coordsTitle: "Coordonnées",
   labelAddress: "Cabinet",
   address: "Adresse à préciser — France",
@@ -1017,8 +1140,6 @@ const DEFAULTS = {
   beforeTitle: "Avant la première séance",
   beforeText: "Si vous venez dans le cadre MonSoutienPsy, munissez-vous de l’orientation de votre médecin. Pour les enfants, la présence d’au moins un parent est généralement souhaitée pour la première rencontre.",
   beforeBtn: "Voir la FAQ",
-
-  // FAQ
   faqLabel: "Questions",
   faqTitle: "Foire aux questions",
   faq1Q: "Comment se passe une première séance ?",
@@ -1032,29 +1153,16 @@ const DEFAULTS = {
   faq5Q: "Les séances en visio sont-elles possibles ?",
   faq5A: "Oui, selon les situations et les disponibilités. La visio peut convenir pour le suivi ou lorsque le déplacement est difficile. La première rencontre peut se faire en présentiel si vous le souhaitez.",
   faq6Q: "Combien de temps dure un accompagnement ?",
-  faq6A: "Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un travail plus long. Nous en discutons régulièrement pour ajuster.",
-
-  // Footer
+  faq6A: "Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un suivi plus long. Nous en discutons régulièrement pour ajuster.",
   footerName: "Emmanuelle Ouvrard",
   footerTagline: "Psychologue · Accompagnement adultes, étudiants & enfants",
   footerMsp: "Conventionnée MonSoutienPsy",
   footerLegal: "Site vitrine — les informations pratiques (adresse, tarifs exacts, n° ADELI) sont à finaliser dans l’espace créateur.",
   footerCopy: "Emmanuelle Ouvrard — Tous droits réservés",
-
-  // Couleurs
   colors: {
-    ink: "#1c1917",
-    muted: "#57534e",
-    soft: "#78716c",
-    bg: "#faf7f2",
-    card: "#ffffff",
-    sand: "#f5f0e8",
-    clay: "#c4a574",
-    clayDark: "#a68b5b",
-    sage: "#6b7f6a",
-    sageDark: "#556654",
-    blush: "#e8d5c4",
-    line: "#e7e0d5"
+    ink: "#1c1917", muted: "#57534e", soft: "#78716c", bg: "#faf7f2", card: "#ffffff",
+    sand: "#f5f0e8", clay: "#c4a574", clayDark: "#a68b5b", sage: "#6b7f6a",
+    sageDark: "#556654", blush: "#e8d5c4", line: "#e7e0d5"
   }
 };
 
@@ -1070,51 +1178,51 @@ try {
 function applyColors() {
   const r = document.documentElement.style;
   const c = cfg.colors || DEFAULTS.colors;
-  r.setProperty("--ink", c.ink);
-  r.setProperty("--muted", c.muted);
-  r.setProperty("--soft", c.soft);
-  r.setProperty("--bg", c.bg);
-  r.setProperty("--card", c.card);
-  r.setProperty("--sand", c.sand);
-  r.setProperty("--clay", c.clay);
-  r.setProperty("--clay-dark", c.clayDark);
-  r.setProperty("--sage", c.sage);
-  r.setProperty("--sage-dark", c.sageDark);
-  r.setProperty("--blush", c.blush);
-  r.setProperty("--line", c.line);
+  Object.entries({
+    "--ink": c.ink, "--muted": c.muted, "--soft": c.soft, "--bg": c.bg, "--card": c.card,
+    "--sand": c.sand, "--clay": c.clay, "--clay-dark": c.clayDark, "--sage": c.sage,
+    "--sage-dark": c.sageDark, "--blush": c.blush, "--line": c.line
+  }).forEach(([k, v]) => r.setProperty(k, v));
+}
+
+function applyDoctolib() {
+  const url = (cfg.doctolibUrl || "").trim();
+  const btn1 = document.getElementById("doctolibBtn");
+  const btn2 = document.getElementById("doctolibBtn2");
+  const box = document.getElementById("doctolibBox");
+  if (url) {
+    btn1.href = url; btn1.style.display = "inline-flex";
+    btn2.href = url; box.style.display = "flex";
+  } else {
+    btn1.style.display = "none";
+    box.style.display = "none";
+  }
 }
 
 function apply() {
   applyColors();
+  applyDoctolib();
   document.querySelectorAll("[data-key]").forEach(el => {
     const key = el.getAttribute("data-key");
-    if (cfg[key] != null) {
-      // Preserve <br> in title
-      if (key === "title") {
-        el.innerHTML = String(cfg[key]).replace(/\n/g, "<br>");
-      } else if (key === "lead" && cfg[key].includes("MonSoutienPsy")) {
-        el.innerHTML = String(cfg[key]).replace(/MonSoutienPsy/g, "<strong>MonSoutienPsy</strong>");
-      } else if (key.startsWith("public") && cfg[key].includes(" — ")) {
-        const [strong, rest] = cfg[key].split(" — ");
-        el.innerHTML = `<strong>${strong}</strong> — ${rest}`;
-      } else if (key === "price1Amount" || key === "price2Amount" || key === "price3Amount") {
-        const parts = String(cfg[key]).split(" / ");
-        if (parts.length === 2) {
-          el.innerHTML = `${parts[0]} <small>/ ${parts[1]}</small>`;
-        } else {
-          el.textContent = cfg[key];
-        }
-      } else if (key === "confidentialite") {
-        el.innerHTML = String(cfg[key]).replace(/^Confidentialité/, "<strong>Confidentialité</strong>");
-      } else {
-        el.textContent = cfg[key];
-      }
+    if (cfg[key] == null) return;
+    if (key === "title") {
+      el.innerHTML = String(cfg[key]).replace(/\n/g, "<br>");
+    } else if (key === "lead" && cfg[key].includes("MonSoutienPsy")) {
+      el.innerHTML = String(cfg[key]).replace(/MonSoutienPsy/g, "<strong>MonSoutienPsy</strong>");
+    } else if (key.startsWith("public") && String(cfg[key]).includes(" — ")) {
+      const [strong, rest] = String(cfg[key]).split(" — ");
+      el.innerHTML = `<strong>${strong}</strong> — ${rest}`;
+    } else if (key === "price1Amount" || key === "price2Amount" || key === "price3Amount") {
+      const parts = String(cfg[key]).split(" / ");
+      el.innerHTML = parts.length === 2 ? `${parts[0]} <small>/ ${parts[1]}</small>` : cfg[key];
+    } else if (key === "confidentialite") {
+      el.innerHTML = String(cfg[key]).replace(/^Confidentialité/, "<strong>Confidentialité</strong>");
+    } else {
+      el.textContent = cfg[key];
     }
   });
-  // Sync contact ids
-  const map = { address: "cAddress", email: "cEmail", phone: "cPhone", hours: "cHours" };
-  Object.entries(map).forEach(([k, id]) => {
-    const el = document.getElementById(id);
+  ["address","email","phone","hours"].forEach(k => {
+    const el = document.getElementById({ address:"cAddress", email:"cEmail", phone:"cPhone", hours:"cHours" }[k]);
     if (el && cfg[k] != null) el.textContent = cfg[k];
   });
 }
@@ -1122,7 +1230,6 @@ function apply() {
 apply();
 document.getElementById("y").textContent = new Date().getFullYear();
 
-// FAQ
 document.querySelectorAll(".faq-q").forEach(btn => {
   btn.addEventListener("click", () => {
     const item = btn.closest(".faq-item");
@@ -1132,27 +1239,104 @@ document.querySelectorAll(".faq-q").forEach(btn => {
   });
 });
 
-// Formulaire contact (démo locale)
-window.handleForm = function(e) {
+// ========== Demandes RDV ==========
+function loadLocalReqs() {
+  try { return JSON.parse(localStorage.getItem(LOCAL_REQS) || "[]"); } catch { return []; }
+}
+function saveLocalReqs(list) {
+  localStorage.setItem(LOCAL_REQS, JSON.stringify(list.slice(0, 100)));
+}
+
+async function fetchRequests() {
+  let list = [];
+  if (db) {
+    try {
+      const q = query(collection(db, "rdv_requests"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      list = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
+    } catch (e) {
+      console.warn("Firestore read failed, fallback local", e);
+    }
+  }
+  if (!list.length) {
+    list = loadLocalReqs().map((r, i) => ({ ...r, id: r.id || `local_${i}`, _source: "local" }));
+  }
+  return list;
+}
+
+function updateBadges(list) {
+  const pending = list.filter(r => r.status !== "replied").length;
+  const badge = document.getElementById("lockBadge");
+  const tabDot = document.getElementById("tabDot");
+  if (pending > 0) {
+    badge.style.display = "grid";
+    badge.textContent = pending;
+    if (tabDot) { tabDot.style.display = "inline-grid"; tabDot.textContent = pending; }
+  } else {
+    badge.style.display = "none";
+    if (tabDot) tabDot.style.display = "none";
+  }
+}
+
+window.handleForm = async function(e) {
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target));
-  const list = JSON.parse(localStorage.getItem("eo_messages") || "[]");
-  list.unshift({ ...data, at: new Date().toISOString() });
-  localStorage.setItem("eo_messages", JSON.stringify(list.slice(0, 50)));
-  document.getElementById("formOk").style.display = "block";
-  e.target.reset();
+  const form = e.target;
+  const fd = new FormData(form);
+  const data = {
+    name: fd.get("name"),
+    email: fd.get("email"),
+    phone: fd.get("phone") || "",
+    who: fd.get("who"),
+    type: fd.get("type"),
+    slot1: `${fd.get("slot1date")} ${fd.get("slot1time")}`,
+    slot2: `${fd.get("slot2date")} ${fd.get("slot2time")}`,
+    slot3: `${fd.get("slot3date")} ${fd.get("slot3time")}`,
+    message: fd.get("message") || "",
+    status: "pending",
+    reply: "",
+    createdAt: new Date().toISOString()
+  };
+
+  const ok = document.getElementById("formOk");
+  const err = document.getElementById("formErr");
+  ok.style.display = "none";
+  err.style.display = "none";
+
+  let saved = false;
+  if (db) {
+    try {
+      await addDoc(collection(db, "rdv_requests"), {
+        ...data,
+        createdAt: serverTimestamp()
+      });
+      saved = true;
+    } catch (e) {
+      console.warn("Firestore write failed", e);
+    }
+  }
+  if (!saved) {
+    const list = loadLocalReqs();
+    list.unshift({ ...data, id: "local_" + Date.now() });
+    saveLocalReqs(list);
+  }
+
+  ok.style.display = "block";
+  form.reset();
+  // refresh badge
+  fetchRequests().then(updateBadges);
   return false;
 };
 
-// ========== Espace créateur ==========
+// ========== Creator ==========
 const creator = document.getElementById("creator");
 const cBody = document.getElementById("cBody");
 const cFoot = document.getElementById("cFoot");
 const cTabs = document.getElementById("cTabs");
 let unlocked = sessionStorage.getItem("eo_creator_ok") === "1";
-let currentPanel = "textes";
+let currentPanel = "demandes";
+let cachedReqs = [];
 
-const ICONS = ["🌿","🎓","🧒","💚","📋","💶","📍","✉️","📞","🕒","🧠","🤝","🌱","✨","💬","🧘","📖","🏠","⏰","✅","🔒","💚","🌸","🍃","🕊️","🤍","🪴","🪨","🌊","☀️"];
+const ICONS = ["🌿","🎓","🧒","💚","📋","💶","📍","✉️","📞","🕒","🧠","🤝","🌱","✨","💬","🧘","📖","🏠","⏰","✅","🔒","🌸","🍃","🕊️","🤍","🪴","🪨","🌊","☀️"];
 
 async function sha256(text) {
   const data = new TextEncoder().encode(text);
@@ -1166,8 +1350,7 @@ async function checkKey(key) {
   if (!snap.exists()) throw new Error("Document config/creator introuvable dans Firestore");
   const stored = (snap.data().keyHash || "").toLowerCase().trim();
   if (!stored) throw new Error("Aucun keyHash dans config/creator");
-  const hash = await sha256(key);
-  return hash === stored;
+  return (await sha256(key)) === stored;
 }
 
 function showLogin() {
@@ -1175,42 +1358,33 @@ function showLogin() {
   cFoot.style.display = "none";
   cBody.innerHTML = `
     <div class="login-box">
-      <p>Entrez la clé d’accès pour modifier le contenu du site.</p>
+      <p>Entrez la clé d’accès pour modifier le contenu et gérer les demandes de RDV.</p>
       <input type="password" id="cKey" placeholder="Clé d’accès" autocomplete="current-password" style="margin-bottom:.8rem;text-align:center">
       <button class="btn btn-primary" type="button" id="cUnlock" style="width:100%">Déverrouiller</button>
       <p id="cErr" style="margin-top:.75rem;font-size:.85rem;color:#b91c1c;display:none"></p>
-      <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">La clé est stockée de façon sécurisée dans Firebase (hash). Elle n’apparaît pas dans le code du site.</p>
+      <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">La clé est stockée de façon sécurisée dans Firebase (hash).</p>
     </div>`;
   const err = document.getElementById("cErr");
   const btn = document.getElementById("cUnlock");
   const input = document.getElementById("cKey");
-
   const tryUnlock = async () => {
     const v = input.value.trim();
     if (!v) { err.style.display = "block"; err.textContent = "Saisissez la clé."; return; }
-    btn.disabled = true;
-    btn.textContent = "Vérification…";
-    err.style.display = "none";
+    btn.disabled = true; btn.textContent = "Vérification…"; err.style.display = "none";
     try {
-      const ok = await checkKey(v);
-      if (ok) {
+      if (await checkKey(v)) {
         unlocked = true;
         sessionStorage.setItem("eo_creator_ok", "1");
         showEditor();
       } else {
-        err.style.display = "block";
-        err.textContent = "Clé incorrecte.";
+        err.style.display = "block"; err.textContent = "Clé incorrecte.";
       }
     } catch (e) {
-      err.style.display = "block";
-      err.textContent = e.message || "Erreur de vérification (Firebase).";
-      console.error(e);
+      err.style.display = "block"; err.textContent = e.message || "Erreur Firebase.";
     } finally {
-      btn.disabled = false;
-      btn.textContent = "Déverrouiller";
+      btn.disabled = false; btn.textContent = "Déverrouiller";
     }
   };
-
   btn.onclick = tryUnlock;
   input.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
 }
@@ -1221,9 +1395,7 @@ function esc(s) {
 
 function field(key, label, type = "text", rows = 2) {
   const val = cfg[key] ?? "";
-  if (type === "textarea") {
-    return `<label>${label}</label><textarea data-edit="${key}" rows="${rows}">${esc(val)}</textarea>`;
-  }
+  if (type === "textarea") return `<label>${label}</label><textarea data-edit="${key}" rows="${rows}">${esc(val)}</textarea>`;
   return `<label>${label}</label><input data-edit="${key}" value="${esc(val)}">`;
 }
 
@@ -1246,205 +1418,259 @@ function iconPicker(key, label) {
     <div class="icon-grid">${buttons}</div>`;
 }
 
+function formatSlot(s) {
+  if (!s) return "—";
+  try {
+    const [d, t] = s.split(" ");
+    const [y, m, day] = d.split("-");
+    return `${day}/${m}/${y} à ${t}`;
+  } catch { return s; }
+}
+
+const WHO_LABELS = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" };
+const TYPE_LABELS = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" };
+
+function buildDemandesPanel() {
+  if (!cachedReqs.length) {
+    return `<p style="color:var(--muted);font-size:.95rem;padding:1rem 0">Aucune demande pour le moment. Les nouvelles demandes apparaîtront ici.</p>
+      <p style="font-size:.82rem;color:var(--soft)">Astuce : ouvrez régulièrement l’espace créateur pour voir les nouvelles demandes (badge rouge sur le cadenas).</p>`;
+  }
+  return cachedReqs.map(r => {
+    const isPending = r.status !== "replied";
+    const mailto = `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent("Réponse à votre demande de rendez-vous")}&body=${encodeURIComponent(
+      `Bonjour ${r.name},\n\nSuite à votre demande de rendez-vous, voici ma réponse :\n\n${r.reply || "[votre message]"}\n\nBien cordialement,\nEmmanuelle Ouvrard`
+    )}`;
+    return `
+    <div class="req-card ${isPending ? "pending" : "replied"}" data-req-id="${esc(r.id)}">
+      <div class="req-head">
+        <div>
+          <div class="req-name">${esc(r.name)}</div>
+          <div class="req-date">${r.createdAt ? new Date(r.createdAt.seconds ? r.createdAt.seconds * 1000 : r.createdAt).toLocaleString("fr-FR") : ""}</div>
+        </div>
+        <span class="status-pill ${isPending ? "pending" : "replied"}">${isPending ? "En attente" : "Répondu"}</span>
+      </div>
+      <div class="req-meta">
+        ${esc(r.email)}${r.phone ? " · " + esc(r.phone) : ""}<br>
+        ${WHO_LABELS[r.who] || r.who} · ${TYPE_LABELS[r.type] || r.type}
+      </div>
+      <div class="req-slots">
+        <strong>Créneaux proposés</strong>
+        1. ${formatSlot(r.slot1)}<br>
+        2. ${formatSlot(r.slot2)}<br>
+        3. ${formatSlot(r.slot3)}
+      </div>
+      ${r.message ? `<div class="req-msg">${esc(r.message)}</div>` : ""}
+      ${r.reply ? `<div class="req-msg" style="background:var(--sand);padding:.5rem .7rem;border-radius:8px"><strong>Votre réponse :</strong><br>${esc(r.reply)}</div>` : ""}
+      <div class="req-actions">
+        <button type="button" class="btn-reply" data-action="toggle-reply">Répondre</button>
+        <a href="${mailto}">Ouvrir e-mail</a>
+        ${isPending ? `<button type="button" data-action="mark-replied">Marquer traité</button>` : ""}
+      </div>
+      <div class="req-reply-box" style="display:none">
+        <textarea placeholder="Ex. : Le créneau du mardi 12 à 14h me convient. Confirmez-vous ?">${esc(r.reply || "")}</textarea>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.85rem" data-action="save-reply">Enregistrer la réponse</button>
+          <a class="btn btn-secondary" style="padding:.4rem .9rem;font-size:.85rem" href="${mailto}" data-action="mailto-after">Envoyer par e-mail</a>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function persistReply(id, reply, status) {
+  if (db && !String(id).startsWith("local_")) {
+    try {
+      await updateDoc(doc(db, "rdv_requests", id), { reply, status, repliedAt: serverTimestamp() });
+      return;
+    } catch (e) { console.warn(e); }
+  }
+  const list = loadLocalReqs();
+  const idx = list.findIndex(r => r.id === id);
+  if (idx >= 0) {
+    list[idx].reply = reply;
+    list[idx].status = status;
+    saveLocalReqs(list);
+  }
+}
+
+function bindDemandesEvents() {
+  cBody.querySelectorAll(".req-card").forEach(card => {
+    const id = card.dataset.reqId;
+    card.querySelector('[data-action="toggle-reply"]')?.addEventListener("click", () => {
+      const box = card.querySelector(".req-reply-box");
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    });
+    card.querySelector('[data-action="save-reply"]')?.addEventListener("click", async () => {
+      const reply = card.querySelector("textarea").value.trim();
+      await persistReply(id, reply, "replied");
+      const req = cachedReqs.find(r => r.id === id);
+      if (req) { req.reply = reply; req.status = "replied"; }
+      updateBadges(cachedReqs);
+      renderPanel("demandes");
+      document.getElementById("cMsg").textContent = "✓ Réponse enregistrée";
+      setTimeout(() => document.getElementById("cMsg").textContent = "", 2000);
+    });
+    card.querySelector('[data-action="mark-replied"]')?.addEventListener("click", async () => {
+      await persistReply(id, "", "replied");
+      const req = cachedReqs.find(r => r.id === id);
+      if (req) req.status = "replied";
+      updateBadges(cachedReqs);
+      renderPanel("demandes");
+    });
+  });
+}
+
 function buildTextesPanel() {
   return `
     <div class="group-title">Identité & Hero</div>
     ${field("siteName", "Nom affiché")}
     ${field("brandMark", "Initiales (logo)")}
     ${field("badge", "Badge sous le titre")}
-    ${field("title", "Titre principal (utilisez \\n pour saut de ligne)", "textarea", 2)}
+    ${field("title", "Titre principal (\\n = saut de ligne)", "textarea", 2)}
     ${field("lead", "Texte d’introduction", "textarea", 3)}
     ${field("btnPrimary", "Bouton principal")}
     ${field("btnSecondary", "Bouton secondaire")}
-    ${field("heroName", "Nom (carte hero)")}
+    ${field("heroName", "Nom (carte)")}
     ${field("heroRole", "Rôle")}
-    ${field("heroPoint1", "Point 1")}
-    ${field("heroPoint2", "Point 2")}
-    ${field("heroPoint3", "Point 3")}
-    ${field("heroPoint4", "Point 4")}
-
+    ${field("heroPoint1", "Point 1")} ${field("heroPoint2", "Point 2")}
+    ${field("heroPoint3", "Point 3")} ${field("heroPoint4", "Point 4")}
     <div class="group-title">Navigation</div>
-    ${field("navApproche", "Lien Approche")}
-    ${field("navPublics", "Lien Publics")}
-    ${field("navMsp", "Lien MonSoutienPsy")}
-    ${field("navTarifs", "Lien Tarifs")}
-    ${field("navFaq", "Lien FAQ")}
-    ${field("navRdv", "Bouton RDV")}
-
+    ${field("navApproche", "Approche")} ${field("navPublics", "Publics")}
+    ${field("navMsp", "MonSoutienPsy")} ${field("navTarifs", "Tarifs")}
+    ${field("navFaq", "FAQ")} ${field("navRdv", "Prendre RDV")}
     <div class="group-title">Qui suis-je</div>
-    ${field("aboutLabel", "Label section")}
-    ${field("aboutTitle", "Titre")}
+    ${field("aboutLabel", "Label")} ${field("aboutTitle", "Titre")}
     ${field("aboutIntro", "Introduction", "textarea", 3)}
-    ${field("card1Title", "Carte 1 — titre")}
-    ${field("card1Text", "Carte 1 — texte", "textarea", 2)}
-    ${field("card2Title", "Carte 2 — titre")}
-    ${field("card2Text", "Carte 2 — texte", "textarea", 2)}
-    ${field("card3Title", "Carte 3 — titre")}
-    ${field("card3Text", "Carte 3 — texte", "textarea", 2)}
-
+    ${field("card1Title", "Carte 1 titre")} ${field("card1Text", "Carte 1 texte", "textarea", 2)}
+    ${field("card2Title", "Carte 2 titre")} ${field("card2Text", "Carte 2 texte", "textarea", 2)}
+    ${field("card3Title", "Carte 3 titre")} ${field("card3Text", "Carte 3 texte", "textarea", 2)}
     <div class="group-title">Publics</div>
-    ${field("publicsLabel", "Label")}
-    ${field("publicsTitle", "Titre")}
-    ${field("publicsIntro", "Introduction", "textarea", 2)}
-    ${field("publicsBtn", "Bouton")}
-    ${field("public1", "Ligne Adultes")}
-    ${field("public2", "Ligne Étudiants")}
-    ${field("public3", "Ligne Enfants")}
-    ${field("public4", "Ligne Parents")}
-
+    ${field("publicsLabel", "Label")} ${field("publicsTitle", "Titre")}
+    ${field("publicsIntro", "Intro", "textarea", 2)} ${field("publicsBtn", "Bouton")}
+    ${field("public1", "Ligne Adultes")} ${field("public2", "Ligne Étudiants")}
+    ${field("public3", "Ligne Enfants")} ${field("public4", "Ligne Parents")}
     <div class="group-title">MonSoutienPsy</div>
-    ${field("mspLabel", "Label")}
-    ${field("mspTitle", "Titre")}
-    ${field("mspIntro", "Introduction", "textarea", 2)}
-    ${field("msp1Title", "Carte 1 — titre")}
-    ${field("msp1Text", "Carte 1 — texte", "textarea", 2)}
-    ${field("msp2Title", "Carte 2 — titre")}
-    ${field("msp2Text", "Carte 2 — texte", "textarea", 2)}
-    ${field("msp3Title", "Carte 3 — titre")}
-    ${field("msp3Text", "Carte 3 — texte", "textarea", 2)}
-    ${field("mspNote", "Note bas de section", "textarea", 2)}
-
+    ${field("mspLabel", "Label")} ${field("mspTitle", "Titre")}
+    ${field("mspIntro", "Intro", "textarea", 2)}
+    ${field("msp1Title", "Carte 1")} ${field("msp1Text", "Texte", "textarea", 2)}
+    ${field("msp2Title", "Carte 2")} ${field("msp2Text", "Texte", "textarea", 2)}
+    ${field("msp3Title", "Carte 3")} ${field("msp3Text", "Texte", "textarea", 2)}
+    ${field("mspNote", "Note", "textarea", 2)}
     <div class="group-title">Approche</div>
-    ${field("approcheLabel", "Label")}
-    ${field("approcheTitle", "Titre")}
-    ${field("approcheIntro", "Introduction", "textarea", 2)}
-    ${field("app1Title", "Item 1 — titre")} ${field("app1Text", "Item 1 — texte")}
-    ${field("app2Title", "Item 2 — titre")} ${field("app2Text", "Item 2 — texte")}
-    ${field("app3Title", "Item 3 — titre")} ${field("app3Text", "Item 3 — texte")}
-    ${field("app4Title", "Item 4 — titre")} ${field("app4Text", "Item 4 — texte")}
-    ${field("app5Title", "Item 5 — titre")} ${field("app5Text", "Item 5 — texte")}
-    ${field("app6Title", "Item 6 — titre")} ${field("app6Text", "Item 6 — texte")}
-
+    ${field("approcheLabel", "Label")} ${field("approcheTitle", "Titre")}
+    ${field("approcheIntro", "Intro", "textarea", 2)}
+    ${field("app1Title", "1 titre")} ${field("app1Text", "1 texte")}
+    ${field("app2Title", "2 titre")} ${field("app2Text", "2 texte")}
+    ${field("app3Title", "3 titre")} ${field("app3Text", "3 texte")}
+    ${field("app4Title", "4 titre")} ${field("app4Text", "4 texte")}
+    ${field("app5Title", "5 titre")} ${field("app5Text", "5 texte")}
+    ${field("app6Title", "6 titre")} ${field("app6Text", "6 texte")}
     <div class="group-title">Déroulement</div>
-    ${field("stepsLabel", "Label")}
-    ${field("stepsTitle", "Titre")}
-    ${field("stepsIntro", "Introduction", "textarea", 2)}
-    ${field("step1Title", "Étape 1 — titre")} ${field("step1Text", "Étape 1 — texte", "textarea", 2)}
-    ${field("step2Title", "Étape 2 — titre")} ${field("step2Text", "Étape 2 — texte", "textarea", 2)}
-    ${field("step3Title", "Étape 3 — titre")} ${field("step3Text", "Étape 3 — texte", "textarea", 2)}
-    ${field("step4Title", "Étape 4 — titre")} ${field("step4Text", "Étape 4 — texte", "textarea", 2)}
-    ${field("confidentialite", "Encadré confidentialité", "textarea", 2)}
-
+    ${field("stepsLabel", "Label")} ${field("stepsTitle", "Titre")}
+    ${field("stepsIntro", "Intro", "textarea", 2)}
+    ${field("step1Title", "Étape 1")} ${field("step1Text", "Texte", "textarea", 2)}
+    ${field("step2Title", "Étape 2")} ${field("step2Text", "Texte", "textarea", 2)}
+    ${field("step3Title", "Étape 3")} ${field("step3Text", "Texte", "textarea", 2)}
+    ${field("step4Title", "Étape 4")} ${field("step4Text", "Texte", "textarea", 2)}
+    ${field("confidentialite", "Confidentialité", "textarea", 2)}
     <div class="group-title">Tarifs</div>
-    ${field("tarifsLabel", "Label")}
-    ${field("tarifsTitle", "Titre")}
-    ${field("tarifsIntro", "Introduction", "textarea", 2)}
-    ${field("price1Tag", "Tag carte 1")}
-    ${field("price1Title", "Carte 1 — titre")}
-    ${field("price1Amount", "Carte 1 — montant")}
-    ${field("price1L1", "Carte 1 — ligne 1")}
-    ${field("price1L2", "Carte 1 — ligne 2")}
-    ${field("price1L3", "Carte 1 — ligne 3")}
-    ${field("price1L4", "Carte 1 — ligne 4")}
-    ${field("price2Title", "Carte 2 — titre")}
-    ${field("price2Amount", "Carte 2 — montant")}
-    ${field("price2L1", "Carte 2 — ligne 1")}
-    ${field("price2L2", "Carte 2 — ligne 2")}
-    ${field("price2L3", "Carte 2 — ligne 3")}
-    ${field("price2L4", "Carte 2 — ligne 4")}
-    ${field("price3Title", "Carte 3 — titre")}
-    ${field("price3Amount", "Carte 3 — montant")}
-    ${field("price3L1", "Carte 3 — ligne 1")}
-    ${field("price3L2", "Carte 3 — ligne 2")}
-    ${field("price3L3", "Carte 3 — ligne 3")}
-    ${field("tarifsNote", "Note bas de section", "textarea", 2)}
-
+    ${field("tarifsLabel", "Label")} ${field("tarifsTitle", "Titre")}
+    ${field("tarifsIntro", "Intro", "textarea", 2)}
+    ${field("price1Tag", "Tag MSP")} ${field("price1Title", "Titre MSP")} ${field("price1Amount", "Montant MSP")}
+    ${field("price1L1", "L1")} ${field("price1L2", "L2")} ${field("price1L3", "L3")} ${field("price1L4", "L4")}
+    ${field("price2Title", "Titre libre")} ${field("price2Amount", "Montant libre")}
+    ${field("price2L1", "L1")} ${field("price2L2", "L2")} ${field("price2L3", "L3")} ${field("price2L4", "L4")}
+    ${field("price3Title", "Titre enfant")} ${field("price3Amount", "Montant enfant")}
+    ${field("price3L1", "L1")} ${field("price3L2", "L2")} ${field("price3L3", "L3")}
+    ${field("tarifsNote", "Note", "textarea", 2)}
     <div class="group-title">FAQ</div>
-    ${field("faqLabel", "Label")}
-    ${field("faqTitle", "Titre")}
+    ${field("faqLabel", "Label")} ${field("faqTitle", "Titre")}
     ${field("faq1Q", "Q1")} ${field("faq1A", "R1", "textarea", 2)}
     ${field("faq2Q", "Q2")} ${field("faq2A", "R2", "textarea", 2)}
     ${field("faq3Q", "Q3")} ${field("faq3A", "R3", "textarea", 2)}
     ${field("faq4Q", "Q4")} ${field("faq4A", "R4", "textarea", 2)}
     ${field("faq5Q", "Q5")} ${field("faq5A", "R5", "textarea", 2)}
     ${field("faq6Q", "Q6")} ${field("faq6A", "R6", "textarea", 2)}
-
     <div class="group-title">Pied de page</div>
-    ${field("footerName", "Nom")}
-    ${field("footerTagline", "Accroche")}
-    ${field("footerMsp", "Ligne MonSoutienPsy")}
-    ${field("footerLegal", "Texte légal", "textarea", 2)}
+    ${field("footerName", "Nom")} ${field("footerTagline", "Accroche")}
+    ${field("footerMsp", "Ligne MSP")} ${field("footerLegal", "Légal", "textarea", 2)}
     ${field("footerCopy", "Copyright")}
   `;
 }
 
 function buildCouleursPanel() {
   return `
-    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Modifiez les couleurs du thème. Les changements s’appliquent immédiatement après sauvegarde.</p>
-    <div class="group-title">Couleurs principales</div>
-    ${colorField("sage", "Primaire (sage)")}
-    ${colorField("sageDark", "Primaire foncé")}
-    ${colorField("clay", "Accent (clay)")}
-    ${colorField("clayDark", "Accent foncé")}
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Couleurs du thème. Sauvegardez pour appliquer.</p>
+    <div class="group-title">Principales</div>
+    ${colorField("sage", "Primaire")} ${colorField("sageDark", "Primaire foncé")}
+    ${colorField("clay", "Accent")} ${colorField("clayDark", "Accent foncé")}
     <div class="group-title">Fonds & textes</div>
-    ${colorField("bg", "Fond page")}
-    ${colorField("sand", "Fond sections")}
-    ${colorField("card", "Cartes")}
-    ${colorField("ink", "Texte principal")}
-    ${colorField("muted", "Texte secondaire")}
-    ${colorField("soft", "Texte léger")}
-    ${colorField("blush", "Dégradé photo")}
-    ${colorField("line", "Bordures")}
-    <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">Astuce : utilisez des teintes douces et peu saturées pour un rendu rassurant, adapté à un cabinet de psychologie.</p>
+    ${colorField("bg", "Fond page")} ${colorField("sand", "Fond sections")}
+    ${colorField("card", "Cartes")} ${colorField("ink", "Texte")}
+    ${colorField("muted", "Secondaire")} ${colorField("soft", "Léger")}
+    ${colorField("blush", "Dégradé")} ${colorField("line", "Bordures")}
   `;
 }
 
 function buildIconesPanel() {
   return `
-    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Choisissez une icône dans la grille ou tapez un emoji librement.</p>
-    ${iconPicker("heroIcon", "Icône hero (carte photo)")}
-    ${iconPicker("card1Icon", "Carte « Formation »")}
-    ${iconPicker("card2Icon", "Carte « Enfants »")}
-    ${iconPicker("card3Icon", "Carte « MonSoutienPsy »")}
-    ${iconPicker("msp1Icon", "MSP — Comment ça marche")}
-    ${iconPicker("msp2Icon", "MSP — Séances")}
-    ${iconPicker("msp3Icon", "MSP — Étudiants")}
-    ${iconPicker("icoAddress", "Coordonnées — Adresse")}
-    ${iconPicker("icoEmail", "Coordonnées — E-mail")}
-    ${iconPicker("icoPhone", "Coordonnées — Téléphone")}
-    ${iconPicker("icoHours", "Coordonnées — Horaires")}
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Choisissez une icône ou tapez un emoji.</p>
+    ${iconPicker("heroIcon", "Hero")}
+    ${iconPicker("card1Icon", "Formation")} ${iconPicker("card2Icon", "Enfants")} ${iconPicker("card3Icon", "MSP")}
+    ${iconPicker("msp1Icon", "MSP 1")} ${iconPicker("msp2Icon", "MSP 2")} ${iconPicker("msp3Icon", "MSP 3")}
+    ${iconPicker("icoAddress", "Adresse")} ${iconPicker("icoEmail", "E-mail")}
+    ${iconPicker("icoPhone", "Téléphone")} ${iconPicker("icoHours", "Horaires")}
   `;
 }
 
 function buildContactPanel() {
   return `
-    <div class="group-title">Coordonnées affichées</div>
-    ${field("address", "Adresse du cabinet")}
-    ${field("email", "E-mail")}
-    ${field("phone", "Téléphone")}
-    ${field("hours", "Horaires")}
+    <div class="group-title">Doctolib</div>
+    ${field("doctolibUrl", "Lien page Doctolib (https://www.doctolib.fr/...)")}
+    ${field("doctolibText", "Texte à côté du bouton Doctolib", "textarea", 2)}
+    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">Si le lien est renseigné, un bouton « Réserver sur Doctolib » apparaît dans le hero et dans la section RDV.</p>
+    <div class="group-title">Coordonnées</div>
+    ${field("address", "Adresse")} ${field("email", "E-mail")}
+    ${field("phone", "Téléphone")} ${field("hours", "Horaires")}
     <div class="group-title">Textes contact</div>
-    ${field("rdvLabel", "Label section")}
-    ${field("rdvTitle", "Titre")}
+    ${field("rdvLabel", "Label")} ${field("rdvTitle", "Titre")}
     ${field("rdvIntro", "Introduction", "textarea", 2)}
     ${field("formTitle", "Titre formulaire")}
+    ${field("labelSlots", "Label créneaux")}
+    ${field("slotsNote", "Note sous les créneaux", "textarea", 2)}
     ${field("coordsTitle", "Titre coordonnées")}
-    ${field("beforeTitle", "Titre « Avant la séance »")}
-    ${field("beforeText", "Texte « Avant la séance »", "textarea", 3)}
-    ${field("beforeBtn", "Bouton FAQ")}
+    ${field("beforeTitle", "Avant la séance — titre")}
+    ${field("beforeText", "Avant la séance — texte", "textarea", 3)}
     ${field("formBtn", "Bouton envoyer")}
-    ${field("formNote", "Note sous le formulaire", "textarea", 2)}
+    ${field("formNote", "Note sous formulaire", "textarea", 2)}
   `;
 }
 
-function showEditor() {
+async function showEditor() {
   cTabs.style.display = "flex";
   cFoot.style.display = "flex";
+  cachedReqs = await fetchRequests();
+  updateBadges(cachedReqs);
   renderPanel(currentPanel);
-  // Tabs
   cTabs.querySelectorAll(".ctab").forEach(tab => {
     tab.onclick = () => {
       cTabs.querySelectorAll(".ctab").forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
+      if (currentPanel !== "demandes") collectEdits();
       currentPanel = tab.dataset.panel;
-      // Save current edits before switching
-      collectEdits();
       renderPanel(currentPanel);
     };
   });
 }
 
-function renderPanel(name) {
+async function renderPanel(name) {
+  if (name === "demandes") {
+    cBody.innerHTML = `<p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Les demandes arrivent ici. Comparez les 3 créneaux avec Doctolib, puis répondez.</p>` + buildDemandesPanel();
+    bindDemandesEvents();
+    cFoot.style.display = "none";
+    return;
+  }
+  cFoot.style.display = "flex";
   let html = "";
   if (name === "textes") html = buildTextesPanel();
   else if (name === "couleurs") html = buildCouleursPanel();
@@ -1452,15 +1678,12 @@ function renderPanel(name) {
   else if (name === "contact") html = buildContactPanel();
   cBody.innerHTML = html;
 
-  // Color sync
   cBody.querySelectorAll("[data-color]").forEach(input => {
     const key = input.dataset.color;
     const text = cBody.querySelector(`[data-color-text="${key}"]`);
     input.oninput = () => { if (text) text.value = input.value; };
     if (text) text.oninput = () => { if (/^#[0-9a-fA-F]{6}$/.test(text.value)) input.value = text.value; };
   });
-
-  // Icon pickers
   cBody.querySelectorAll("[data-icon-for]").forEach(btn => {
     btn.onclick = () => {
       const key = btn.dataset.iconFor;
@@ -1474,32 +1697,26 @@ function renderPanel(name) {
 }
 
 function collectEdits() {
-  cBody.querySelectorAll("[data-edit]").forEach(el => {
-    const key = el.dataset.edit;
-    cfg[key] = el.value;
-  });
+  cBody.querySelectorAll("[data-edit]").forEach(el => { cfg[el.dataset.edit] = el.value; });
   cBody.querySelectorAll("[data-color]").forEach(el => {
-    const key = el.dataset.color;
     if (!cfg.colors) cfg.colors = {};
-    cfg.colors[key] = el.value;
+    cfg.colors[el.dataset.color] = el.value;
   });
-  // also text color inputs
   cBody.querySelectorAll("[data-color-text]").forEach(el => {
-    const key = el.dataset.colorText;
     if (/^#[0-9a-fA-F]{6}$/.test(el.value)) {
       if (!cfg.colors) cfg.colors = {};
-      cfg.colors[key] = el.value;
+      cfg.colors[el.dataset.colorText] = el.value;
     }
   });
 }
 
-document.getElementById("lockBtn").onclick = () => {
+document.getElementById("lockBtn").onclick = async () => {
   creator.classList.add("open");
-  if (unlocked) showEditor();
+  if (unlocked) await showEditor();
   else showLogin();
 };
 document.getElementById("cClose").onclick = () => {
-  if (unlocked) collectEdits();
+  if (unlocked && currentPanel !== "demandes") collectEdits();
   creator.classList.remove("open");
 };
 
@@ -1513,14 +1730,16 @@ document.getElementById("cSave").onclick = () => {
 };
 
 document.getElementById("cReset").onclick = () => {
-  if (!confirm("Remettre tous les textes, couleurs et icônes par défaut ?")) return;
+  if (!confirm("Remettre textes, couleurs et icônes par défaut ?")) return;
   cfg = structuredClone(DEFAULTS);
   localStorage.removeItem(STORAGE);
   apply();
   renderPanel(currentPanel);
   document.getElementById("cMsg").textContent = "Réinitialisé";
-  setTimeout(() => document.getElementById("cMsg").textContent = "", 2000);
 };
+
+// Badge initial
+fetchRequests().then(updateBadges);
 </script>
 </body>
 </html>
