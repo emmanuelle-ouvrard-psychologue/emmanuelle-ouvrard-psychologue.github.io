@@ -273,6 +273,10 @@ h2 {
   border-color: var(--sage);
   box-shadow: 0 8px 28px color-mix(in srgb, var(--sage) 12%, transparent);
 }
+.price-card .amount {
+  line-height: 1.15;
+  word-break: break-word;
+}
 .price-card .tag {
   position: absolute; top: -11px; left: 1.2rem;
   background: var(--sage); color: #fff;
@@ -286,10 +290,11 @@ h2 {
 }
 .price-card .amount {
   font-family: var(--font-serif);
-  font-size: 2rem; font-weight: 600;
+  font-size: 1.75rem; font-weight: 600;
   color: var(--sage-dark); margin: .6rem 0 .4rem;
+  line-height: 1.2;
 }
-.price-card .amount small { font-size: 1rem; font-weight: 400; color: var(--soft); }
+.price-card .amount small { font-size: .95rem; font-weight: 400; color: var(--soft); white-space: nowrap; }
 .price-card ul {
   list-style: none; margin-top: 1rem;
   display: flex; flex-direction: column; gap: .4rem;
@@ -366,16 +371,72 @@ h2 {
 .slots-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: .6rem;
+  gap: .85rem;
+}
+.slot-block {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .85rem 1rem;
+}
+.slot-label {
+  font-size: .8rem; font-weight: 700; color: var(--clay-dark);
+  margin-bottom: .55rem;
+  letter-spacing: .02em;
 }
 .slot-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: .5rem;
+  gap: .55rem;
 }
-.slot-label {
-  font-size: .8rem; font-weight: 600; color: var(--clay-dark);
-  margin-bottom: .2rem;
+.slot-field label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: .25rem;
+}
+.slot-field input[type="date"],
+.slot-field input[type="time"] {
+  width: 100%;
+  padding: .6rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  font-family: inherit;
+  font-size: .95rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.slot-field input:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+.flex-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .45rem;
+}
+.flex-btn {
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 600;
+  padding: .3rem .65rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+}
+.flex-btn.active {
+  background: var(--sage);
+  border-color: var(--sage);
+  color: #fff;
+}
+.flex-btn:hover { border-color: var(--clay); }
+@media (max-width: 520px) {
+  .slot-row { grid-template-columns: 1fr; }
 }
 .doctolib-box {
   background: #f0f7fc;
@@ -503,6 +564,41 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   text-transform: uppercase; color: var(--clay-dark);
   margin: 1.1rem 0 .4rem; padding-bottom: .3rem;
   border-bottom: 1px solid var(--line);
+}
+
+
+/* Mentions légales */
+.legal-modal {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(28,25,23,.45);
+  display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.legal-modal.open { display: flex; }
+.legal-box {
+  background: var(--card);
+  border-radius: 16px;
+  max-width: 640px; width: 100%;
+  max-height: 85vh; overflow-y: auto;
+  padding: 1.75rem 1.5rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,.15);
+}
+.legal-box h2 {
+  font-family: var(--font-serif);
+  font-size: 1.6rem; margin-bottom: 1rem;
+}
+.legal-box h3 {
+  font-family: var(--font-serif);
+  font-size: 1.15rem; margin: 1.1rem 0 .4rem;
+}
+.legal-box p, .legal-box li {
+  font-size: .92rem; color: var(--muted); margin-bottom: .5rem;
+}
+.legal-box ul { padding-left: 1.2rem; margin-bottom: .6rem; }
+.legal-close {
+  float: right; border: none; background: var(--sand);
+  width: 36px; height: 36px; border-radius: 8px;
+  cursor: pointer; font-size: 1.1rem;
 }
 
 /* Demandes RDV admin */
@@ -696,6 +792,15 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
     <p style="margin-top: 1.5rem; color: var(--muted); font-size: .95rem;" data-key="mspNote">
       Je suis conventionnée MonSoutienPsy. Lors de la prise de rendez-vous, indiquez simplement que vous venez dans ce cadre (avec l’orientation médicale).
     </p>
+
+    <div class="note-box" style="margin-top:1.75rem" id="soutien-etudiant">
+      <p class="section-label" style="margin-bottom:.35rem" data-key="etudiantLabel">Étudiants</p>
+      <h3 style="font-family:var(--font-serif);font-size:1.35rem;margin-bottom:.5rem" data-key="etudiantTitle">Soutien psychologique étudiant</h3>
+      <p style="margin:0" data-key="etudiantText">
+        Les étudiants peuvent bénéficier de MonSoutienPsy (orientation médicale) et, selon leur établissement, de dispositifs de soutien psychologique universitaires.
+        N’hésitez pas à indiquer votre statut étudiant lors de la prise de rendez-vous : le cadre peut être adapté (horaires, rythme, sujets liés aux études).
+      </p>
+    </div>
   </div>
 </section>
 
@@ -775,7 +880,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
       <div class="price-card featured">
         <span class="tag" data-key="price1Tag">MonSoutienPsy</span>
         <h3 data-key="price1Title">Séance MonSoutienPsy</h3>
-        <div class="amount" data-key="price1Amount">Tarif conventionné <small>/ séance</small></div>
+        <div class="amount"><span data-key="price1AmountMain">Tarif conventionné</span> <small data-key="price1AmountSub">/ séance</small></div>
         <ul>
           <li data-key="price1L1">Jusqu’à 12 séances / an</li>
           <li data-key="price1L2">Orientation médicale requise</li>
@@ -785,7 +890,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
       </div>
       <div class="price-card">
         <h3 data-key="price2Title">Consultation libre</h3>
-        <div class="amount" data-key="price2Amount">À partir de 60 € <small>/ séance</small></div>
+        <div class="amount"><span data-key="price2AmountMain">À partir de 60 €</span> <small data-key="price2AmountSub">/ séance</small></div>
         <ul>
           <li data-key="price2L1">Adultes & étudiants</li>
           <li data-key="price2L2">Durée indicative 45–50 min</li>
@@ -795,7 +900,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
       </div>
       <div class="price-card">
         <h3 data-key="price3Title">Enfant / adolescent</h3>
-        <div class="amount" data-key="price3Amount">À partir de 60 € <small>/ séance</small></div>
+        <div class="amount"><span data-key="price3AmountMain">À partir de 60 €</span> <small data-key="price3AmountSub">/ séance</small></div>
         <ul>
           <li data-key="price3L1">Espace adapté</li>
           <li data-key="price3L2">Temps d’échange possible avec le parent</li>
@@ -857,30 +962,66 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
           <div class="form-row">
             <label data-key="labelSlots">3 créneaux souhaités (par ordre de préférence)</label>
+            <p class="form-note" style="margin-top:0;margin-bottom:.75rem" data-key="slotsNote">Cliquez sur la date (calendrier) ou l’heure (horloge). Vous pouvez aussi choisir « n’importe quel jour » ou « n’importe quelle heure ».</p>
             <div class="slots-grid">
-              <div>
+              <div class="slot-block" data-slot="1">
                 <div class="slot-label">1er choix</div>
                 <div class="slot-row">
-                  <input type="date" name="slot1date" required>
-                  <input type="time" name="slot1time" required>
+                  <div class="slot-field">
+                    <label>Date</label>
+                    <input type="date" name="slot1date" id="slot1date">
+                    <div class="flex-btns">
+                      <button type="button" class="flex-btn" data-flex="date" data-for="1">N’importe quel jour</button>
+                    </div>
+                  </div>
+                  <div class="slot-field">
+                    <label>Heure</label>
+                    <input type="time" name="slot1time" id="slot1time">
+                    <div class="flex-btns">
+                      <button type="button" class="flex-btn" data-flex="time" data-for="1">N’importe quelle heure</button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div>
+              <div class="slot-block" data-slot="2">
                 <div class="slot-label">2e choix</div>
                 <div class="slot-row">
-                  <input type="date" name="slot2date" required>
-                  <input type="time" name="slot2time" required>
+                  <div class="slot-field">
+                    <label>Date</label>
+                    <input type="date" name="slot2date" id="slot2date">
+                    <div class="flex-btns">
+                      <button type="button" class="flex-btn" data-flex="date" data-for="2">N’importe quel jour</button>
+                    </div>
+                  </div>
+                  <div class="slot-field">
+                    <label>Heure</label>
+                    <input type="time" name="slot2time" id="slot2time">
+                    <div class="flex-btns">
+                      <button type="button" class="flex-btn" data-flex="time" data-for="2">N’importe quelle heure</button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div>
+              <div class="slot-block" data-slot="3">
                 <div class="slot-label">3e choix</div>
                 <div class="slot-row">
-                  <input type="date" name="slot3date" required>
-                  <input type="time" name="slot3time" required>
+                  <div class="slot-field">
+                    <label>Date</label>
+                    <input type="date" name="slot3date" id="slot3date">
+                    <div class="flex-btns">
+                      <button type="button" class="flex-btn" data-flex="date" data-for="3">N’importe quel jour</button>
+                    </div>
+                  </div>
+                  <div class="slot-field">
+                    <label>Heure</label>
+                    <input type="time" name="slot3time" id="slot3time">
+                    <div class="flex-btns">
+                      <button type="button" class="flex-btn" data-flex="time" data-for="3">N’importe quelle heure</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <p class="form-note" data-key="slotsNote">Indiquez 3 propositions. Je comparerai avec mon agenda et vous confirmerai le créneau disponible.</p>
           </div>
 
           <div class="form-row">
@@ -967,6 +1108,10 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
         <button class="faq-q" type="button"><span data-key="faq6Q">Combien de temps dure un accompagnement ?</span> <span class="plus">+</span></button>
         <div class="faq-a" data-key="faq6A">Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un suivi plus long. Nous en discutons régulièrement pour ajuster.</div>
       </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button"><span data-key="faq7Q">Comment se passe le paiement ?</span> <span class="plus">+</span></button>
+        <div class="faq-a" data-key="faq7A">Pour MonSoutienPsy : le tarif est fixé par le dispositif ; une partie est prise en charge par l’Assurance Maladie et éventuellement votre mutuelle (selon votre contrat), après orientation médicale. Pour une consultation libre : le règlement se fait en fin de séance (espèces, chèque ou virement — les modalités exactes vous seront confirmées). Une facture peut être fournie pour votre mutuelle.</div>
+      </div>
     </div>
   </div>
 </section>
@@ -977,9 +1122,33 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   <p style="margin-top:.5rem" data-key="footerMsp">Conventionnée MonSoutienPsy</p>
   <div class="legal">
     <span data-key="footerLegal">Site vitrine — les informations pratiques (adresse, tarifs exacts, n° ADELI) sont à finaliser dans l’espace créateur.</span><br>
-    © <span id="y"></span> <span data-key="footerCopy">Emmanuelle Ouvrard — Tous droits réservés</span>
+    <a href="#" id="openLegal" style="text-decoration:underline">Mentions légales</a>
+    · © <span id="y"></span> <span data-key="footerCopy">Emmanuelle Ouvrard — Tous droits réservés</span>
   </div>
 </footer>
+
+<div class="legal-modal" id="legalModal" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+  <div class="legal-box">
+    <button type="button" class="legal-close" id="closeLegal" aria-label="Fermer">✕</button>
+    <h2 id="legalTitle">Mentions légales</h2>
+    <h3>Éditeur du site</h3>
+    <p data-key="legalEditor">Emmanuelle Ouvrard — Psychologue<br>
+    Adresse du cabinet : à compléter<br>
+    E-mail : contact@emmanuelle-ouvrard.fr<br>
+    Numéro ADELI : en cours d’affichage</p>
+    <h3>Activité professionnelle</h3>
+    <p data-key="legalActivity">Exercice de la psychologie conformément au code de déontologie des psychologues. Conventionnée MonSoutienPsy.</p>
+    <h3>Hébergement</h3>
+    <p data-key="legalHost">Le site est hébergé par l’hébergeur choisi lors de la mise en ligne (à compléter : nom, adresse, contact de l’hébergeur).</p>
+    <h3>Données personnelles</h3>
+    <p data-key="legalRgpd">Les informations envoyées via le formulaire de contact (nom, e-mail, téléphone, message, créneaux souhaités) sont utilisées uniquement pour répondre à votre demande de rendez-vous. Elles ne sont pas revendues. Conformément au RGPD, vous pouvez demander l’accès, la rectification ou la suppression de vos données en écrivant à l’adresse e-mail indiquée ci-dessus.</p>
+    <h3>Cookies</h3>
+    <p data-key="legalCookies">Ce site n’utilise pas de cookies publicitaires. Des données techniques peuvent être stockées localement dans votre navigateur (préférences d’affichage) pour le bon fonctionnement du site.</p>
+    <h3>Propriété intellectuelle</h3>
+    <p data-key="legalIP">L’ensemble des contenus de ce site (textes, structure, éléments graphiques) est protégé. Toute reproduction non autorisée est interdite.</p>
+    <p style="margin-top:1.2rem;font-size:.85rem;color:var(--soft)">Ces mentions sont un modèle à finaliser avec les informations exactes (adresse, ADELI, hébergeur) dans l’espace créateur ou avant mise en ligne.</p>
+  </div>
+</div>
 
 <button id="lockBtn" title="Espace créateur" aria-label="Espace créateur">
   🔒
@@ -1094,19 +1263,22 @@ const DEFAULTS = {
   tarifsIntro: "Les tarifs peuvent évoluer. Les montants exacts vous seront confirmés lors de la prise de rendez-vous.",
   price1Tag: "MonSoutienPsy",
   price1Title: "Séance MonSoutienPsy",
-  price1Amount: "Tarif conventionné / séance",
+  price1AmountMain: "Tarif conventionné",
+  price1AmountSub: "/ séance",
   price1L1: "Jusqu’à 12 séances / an",
   price1L2: "Orientation médicale requise",
   price1L3: "Remboursement selon parcours de soins",
   price1L4: "Adultes, adolescents, enfants",
   price2Title: "Consultation libre",
-  price2Amount: "À partir de 60 € / séance",
+  price2AmountMain: "À partir de 60 €",
+  price2AmountSub: "/ séance",
   price2L1: "Adultes & étudiants",
   price2L2: "Durée indicative 45–50 min",
   price2L3: "Présentiel ou visio",
   price2L4: "Possibilité de facture pour mutuelle",
   price3Title: "Enfant / adolescent",
-  price3Amount: "À partir de 60 € / séance",
+  price3AmountMain: "À partir de 60 €",
+  price3AmountSub: "/ séance",
   price3L1: "Espace adapté",
   price3L2: "Temps d’échange possible avec le parent",
   price3L3: "Également possible en MonSoutienPsy",
@@ -1159,6 +1331,17 @@ const DEFAULTS = {
   footerMsp: "Conventionnée MonSoutienPsy",
   footerLegal: "Site vitrine — les informations pratiques (adresse, tarifs exacts, n° ADELI) sont à finaliser dans l’espace créateur.",
   footerCopy: "Emmanuelle Ouvrard — Tous droits réservés",
+  etudiantLabel: "Étudiants",
+  etudiantTitle: "Soutien psychologique étudiant",
+  etudiantText: "Les étudiants peuvent bénéficier de MonSoutienPsy (orientation médicale) et, selon leur établissement, de dispositifs de soutien psychologique universitaires. N’hésitez pas à indiquer votre statut étudiant lors de la prise de rendez-vous : le cadre peut être adapté (horaires, rythme, sujets liés aux études).",
+  faq7Q: "Comment se passe le paiement ?",
+  faq7A: "Pour MonSoutienPsy : le tarif est fixé par le dispositif ; une partie est prise en charge par l’Assurance Maladie et éventuellement votre mutuelle (selon votre contrat), après orientation médicale. Pour une consultation libre : le règlement se fait en fin de séance (espèces, chèque ou virement — les modalités exactes vous seront confirmées). Une facture peut être fournie pour votre mutuelle.",
+  legalEditor: "Emmanuelle Ouvrard — Psychologue\nAdresse du cabinet : à compléter\nE-mail : contact@emmanuelle-ouvrard.fr\nNuméro ADELI : en cours d’affichage",
+  legalActivity: "Exercice de la psychologie conformément au code de déontologie des psychologues. Conventionnée MonSoutienPsy.",
+  legalHost: "Le site est hébergé par l’hébergeur choisi lors de la mise en ligne (à compléter : nom, adresse, contact de l’hébergeur).",
+  legalRgpd: "Les informations envoyées via le formulaire de contact (nom, e-mail, téléphone, message, créneaux souhaités) sont utilisées uniquement pour répondre à votre demande de rendez-vous. Elles ne sont pas revendues. Conformément au RGPD, vous pouvez demander l’accès, la rectification ou la suppression de vos données en écrivant à l’adresse e-mail indiquée ci-dessus.",
+  legalCookies: "Ce site n’utilise pas de cookies publicitaires. Des données techniques peuvent être stockées localement dans votre navigateur (préférences d’affichage) pour le bon fonctionnement du site.",
+  legalIP: "L’ensemble des contenus de ce site (textes, structure, éléments graphiques) est protégé. Toute reproduction non autorisée est interdite.",
   colors: {
     ink: "#1c1917", muted: "#57534e", soft: "#78716c", bg: "#faf7f2", card: "#ffffff",
     sand: "#f5f0e8", clay: "#c4a574", clayDark: "#a68b5b", sage: "#6b7f6a",
@@ -1212,9 +1395,6 @@ function apply() {
     } else if (key.startsWith("public") && String(cfg[key]).includes(" — ")) {
       const [strong, rest] = String(cfg[key]).split(" — ");
       el.innerHTML = `<strong>${strong}</strong> — ${rest}`;
-    } else if (key === "price1Amount" || key === "price2Amount" || key === "price3Amount") {
-      const parts = String(cfg[key]).split(" / ");
-      el.innerHTML = parts.length === 2 ? `${parts[0]} <small>/ ${parts[1]}</small>` : cfg[key];
     } else if (key === "confidentialite") {
       el.innerHTML = String(cfg[key]).replace(/^Confidentialité/, "<strong>Confidentialité</strong>");
     } else {
@@ -1224,6 +1404,13 @@ function apply() {
   ["address","email","phone","hours"].forEach(k => {
     const el = document.getElementById({ address:"cAddress", email:"cEmail", phone:"cPhone", hours:"cHours" }[k]);
     if (el && cfg[k] != null) el.textContent = cfg[k];
+  });
+  // Prix (main + sub séparés pour un affichage propre)
+  [["price1AmountMain","Tarif conventionné"],["price1AmountSub","/ séance"],
+   ["price2AmountMain","À partir de 60 €"],["price2AmountSub","/ séance"],
+   ["price3AmountMain","À partir de 60 €"],["price3AmountSub","/ séance"]].forEach(([k, def]) => {
+    const el = document.querySelector(`[data-key="${k}"]`);
+    if (el) el.textContent = cfg[k] != null ? cfg[k] : def;
   });
 }
 
@@ -1238,6 +1425,49 @@ document.querySelectorAll(".faq-q").forEach(btn => {
     if (!open) item.classList.add("open");
   });
 });
+
+// Créneaux flexibles
+document.querySelectorAll(".flex-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const n = btn.dataset.for;
+    const kind = btn.dataset.flex; // date | time
+    const input = document.getElementById("slot" + n + kind);
+    if (!input) return;
+    const active = btn.classList.toggle("active");
+    if (active) {
+      input.value = "";
+      input.disabled = true;
+      input.dataset.flex = "1";
+    } else {
+      input.disabled = false;
+      input.dataset.flex = "0";
+    }
+  });
+});
+// Si l'utilisateur saisit une date/heure, désactive le mode flexible
+["1","2","3"].forEach(n => {
+  ["date","time"].forEach(kind => {
+    const input = document.getElementById("slot" + n + kind);
+    if (!input) return;
+    input.addEventListener("input", () => {
+      if (input.value) {
+        input.disabled = false;
+        input.dataset.flex = "0";
+        const btn = document.querySelector(`.flex-btn[data-flex="${kind}"][data-for="${n}"]`);
+        if (btn) btn.classList.remove("active");
+      }
+    });
+  });
+});
+
+// Mentions légales
+const legalModal = document.getElementById("legalModal");
+document.getElementById("openLegal")?.addEventListener("click", e => {
+  e.preventDefault();
+  legalModal.classList.add("open");
+});
+document.getElementById("closeLegal")?.addEventListener("click", () => legalModal.classList.remove("open"));
+legalModal?.addEventListener("click", e => { if (e.target === legalModal) legalModal.classList.remove("open"); });
 
 // ========== Demandes RDV ==========
 function loadLocalReqs() {
@@ -1278,19 +1508,40 @@ function updateBadges(list) {
   }
 }
 
+function readSlot(n) {
+  const dateEl = document.getElementById("slot" + n + "date");
+  const timeEl = document.getElementById("slot" + n + "time");
+  const dateFlex = dateEl?.disabled || dateEl?.dataset.flex === "1";
+  const timeFlex = timeEl?.disabled || timeEl?.dataset.flex === "1";
+  const d = dateFlex ? "Jour flexible" : (dateEl?.value || "");
+  const t = timeFlex ? "Heure flexible" : (timeEl?.value || "");
+  if (!d && !t) return "";
+  return `${d || "Jour flexible"} · ${t || "Heure flexible"}`;
+}
+
 window.handleForm = async function(e) {
   e.preventDefault();
   const form = e.target;
   const fd = new FormData(form);
+  const err = document.getElementById("formErr");
+  err.style.display = "none";
+
+  const slots = [1,2,3].map(readSlot);
+  if (slots.some(s => !s || s === " · ")) {
+    err.style.display = "block";
+    err.textContent = "Indiquez au moins une date ou « n’importe quel jour », et une heure ou « n’importe quelle heure », pour chaque créneau.";
+    return false;
+  }
+
   const data = {
     name: fd.get("name"),
     email: fd.get("email"),
     phone: fd.get("phone") || "",
     who: fd.get("who"),
     type: fd.get("type"),
-    slot1: `${fd.get("slot1date")} ${fd.get("slot1time")}`,
-    slot2: `${fd.get("slot2date")} ${fd.get("slot2time")}`,
-    slot3: `${fd.get("slot3date")} ${fd.get("slot3time")}`,
+    slot1: slots[0],
+    slot2: slots[1],
+    slot3: slots[2],
     message: fd.get("message") || "",
     status: "pending",
     reply: "",
@@ -1298,7 +1549,6 @@ window.handleForm = async function(e) {
   };
 
   const ok = document.getElementById("formOk");
-  const err = document.getElementById("formErr");
   ok.style.display = "none";
   err.style.display = "none";
 
@@ -1420,6 +1670,17 @@ function iconPicker(key, label) {
 
 function formatSlot(s) {
   if (!s) return "—";
+  // Nouveau format: "2026-11-20 · 14:30" ou "Jour flexible · Heure flexible"
+  if (s.includes("·")) {
+    const parts = s.split("·").map(x => x.trim());
+    let d = parts[0] || "";
+    let t = parts[1] || "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+      const [y, m, day] = d.split("-");
+      d = `${day}/${m}/${y}`;
+    }
+    return `${d}${t ? " · " + t : ""}`;
+  }
   try {
     const [d, t] = s.split(" ");
     const [y, m, day] = d.split("-");
