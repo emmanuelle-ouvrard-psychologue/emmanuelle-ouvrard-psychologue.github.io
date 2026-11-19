@@ -567,6 +567,69 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 }
 
 
+
+/* Portail patient suivi */
+#patientPortal {
+  position: fixed; inset: 0; z-index: 1500;
+  background: rgba(28,25,23,.5);
+  display: none; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+#patientPortal.open { display: flex; }
+.portal-box {
+  background: var(--card);
+  border-radius: 16px;
+  width: min(520px, 100%);
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0,0,0,.2);
+}
+.portal-head {
+  padding: 1rem 1.2rem;
+  background: linear-gradient(135deg, #3f3a35, #1c1917);
+  color: #fff;
+  display: flex; justify-content: space-between; align-items: center;
+  font-weight: 700;
+}
+.portal-head button {
+  background: rgba(255,255,255,.15); border: none; color: #fff;
+  width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+}
+.portal-body { padding: 1rem 1.2rem; overflow-y: auto; flex: 1; }
+.portal-foot {
+  padding: .9rem 1.2rem; border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: .5rem;
+}
+.chat-bubble {
+  max-width: 90%;
+  padding: .7rem .9rem;
+  border-radius: 14px;
+  margin-bottom: .6rem;
+  font-size: .92rem;
+  white-space: pre-wrap;
+}
+.chat-bubble.patient {
+  background: var(--sand);
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+}
+.chat-bubble.psy {
+  background: color-mix(in srgb, var(--sage) 18%, white);
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+.chat-meta {
+  font-size: .72rem; color: var(--soft); margin-bottom: .2rem;
+}
+.fiche-meta {
+  font-size: .88rem; color: var(--muted);
+  background: var(--bg);
+  border-radius: 10px;
+  padding: .75rem .9rem;
+  margin-bottom: 1rem;
+}
+
 /* Mentions légales */
 .legal-modal {
   position: fixed; inset: 0; z-index: 2000;
@@ -962,7 +1025,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
           <div class="form-row">
             <label data-key="labelSlots">3 créneaux souhaités (par ordre de préférence)</label>
-            <p class="form-note" style="margin-top:0;margin-bottom:.75rem" data-key="slotsNote">Cliquez sur la date (calendrier) ou l’heure (horloge). Vous pouvez aussi choisir « n’importe quel jour » ou « n’importe quelle heure ».</p>
+            <p class="form-note" style="margin-top:0;margin-bottom:.75rem" data-key="slotsNote">Cliquez sur la date ou l’heure. « N’importe quel jour / heure » possibles. Si vous êtes très flexible, un seul créneau suffit.</p>
             <div class="slots-grid">
               <div class="slot-block" data-slot="1">
                 <div class="slot-label">1er choix</div>
@@ -1150,6 +1213,22 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   </div>
 </div>
 
+
+<div id="patientPortal">
+  <div class="portal-box">
+    <div class="portal-head">
+      <span>Messagerie — suivi de demande</span>
+      <button type="button" id="portalClose" aria-label="Fermer">✕</button>
+    </div>
+    <div class="portal-body" id="portalBody"></div>
+    <div class="portal-foot" id="portalFoot" style="display:none">
+      <textarea id="portalReply" rows="3" placeholder="Votre message…" style="width:100%;padding:.7rem;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:.95rem;background:var(--bg)"></textarea>
+      <button type="button" class="btn btn-primary" id="portalSend" style="width:100%">Envoyer</button>
+      <p id="portalStatus" style="font-size:.82rem;color:var(--muted);margin:0"></p>
+    </div>
+  </div>
+</div>
+
 <button id="lockBtn" title="Espace créateur" aria-label="Espace créateur">
   🔒
   <span class="badge-count" id="lockBadge">0</span>
@@ -1180,7 +1259,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, addDoc, getDocs, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBUZJOAct8owIJpHrgefe_SgoXH_MjDd9A",
@@ -1499,10 +1578,15 @@ async function fetchRequests() {
 }
 
 function updateBadges(list) {
-  const pending = list.filter(r => r.status !== "replied").length;
+  const pending = list.filter(r => {
+    if (r.status !== "replied" && r.status !== "closed") return true;
+    const msgs = Array.isArray(r.messages) ? r.messages : [];
+    if (msgs.length && msgs[msgs.length - 1].from === "patient") return true;
+    if (!msgs.length && r.message && !r.reply) return true;
+    return false;
+  }).length;
   const badge = document.getElementById("lockBadge");
   const tabDot = document.getElementById("tabDot");
-  // Visible UNIQUEMENT si l'espace créateur est déverrouillé (pas pour les visiteurs)
   if (unlocked && pending > 0) {
     badge.style.display = "grid";
     badge.textContent = pending;
@@ -1511,6 +1595,22 @@ function updateBadges(list) {
     badge.style.display = "none";
     if (tabDot) tabDot.style.display = "none";
   }
+}
+
+function makeToken() {
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+function normalizeMessages(req) {
+  if (Array.isArray(req.messages) && req.messages.length) return req.messages;
+  const msgs = [];
+  if (req.message) {
+    msgs.push({ from: "patient", text: req.message, at: req.createdAt || new Date().toISOString() });
+  }
+  if (req.reply) {
+    msgs.push({ from: "psy", text: req.reply, at: req.repliedAt || new Date().toISOString() });
+  }
+  return msgs;
 }
 
 function readSlot(n) {
@@ -1524,19 +1624,41 @@ function readSlot(n) {
   return `${d || "Jour flexible"} · ${t || "Heure flexible"}`;
 }
 
+function validateSlots(slots) {
+  const filled = slots.filter(Boolean);
+  if (!filled.length) {
+    return "Indiquez au moins un créneau (date/heure ou « n’importe quel jour / heure »).";
+  }
+  // Si le 1er est entièrement flexible (jour + heure flex), les autres sont optionnels
+  const firstFlex = slots[0] && slots[0].includes("Jour flexible");
+  if (firstFlex) return null;
+  // Sinon exiger les 3 pour faciliter le planning — sauf si chaque slot manquant est accepté quand flexible mode used on at least one full slot
+  // Règle douce : au moins 1 créneau OK ; si 2e/3e vides et 1er précis, OK aussi
+  return null;
+}
+
 window.handleForm = async function(e) {
   e.preventDefault();
   const form = e.target;
   const fd = new FormData(form);
   const err = document.getElementById("formErr");
+  const ok = document.getElementById("formOk");
   err.style.display = "none";
+  ok.style.display = "none";
 
-  const slots = [1,2,3].map(readSlot);
-  if (slots.some(s => !s || s === " · ")) {
+  const slots = [1, 2, 3].map(readSlot);
+  const slotErr = validateSlots(slots);
+  if (slotErr) {
     err.style.display = "block";
-    err.textContent = "Indiquez au moins une date ou « n’importe quel jour », et une heure ou « n’importe quelle heure », pour chaque créneau.";
+    err.textContent = slotErr;
     return false;
   }
+
+  const token = makeToken();
+  const initialMsg = (fd.get("message") || "").trim();
+  const now = new Date().toISOString();
+  const messages = [];
+  if (initialMsg) messages.push({ from: "patient", text: initialMsg, at: now });
 
   const data = {
     name: fd.get("name"),
@@ -1544,105 +1666,94 @@ window.handleForm = async function(e) {
     phone: fd.get("phone") || "",
     who: fd.get("who"),
     type: fd.get("type"),
-    slot1: slots[0],
-    slot2: slots[1],
-    slot3: slots[2],
-    message: fd.get("message") || "",
+    slot1: slots[0] || "",
+    slot2: slots[1] || "",
+    slot3: slots[2] || "",
+    message: initialMsg,
+    messages,
     status: "pending",
     reply: "",
-    createdAt: new Date().toISOString()
+    token,
+    createdAt: now
   };
 
-  const ok = document.getElementById("formOk");
-  ok.style.display = "none";
-  err.style.display = "none";
-
-  // 1) Enregistrement local / Firebase (tableau de bord créateur)
+  let savedId = null;
   let saved = false;
   if (db) {
     try {
-      await addDoc(collection(db, "rdv_requests"), {
+      const ref = await addDoc(collection(db, "rdv_requests"), {
         ...data,
         createdAt: serverTimestamp()
       });
+      savedId = ref.id;
       saved = true;
     } catch (e) {
       console.warn("Firestore write failed", e);
     }
   }
   if (!saved) {
+    savedId = "local_" + Date.now();
     const list = loadLocalReqs();
-    list.unshift({ ...data, id: "local_" + Date.now() });
+    list.unshift({ ...data, id: savedId });
     saveLocalReqs(list);
   }
 
-  // 2) Envoi e-mail via FormSubmit (adresse configurable)
   const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
   let emailOk = false;
   let emailMsg = "";
   const isFileProtocol = location.protocol === "file:";
+  const suiviUrl = location.origin + location.pathname + "#suivi=" + token;
 
   if (isFileProtocol) {
-    emailMsg = "Le site est ouvert en local (fichier). L’e-mail ne peut pas partir ainsi — il faut l’héberger en ligne (ex. Netlify). La demande est quand même enregistrée sur le site.";
+    emailMsg = "Site ouvert en local : e-mail impossible. Hébergez en https.";
   } else if (toEmail && toEmail.includes("@")) {
     try {
       const whoLabel = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" }[data.who] || data.who;
       const typeLabel = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" }[data.type] || data.type;
-      const payload = {
-        _subject: "Nouvelle demande de RDV — " + data.name,
-        _template: "table",
-        _captcha: "false",
-        name: data.name,
-        email: data.email,
-        phone: data.phone || "(non renseigné)",
-        consult_pour: whoLabel,
-        cadre: typeLabel,
-        creneau_1: data.slot1,
-        creneau_2: data.slot2,
-        creneau_3: data.slot3,
-        message: data.message || "(aucun)",
-        _replyto: data.email
-      };
       const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(payload)
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          _subject: "Nouvelle demande de RDV — " + data.name,
+          _template: "table",
+          _captcha: "false",
+          name: data.name,
+          email: data.email,
+          phone: data.phone || "(non renseigné)",
+          consult_pour: whoLabel,
+          cadre: typeLabel,
+          creneau_1: data.slot1 || "—",
+          creneau_2: data.slot2 || "—",
+          creneau_3: data.slot3 || "—",
+          message: data.message || "(aucun)",
+          lien_suivi: suiviUrl,
+          _replyto: data.email
+        })
       });
       const json = await res.json().catch(() => ({}));
-      console.log("FormSubmit status", res.status, json);
-      if (res.ok && (json.success === "true" || json.success === true || res.status === 200)) {
+      if (res.ok) {
         emailOk = true;
-        // Première activation : FormSubmit répond souvent success mais envoie d'abord un mail de confirmation
         if (json.message && String(json.message).toLowerCase().includes("confirm")) {
-          emailMsg = "FormSubmit : vérifiez la boîte " + toEmail + " (et les spams) et cliquez sur le lien de confirmation une fois.";
           emailOk = false;
+          emailMsg = "Confirmez FormSubmit dans " + toEmail + " (spams possibles).";
         }
       } else {
-        emailMsg = (json.message || ("Erreur FormSubmit HTTP " + res.status)) + " — regardez aussi les spams de " + toEmail;
-        console.warn("FormSubmit response", json);
+        emailMsg = json.message || "Envoi e-mail échoué";
       }
     } catch (e) {
-      console.warn("FormSubmit error", e);
-      emailMsg = "Impossible de joindre le service e-mail (réseau / bloqueur). Demande enregistrée sur le site.";
+      emailMsg = "Réseau : e-mail non envoyé.";
     }
-  } else {
-    emailMsg = "Aucun e-mail de notification configuré (espace créateur → Contact).";
   }
 
   ok.style.display = "block";
-  err.style.display = "none";
   if (emailOk) {
     ok.style.color = "var(--sage-dark)";
-    ok.textContent = "✓ Demande bien reçue. Un e-mail a été envoyé à " + toEmail + ". Merci !";
+    ok.textContent = "✓ Demande envoyée. Vous pourrez suivre la conversation via le lien reçu par e-mail après la première réponse.";
   } else {
     ok.style.color = "#b45309";
-    ok.textContent = "✓ Demande enregistrée sur le site. E-mail : " + (emailMsg || "non envoyé");
+    ok.textContent = "✓ Demande enregistrée. " + (emailMsg || "");
   }
   form.reset();
-  // reset flex buttons
   document.querySelectorAll(".flex-btn").forEach(b => b.classList.remove("active"));
   document.querySelectorAll('input[type="date"], input[type="time"]').forEach(inp => {
     inp.disabled = false;
@@ -1652,100 +1763,8 @@ window.handleForm = async function(e) {
   return false;
 };
 
-// ========== Creator ==========
-const creator = document.getElementById("creator");
-const cBody = document.getElementById("cBody");
-const cFoot = document.getElementById("cFoot");
-const cTabs = document.getElementById("cTabs");
-let unlocked = sessionStorage.getItem("eo_creator_ok") === "1";
-let currentPanel = "demandes";
-let cachedReqs = [];
-
-const ICONS = ["🌿","🎓","🧒","💚","📋","💶","📍","✉️","📞","🕒","🧠","🤝","🌱","✨","💬","🧘","📖","🏠","⏰","✅","🔒","🌸","🍃","🕊️","🤍","🪴","🪨","🌊","☀️"];
-
-async function sha256(text) {
-  const data = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-
-async function checkKey(key) {
-  if (!db) throw new Error("Firebase non configuré");
-  const snap = await getDoc(doc(db, "config", "creator"));
-  if (!snap.exists()) throw new Error("Document config/creator introuvable dans Firestore");
-  const stored = (snap.data().keyHash || "").toLowerCase().trim();
-  if (!stored) throw new Error("Aucun keyHash dans config/creator");
-  return (await sha256(key)) === stored;
-}
-
-function showLogin() {
-  cTabs.style.display = "none";
-  cFoot.style.display = "none";
-  cBody.innerHTML = `
-    <div class="login-box">
-      <p>Entrez la clé d’accès pour modifier le contenu et gérer les demandes de RDV.</p>
-      <input type="password" id="cKey" placeholder="Clé d’accès" autocomplete="current-password" style="margin-bottom:.8rem;text-align:center">
-      <button class="btn btn-primary" type="button" id="cUnlock" style="width:100%">Déverrouiller</button>
-      <p id="cErr" style="margin-top:.75rem;font-size:.85rem;color:#b91c1c;display:none"></p>
-      <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">La clé est stockée de façon sécurisée dans Firebase (hash).</p>
-    </div>`;
-  const err = document.getElementById("cErr");
-  const btn = document.getElementById("cUnlock");
-  const input = document.getElementById("cKey");
-  const tryUnlock = async () => {
-    const v = input.value.trim();
-    if (!v) { err.style.display = "block"; err.textContent = "Saisissez la clé."; return; }
-    btn.disabled = true; btn.textContent = "Vérification…"; err.style.display = "none";
-    try {
-      if (await checkKey(v)) {
-        unlocked = true;
-        sessionStorage.setItem("eo_creator_ok", "1");
-        showEditor();
-      } else {
-        err.style.display = "block"; err.textContent = "Clé incorrecte.";
-      }
-    } catch (e) {
-      err.style.display = "block"; err.textContent = e.message || "Erreur Firebase.";
-    } finally {
-      btn.disabled = false; btn.textContent = "Déverrouiller";
-    }
-  };
-  btn.onclick = tryUnlock;
-  input.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
-}
-
-function esc(s) {
-  return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-function field(key, label, type = "text", rows = 2) {
-  const val = cfg[key] ?? "";
-  if (type === "textarea") return `<label>${label}</label><textarea data-edit="${key}" rows="${rows}">${esc(val)}</textarea>`;
-  return `<label>${label}</label><input data-edit="${key}" value="${esc(val)}">`;
-}
-
-function colorField(key, label) {
-  const val = (cfg.colors && cfg.colors[key]) || DEFAULTS.colors[key];
-  return `<div class="color-row">
-    <input type="color" data-color="${key}" value="${val}">
-    <input type="text" data-color-text="${key}" value="${val}" style="font-family:monospace;font-size:.85rem">
-    <span style="font-size:.8rem;color:var(--muted);min-width:4.5rem">${label}</span>
-  </div>`;
-}
-
-function iconPicker(key, label) {
-  const current = cfg[key] || "🌿";
-  const buttons = ICONS.map(ic =>
-    `<button type="button" data-icon-for="${key}" data-icon="${ic}" class="${ic === current ? "selected" : ""}">${ic}</button>`
-  ).join("");
-  return `<label>${label}</label>
-    <input data-edit="${key}" value="${esc(current)}" style="margin-bottom:.35rem">
-    <div class="icon-grid">${buttons}</div>`;
-}
-
 function formatSlot(s) {
   if (!s) return "—";
-  // Nouveau format: "2026-11-20 · 14:30" ou "Jour flexible · Heure flexible"
   if (s.includes("·")) {
     const parts = s.split("·").map(x => x.trim());
     let d = parts[0] || "";
@@ -1756,34 +1775,44 @@ function formatSlot(s) {
     }
     return `${d}${t ? " · " + t : ""}`;
   }
-  try {
-    const [d, t] = s.split(" ");
-    const [y, m, day] = d.split("-");
-    return `${day}/${m}/${y} à ${t}`;
-  } catch { return s; }
+  return s;
 }
 
 const WHO_LABELS = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" };
 const TYPE_LABELS = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" };
 
+function chatHtml(messages) {
+  if (!messages.length) return `<p style="color:var(--muted);font-size:.9rem">Aucun message pour l’instant.</p>`;
+  return messages.map(m => {
+    const who = m.from === "psy" ? (cfg.siteName || "Psychologue") : "Patient";
+    const cls = m.from === "psy" ? "psy" : "patient";
+    let when = "";
+    try {
+      const t = m.at?.seconds ? m.at.seconds * 1000 : m.at;
+      when = t ? new Date(t).toLocaleString("fr-FR") : "";
+    } catch {}
+    return `<div class="chat-bubble ${cls}"><div class="chat-meta">${who}${when ? " · " + when : ""}</div>${esc(m.text)}</div>`;
+  }).join("");
+}
+
 function buildDemandesPanel() {
   if (!cachedReqs.length) {
-    return `<p style="color:var(--muted);font-size:.95rem;padding:1rem 0">Aucune demande pour le moment. Les nouvelles demandes apparaîtront ici.</p>
-      <p style="font-size:.82rem;color:var(--soft)">Astuce : ouvrez régulièrement l’espace créateur pour voir les nouvelles demandes (badge rouge sur le cadenas).</p>`;
+    return `<p style="color:var(--muted);font-size:.95rem;padding:1rem 0">Aucune demande pour le moment.</p>`;
   }
+  // Group by email for fiche patient feel, but still list threads
   return cachedReqs.map(r => {
-    const isPending = r.status !== "replied";
-    const mailto = `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent("Réponse à votre demande de rendez-vous")}&body=${encodeURIComponent(
-      `Bonjour ${r.name},\n\nSuite à votre demande de rendez-vous, voici ma réponse :\n\n${r.reply || "[votre message]"}\n\nBien cordialement,\nEmmanuelle Ouvrard`
-    )}`;
+    const isPending = r.status !== "replied" && r.status !== "closed";
+    const msgs = normalizeMessages(r);
+    const unreadPatient = [...msgs].reverse().find(m => m.from === "patient");
+    const lastIsPatient = msgs.length && msgs[msgs.length - 1].from === "patient";
     return `
-    <div class="req-card ${isPending ? "pending" : "replied"}" data-req-id="${esc(r.id)}">
+    <div class="req-card ${isPending || lastIsPatient ? "pending" : "replied"}" data-req-id="${esc(r.id)}">
       <div class="req-head">
         <div>
           <div class="req-name">${esc(r.name)}</div>
           <div class="req-date">${r.createdAt ? new Date(r.createdAt.seconds ? r.createdAt.seconds * 1000 : r.createdAt).toLocaleString("fr-FR") : ""}</div>
         </div>
-        <span class="status-pill ${isPending ? "pending" : "replied"}">${isPending ? "En attente" : "Répondu"}</span>
+        <span class="status-pill ${isPending || lastIsPatient ? "pending" : "replied"}">${lastIsPatient && !isPending ? "Nouveau message" : (isPending ? "En attente" : "Répondu")}</span>
       </div>
       <div class="req-meta">
         ${esc(r.email)}${r.phone ? " · " + esc(r.phone) : ""}<br>
@@ -1791,70 +1820,251 @@ function buildDemandesPanel() {
       </div>
       <div class="req-slots">
         <strong>Créneaux proposés</strong>
-        1. ${formatSlot(r.slot1)}<br>
-        2. ${formatSlot(r.slot2)}<br>
-        3. ${formatSlot(r.slot3)}
+        ${r.slot1 ? "1. " + formatSlot(r.slot1) + "<br>" : ""}
+        ${r.slot2 ? "2. " + formatSlot(r.slot2) + "<br>" : ""}
+        ${r.slot3 ? "3. " + formatSlot(r.slot3) : ""}
+        ${!r.slot1 && !r.slot2 && !r.slot3 ? "—" : ""}
       </div>
-      ${r.message ? `<div class="req-msg">${esc(r.message)}</div>` : ""}
-      ${r.reply ? `<div class="req-msg" style="background:var(--sand);padding:.5rem .7rem;border-radius:8px"><strong>Votre réponse :</strong><br>${esc(r.reply)}</div>` : ""}
+      <div style="margin-top:.6rem">${chatHtml(msgs)}</div>
       <div class="req-actions">
         <button type="button" class="btn-reply" data-action="toggle-reply">Répondre</button>
-        <a href="${mailto}">Ouvrir e-mail</a>
-        ${isPending ? `<button type="button" data-action="mark-replied">Marquer traité</button>` : ""}
+        <button type="button" data-action="mark-replied">Marquer traité</button>
+        <button type="button" data-action="delete-req" style="color:#b91c1c">Supprimer</button>
       </div>
       <div class="req-reply-box" style="display:none">
-        <textarea placeholder="Ex. : Le créneau du mardi 12 à 14h me convient. Confirmez-vous ?">${esc(r.reply || "")}</textarea>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-          <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.85rem" data-action="save-reply">Enregistrer la réponse</button>
-          <a class="btn btn-secondary" style="padding:.4rem .9rem;font-size:.85rem" href="${mailto}" data-action="mailto-after">Envoyer par e-mail</a>
+        <textarea placeholder="Votre réponse au patient…"></textarea>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.4rem">
+          <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.85rem" data-action="send-reply">Envoyer (site + e-mail)</button>
+          <button type="button" class="btn btn-secondary" style="padding:.4rem .9rem;font-size:.85rem" data-action="save-reply">Enregistrer seulement</button>
         </div>
+        <p class="req-send-status" style="font-size:.8rem;margin-top:.5rem;display:none"></p>
       </div>
     </div>`;
   }).join("");
 }
 
-async function persistReply(id, reply, status) {
-  if (db && !String(id).startsWith("local_")) {
+async function persistFull(req) {
+  if (db && req.id && !String(req.id).startsWith("local_")) {
     try {
-      await updateDoc(doc(db, "rdv_requests", id), { reply, status, repliedAt: serverTimestamp() });
+      const { id, _source, ...rest } = req;
+      await updateDoc(doc(db, "rdv_requests", id), rest);
       return;
     } catch (e) { console.warn(e); }
   }
   const list = loadLocalReqs();
-  const idx = list.findIndex(r => r.id === id);
-  if (idx >= 0) {
-    list[idx].reply = reply;
-    list[idx].status = status;
-    saveLocalReqs(list);
+  const idx = list.findIndex(r => r.id === req.id);
+  if (idx >= 0) list[idx] = req;
+  else list.unshift(req);
+  saveLocalReqs(list);
+}
+
+async function persistReply(id, reply, status) {
+  const req = cachedReqs.find(r => r.id === id);
+  if (!req) return;
+  const msgs = normalizeMessages(req);
+  if (reply) msgs.push({ from: "psy", text: reply, at: new Date().toISOString() });
+  req.messages = msgs;
+  req.reply = reply;
+  req.status = status;
+  await persistFull(req);
+}
+
+async function deleteRequest(id) {
+  if (db && !String(id).startsWith("local_")) {
+    try {
+      await deleteDoc(doc(db, "rdv_requests", id));
+    } catch (e) { console.warn(e); }
+  }
+  const list = loadLocalReqs().filter(r => r.id !== id);
+  saveLocalReqs(list);
+  cachedReqs = cachedReqs.filter(r => r.id !== id);
+}
+
+async function sendReplyToPatient(req, replyText) {
+  const patientEmail = (req.email || "").trim();
+  if (!patientEmail.includes("@")) return { ok: false, msg: "E-mail patient invalide." };
+  if (!replyText) return { ok: false, msg: "Écrivez d’abord votre réponse." };
+  if (location.protocol === "file:") return { ok: false, msg: "Hébergez le site en https pour envoyer l’e-mail." };
+
+  if (!req.token) {
+    req.token = makeToken();
+    await persistFull(req);
+  }
+  const suiviUrl = location.origin + location.pathname + "#suivi=" + req.token;
+  const psyEmail = (cfg.notificationEmail || cfg.email || "").trim();
+  const body =
+    "Bonjour " + (req.name || "") + ",\n\n" +
+    "Suite à votre demande de rendez-vous :\n\n" +
+    replyText + "\n\n" +
+    "Vous pouvez répondre directement sur le site (sans Outlook) via ce lien :\n" +
+    suiviUrl + "\n\n" +
+    "Bien cordialement,\n" +
+    (cfg.siteName || "Emmanuelle Ouvrard");
+
+  try {
+    const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(patientEmail), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: "Réponse — " + (cfg.siteName || "Cabinet de psychologie"),
+        _template: "box",
+        _captcha: "false",
+        _replyto: psyEmail || undefined,
+        name: cfg.siteName || "Psychologue",
+        message: body,
+        email: psyEmail || patientEmail
+      })
+    });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok) {
+      return { ok: true, msg: "E-mail envoyé à " + patientEmail + " (avec lien de suivi)." };
+    }
+    return { ok: false, msg: json.message || "Erreur d’envoi e-mail" };
+  } catch (e) {
+    return { ok: false, msg: "Échec réseau." };
   }
 }
 
 function bindDemandesEvents() {
   cBody.querySelectorAll(".req-card").forEach(card => {
     const id = card.dataset.reqId;
+    const req = cachedReqs.find(r => r.id === id) || {};
     card.querySelector('[data-action="toggle-reply"]')?.addEventListener("click", () => {
       const box = card.querySelector(".req-reply-box");
       box.style.display = box.style.display === "none" ? "block" : "none";
     });
     card.querySelector('[data-action="save-reply"]')?.addEventListener("click", async () => {
       const reply = card.querySelector("textarea").value.trim();
+      if (!reply) return;
       await persistReply(id, reply, "replied");
-      const req = cachedReqs.find(r => r.id === id);
-      if (req) { req.reply = reply; req.status = "replied"; }
       updateBadges(cachedReqs);
       renderPanel("demandes");
-      document.getElementById("cMsg").textContent = "✓ Réponse enregistrée";
-      setTimeout(() => document.getElementById("cMsg").textContent = "", 2000);
+    });
+    card.querySelector('[data-action="send-reply"]')?.addEventListener("click", async () => {
+      const textarea = card.querySelector("textarea");
+      const statusEl = card.querySelector(".req-send-status");
+      const btn = card.querySelector('[data-action="send-reply"]');
+      const reply = textarea.value.trim();
+      statusEl.style.display = "block";
+      statusEl.style.color = "var(--muted)";
+      statusEl.textContent = "Envoi…";
+      btn.disabled = true;
+      // Always save on site first
+      await persistReply(id, reply, "replied");
+      const result = await sendReplyToPatient(req, reply);
+      statusEl.style.color = result.ok ? "var(--sage-dark)" : "#b91c1c";
+      statusEl.textContent = (result.ok ? "✓ " : "") + result.msg;
+      btn.disabled = false;
+      updateBadges(cachedReqs);
+      if (result.ok) setTimeout(() => renderPanel("demandes"), 1000);
     });
     card.querySelector('[data-action="mark-replied"]')?.addEventListener("click", async () => {
-      await persistReply(id, "", "replied");
-      const req = cachedReqs.find(r => r.id === id);
-      if (req) req.status = "replied";
+      req.status = "replied";
+      await persistFull(req);
+      updateBadges(cachedReqs);
+      renderPanel("demandes");
+    });
+    card.querySelector('[data-action="delete-req"]')?.addEventListener("click", async () => {
+      if (!confirm("Supprimer définitivement cette demande et la conversation ?")) return;
+      await deleteRequest(id);
       updateBadges(cachedReqs);
       renderPanel("demandes");
     });
   });
 }
+
+// ——— Portail patient (#suivi=token) ———
+async function findByToken(token) {
+  if (db) {
+    try {
+      const q = query(collection(db, "rdv_requests"), where("token", "==", token));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const d = snap.docs[0];
+        return { id: d.id, ...d.data(), _source: "firebase" };
+      }
+    } catch (e) {
+      console.warn("token query", e);
+    }
+  }
+  return loadLocalReqs().find(r => r.token === token) || null;
+}
+
+async function openPatientPortal(token) {
+  const portal = document.getElementById("patientPortal");
+  const body = document.getElementById("portalBody");
+  const foot = document.getElementById("portalFoot");
+  const status = document.getElementById("portalStatus");
+  portal.classList.add("open");
+  body.innerHTML = `<p style="color:var(--muted)">Chargement…</p>`;
+  foot.style.display = "none";
+
+  const req = await findByToken(token);
+  if (!req) {
+    body.innerHTML = `<p style="color:#b91c1c">Lien invalide ou demande introuvable.</p>`;
+    return;
+  }
+  window._portalReq = req;
+  const msgs = normalizeMessages(req);
+  body.innerHTML = `
+    <div class="fiche-meta">
+      <strong>${esc(req.name)}</strong><br>
+      ${WHO_LABELS[req.who] || ""} · ${TYPE_LABELS[req.type] || ""}<br>
+      Créneaux : ${[req.slot1, req.slot2, req.slot3].filter(Boolean).map(formatSlot).join(" · ") || "—"}
+    </div>
+    <div id="portalChat">${chatHtml(msgs)}</div>`;
+  foot.style.display = "flex";
+  status.textContent = "Vous pouvez écrire un message ci-dessous.";
+}
+
+document.getElementById("portalClose")?.addEventListener("click", () => {
+  document.getElementById("patientPortal").classList.remove("open");
+  if (location.hash.startsWith("#suivi=")) history.replaceState(null, "", location.pathname + location.search);
+});
+
+document.getElementById("portalSend")?.addEventListener("click", async () => {
+  const req = window._portalReq;
+  const text = document.getElementById("portalReply").value.trim();
+  const status = document.getElementById("portalStatus");
+  if (!req || !text) {
+    status.textContent = "Écrivez un message.";
+    return;
+  }
+  const msgs = normalizeMessages(req);
+  msgs.push({ from: "patient", text, at: new Date().toISOString() });
+  req.messages = msgs;
+  req.status = "pending";
+  await persistFull(req);
+  document.getElementById("portalReply").value = "";
+  document.getElementById("portalChat").innerHTML = chatHtml(msgs);
+  status.textContent = "Message envoyé. Le cabinet a été notifié.";
+
+  // Notifier le psy par e-mail
+  const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
+  if (toEmail && location.protocol !== "file:") {
+    try {
+      await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          _subject: "Nouveau message patient — " + (req.name || ""),
+          _captcha: "false",
+          name: req.name,
+          email: req.email,
+          message: text
+        })
+      });
+    } catch (e) { console.warn(e); }
+  }
+});
+
+function checkSuiviHash() {
+  const m = location.hash.match(/^#suivi=(.+)$/);
+  if (m) openPatientPortal(m[1]);
+}
+window.addEventListener("hashchange", checkSuiviHash);
+checkSuiviHash();
+
 
 function buildTextesPanel() {
   return `
