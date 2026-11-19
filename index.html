@@ -1158,7 +1158,10 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 <div id="creator">
   <div class="ch">
     <span>Espace créateur</span>
-    <button type="button" id="cClose">✕</button>
+    <div style="display:flex;gap:.4rem;align-items:center">
+      <button type="button" id="cLogout" title="Déconnexion" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:.35rem .7rem;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;font-family:inherit">Déconnexion</button>
+      <button type="button" id="cClose">✕</button>
+    </div>
   </div>
   <div class="ctabs" id="cTabs" style="display:none">
     <button class="ctab active" data-panel="demandes">Demandes <span class="dot" id="tabDot" style="display:none">0</span></button>
@@ -1499,7 +1502,8 @@ function updateBadges(list) {
   const pending = list.filter(r => r.status !== "replied").length;
   const badge = document.getElementById("lockBadge");
   const tabDot = document.getElementById("tabDot");
-  if (pending > 0) {
+  // Visible UNIQUEMENT si l'espace créateur est déverrouillé (pas pour les visiteurs)
+  if (unlocked && pending > 0) {
     badge.style.display = "grid";
     badge.textContent = pending;
     if (tabDot) { tabDot.style.display = "inline-grid"; tabDot.textContent = pending; }
@@ -1644,7 +1648,7 @@ window.handleForm = async function(e) {
     inp.disabled = false;
     inp.dataset.flex = "0";
   });
-  fetchRequests().then(updateBadges);
+  if (unlocked) fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
   return false;
 };
 
@@ -2058,6 +2062,21 @@ document.getElementById("cClose").onclick = () => {
   creator.classList.remove("open");
 };
 
+document.getElementById("cLogout").onclick = () => {
+  if (unlocked && currentPanel !== "demandes") {
+    try { collectEdits(); } catch (e) {}
+  }
+  unlocked = false;
+  sessionStorage.removeItem("eo_creator_ok");
+  cachedReqs = [];
+  updateBadges([]);
+  creator.classList.remove("open");
+  cTabs.style.display = "none";
+  cFoot.style.display = "none";
+  cBody.innerHTML = "";
+  // Prochaine ouverture = écran de connexion
+};
+
 document.getElementById("cSave").onclick = () => {
   if (!unlocked) return;
   collectEdits();
@@ -2076,8 +2095,10 @@ document.getElementById("cReset").onclick = () => {
   document.getElementById("cMsg").textContent = "Réinitialisé";
 };
 
-// Badge initial
-fetchRequests().then(updateBadges);
+// Pas de badge public : les notifs RDV ne s'affichent qu'après déverrouillage créateur
+if (unlocked) {
+  fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
+}
 </script>
 </body>
 </html>
