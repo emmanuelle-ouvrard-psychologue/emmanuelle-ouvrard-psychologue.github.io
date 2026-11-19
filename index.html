@@ -753,8 +753,28 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   </div>
 </div>
 
-<script>
-const ACCESS_KEY = "ouvrard2026"; // Clé d'accès espace créateur
+<script type="module">
+// ========== Firebase (remplacez par VOTRE config) ==========
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "VOTRE_API_KEY",
+  authDomain: "VOTRE_PROJECT.firebaseapp.com",
+  projectId: "VOTRE_PROJECT_ID",
+  storageBucket: "VOTRE_PROJECT.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId: "VOTRE_APP_ID"
+};
+
+let db = null;
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+} catch (err) {
+  console.warn("Firebase non initialisé — renseignez firebaseConfig", err);
+}
+
 const STORAGE = "eo_psy_cfg_v1";
 
 const DEFAULTS = {
@@ -776,7 +796,6 @@ try {
 
 function apply() {
   const set = (sel, val) => { const el = document.querySelector(sel); if (el && val != null) el.textContent = val; };
-  set(".brand", null);
   document.querySelectorAll(".brand").forEach(el => {
     if (el.querySelector(".brand-mark")) {
       el.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = " " + (cfg.siteName || DEFAULTS.siteName); });
@@ -789,7 +808,8 @@ function apply() {
   set("#cAddress", cfg.address);
   set("#cHours", cfg.hours);
   set(".hero-badge", cfg.badge);
-  document.querySelector(".brand-f").textContent = cfg.siteName || DEFAULTS.siteName;
+  const bf = document.querySelector(".brand-f");
+  if (bf) bf.textContent = cfg.siteName || DEFAULTS.siteName;
 }
 
 apply();
@@ -805,8 +825,8 @@ document.querySelectorAll(".faq-q").forEach(btn => {
   });
 });
 
-// Form demo
-function handleForm(e) {
+// Formulaire contact (démo locale)
+window.handleForm = function(e) {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(e.target));
   const list = JSON.parse(localStorage.getItem("eo_messages") || "[]");
@@ -815,42 +835,83 @@ function handleForm(e) {
   document.getElementById("formOk").style.display = "block";
   e.target.reset();
   return false;
-}
+};
 
-// Creator panel
+// ========== Espace créateur — clé vérifiée via Firebase ==========
 const creator = document.getElementById("creator");
 const cBody = document.getElementById("cBody");
 const cFoot = document.getElementById("cFoot");
 let unlocked = sessionStorage.getItem("eo_creator_ok") === "1";
+
+async function sha256(text) {
+  const data = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function checkKey(key) {
+  if (!db) throw new Error("Firebase non configuré");
+  // Document attendu : collection "config", document "creator", champ "keyHash" (SHA-256 de la clé)
+  const snap = await getDoc(doc(db, "config", "creator"));
+  if (!snap.exists()) throw new Error("Document config/creator introuvable dans Firestore");
+  const stored = (snap.data().keyHash || "").toLowerCase().trim();
+  if (!stored) throw new Error("Aucun keyHash dans config/creator");
+  const hash = await sha256(key);
+  return hash === stored;
+}
 
 function showLogin() {
   cFoot.style.display = "none";
   cBody.innerHTML = `
     <div class="login-box">
       <p>Entrez la clé d’accès pour modifier le contenu du site.</p>
-      <input type="password" id="cKey" placeholder="Clé d’accès" style="margin-bottom:.8rem;text-align:center">
+      <input type="password" id="cKey" placeholder="Clé d’accès" autocomplete="current-password" style="margin-bottom:.8rem;text-align:center">
       <button class="btn btn-primary" type="button" id="cUnlock" style="width:100%">Déverrouiller</button>
-      <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">Astuce : la clé a été définie dans le code source du site.</p>
+      <p id="cErr" style="margin-top:.75rem;font-size:.85rem;color:#b91c1c;display:none"></p>
+      <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">La clé est stockée de façon sécurisée dans Firebase (hash). Elle n’apparaît pas dans le code du site.</p>
     </div>`;
-  document.getElementById("cUnlock").onclick = () => {
-    const v = document.getElementById("cKey").value.trim();
-    if (v === ACCESS_KEY) {
-      unlocked = true;
-      sessionStorage.setItem("eo_creator_ok", "1");
-      showEditor();
-    } else {
-      alert("Clé incorrecte.");
+  const err = document.getElementById("cErr");
+  const btn = document.getElementById("cUnlock");
+  const input = document.getElementById("cKey");
+
+  const tryUnlock = async () => {
+    const v = input.value.trim();
+    if (!v) { err.style.display = "block"; err.textContent = "Saisissez la clé."; return; }
+    btn.disabled = true;
+    btn.textContent = "Vérification…";
+    err.style.display = "none";
+    try {
+      const ok = await checkKey(v);
+      if (ok) {
+        unlocked = true;
+        sessionStorage.setItem("eo_creator_ok", "1");
+        showEditor();
+      } else {
+        err.style.display = "block";
+        err.textContent = "Clé incorrecte.";
+      }
+    } catch (e) {
+      err.style.display = "block";
+      err.textContent = e.message || "Erreur de vérification (Firebase).";
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Déverrouiller";
     }
   };
-  document.getElementById("cKey").addEventListener("keydown", e => {
-    if (e.key === "Enter") document.getElementById("cUnlock").click();
-  });
+
+  btn.onclick = tryUnlock;
+  input.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+}
+
+function esc(s) {
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
 function showEditor() {
   cFoot.style.display = "flex";
   cBody.innerHTML = `
-    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Modifiez les textes principaux puis cliquez sur <strong>Sauvegarder</strong>. Les changements restent sur cet appareil.</p>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Modifiez les textes principaux puis cliquez sur <strong>Sauvegarder</strong>.</p>
     <label>Nom affiché</label>
     <input id="eName" value="${esc(cfg.siteName)}">
     <label>Badge sous le titre (ex. Psychologue · n° ADELI)</label>
@@ -867,12 +928,8 @@ function showEditor() {
     <input id="eAddress" value="${esc(cfg.address)}">
     <label>Horaires</label>
     <input id="eHours" value="${esc(cfg.hours)}">
-    <p style="margin-top:1.2rem;font-size:.82rem;color:var(--soft)">Clé actuelle : définie dans le code (<code>ACCESS_KEY</code>). Changez-la avant de mettre le site en ligne.</p>
+    <p style="margin-top:1.2rem;font-size:.82rem;color:var(--soft)">Clé d’accès gérée dans Firebase (Firestore → config/creator → keyHash). Aucun secret dans le code source.</p>
   `;
-}
-
-function esc(s) {
-  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
 document.getElementById("lockBtn").onclick = () => {
@@ -909,3 +966,4 @@ document.getElementById("cReset").onclick = () => {
 </script>
 </body>
 </html>
+
