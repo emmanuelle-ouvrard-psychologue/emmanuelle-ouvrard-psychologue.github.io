@@ -610,6 +610,49 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 .suivi-list-item .title { font-weight: 700; font-size: .95rem; }
 .suivi-list-item .sub { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
 
+
+.ai-box {
+  background: linear-gradient(135deg, #f8faf8, #f5f0e8);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .85rem .9rem;
+  margin-top: .65rem;
+}
+.ai-box .ai-title {
+  font-size: .78rem; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--sage-dark);
+  margin-bottom: .5rem;
+  display: flex; align-items: center; gap: .35rem;
+}
+.ai-actions { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .5rem; }
+.ai-actions button {
+  font-family: inherit; font-size: .78rem; font-weight: 600;
+  padding: .35rem .65rem; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card);
+  cursor: pointer; color: var(--ink);
+}
+.ai-actions button:hover { border-color: var(--sage); background: var(--sand); }
+.ai-actions button:disabled { opacity: .6; cursor: wait; }
+.ai-out {
+  font-size: .88rem; color: var(--ink);
+  background: var(--card);
+  border-radius: 8px;
+  padding: .65rem .75rem;
+  white-space: pre-wrap;
+  display: none;
+  border: 1px solid var(--line);
+  margin-top: .35rem;
+}
+.ai-out.visible { display: block; }
+.ai-out .ai-label { font-size: .72rem; font-weight: 700; color: var(--clay-dark); margin-bottom: .35rem; }
+.ai-use {
+  margin-top: .45rem;
+  font-size: .78rem; font-weight: 600;
+  border: none; background: var(--sage); color: #fff;
+  padding: .3rem .65rem; border-radius: 8px; cursor: pointer;
+  font-family: inherit;
+}
+
 /* Portail patient suivi */
 #patientPortal {
   position: fixed; inset: 0; z-index: 1500;
@@ -1451,6 +1494,9 @@ const DEFAULTS = {
   labelEmailC: "E-mail",
   email: "vincent.legall974@gmail.com",
   notificationEmail: "vincent.legall974@gmail.com",
+  aiApiKey: "",
+  aiModel: "gpt-4o-mini",
+  aiBaseUrl: "https://api.openai.com/v1",
   labelPhone: "Téléphone",
   phone: "Sur demande lors du premier contact",
   labelHours: "Horaires",
@@ -1958,6 +2004,151 @@ function chatHtml(messages) {
   }).join("");
 }
 
+
+// ——— Assistant réponses / conseils (créateur) ———
+function lastPatientText(req) {
+  const msgs = normalizeMessages(req);
+  const patientMsgs = msgs.filter(m => m.from === "patient");
+  if (patientMsgs.length) return patientMsgs.map(m => m.text).join("\n\n");
+  return req.message || "";
+}
+
+function localSuggestReply(req) {
+  const text = (lastPatientText(req) || "").toLowerCase();
+  const name = (req.name || "").split(" ")[0] || "";
+  const slots = [req.slot1, req.slot2, req.slot3].filter(Boolean).map(formatSlot);
+  const slot1 = slots[0] || null;
+
+  let opening = name ? `Bonjour ${name},\n\n` : "Bonjour,\n\n";
+  let core = "";
+
+  // Détection d'intention simple
+  const asksConfirm = /confirm|possible|disponible|ça vous va|ca vous va|ok pour|d'accord pour|valider/.test(text);
+  const asksCancel = /annul|report|déplacer|deplacer|pas disponible|empêch/.test(text);
+  const asksPrice = /tarif|prix|co[uû]t|rembours|mutuelle|monsoutien/.test(text);
+  const asksVisio = /visio|visioconf|en ligne|distance|teams|zoom/.test(text);
+  const hasQuestion = /\?/.test(text) || /est-ce que|pouvez-vous|pourriez|comment|quand|où|ou /.test(text);
+
+  if (asksCancel) {
+    core = "Merci pour votre message. Bien sûr, nous pouvons reporter. Indiquez-moi 2 ou 3 nouvelles disponibilités (jours et créneaux), et je vous proposerai ce qui est possible de mon côté.";
+  } else if (asksPrice) {
+    core = "Concernant les tarifs : les séances MonSoutienPsy suivent le barème national (avec orientation médicale). Pour une consultation libre, le montant vous sera confirmé lors de la prise de rendez-vous ; une facture peut être fournie pour votre mutuelle. N’hésitez pas si vous avez une question précise à ce sujet.";
+  } else if (asksVisio) {
+    core = "Oui, des séances en visioconférence sont possibles selon les situations et les disponibilités. Dites-moi si vous préférez le présentiel ou la visio pour la prochaine rencontre, afin que je m’organise en conséquence.";
+  } else if (slot1 && (asksConfirm || !text)) {
+    core = `Je vous confirme que le créneau suivant me convient : ${slot1}.\nPouvez-vous me confirmer que cela vous arrange également ? Une fois validé, je bloquerai ce rendez-vous.`;
+  } else if (slots.length >= 2) {
+    core = `Merci pour votre message et pour les créneaux proposés.\nLe créneau qui me convient le mieux est : ${slot1}.\nPouvez-vous me confirmer votre accord ? Si ce n’est plus possible, le 2ᵉ choix (${slots[1]}) peut aussi être envisagé.`;
+  } else if (slot1) {
+    core = `Merci pour votre demande. Le créneau ${slot1} est possible de mon côté.\nConfirmez-vous ce rendez-vous ?`;
+  } else if (hasQuestion) {
+    core = "Merci pour votre message et pour vos questions. Je vous réponds avec attention : n’hésitez pas à préciser un point si besoin. Pour le rendez-vous, proposez-moi un créneau qui vous arrange (ou utilisez Doctolib si vous préférez), et je vous confirmerai dès que possible.";
+  } else {
+    core = "Merci pour votre message. J’ai bien pris connaissance de votre demande. Je reviens vers vous rapidement pour convenir d’un créneau adapté.";
+  }
+
+  const closing = "\n\nBien cordialement,\n" + (cfg.siteName || "Emmanuelle Ouvrard");
+  return opening + core + closing;
+}
+
+function localAdvice(req) {
+  const text = (lastPatientText(req) || "").toLowerCase();
+  const who = req.who || "";
+  const tips = [];
+
+  if (who === "enfant") {
+    tips.push("Public enfant : prévoir un temps d’échange avec le parent en début ou fin de séance ; observer le langage émotionnel et le contexte scolaire/familial.");
+  }
+  if (who === "etudiant") {
+    tips.push("Étudiant : explorer stress académique, isolement, sommeil et pression de performance ; rappeler le cadre MonSoutienPsy si orientation médicale.");
+  }
+  if (who === "parent") {
+    tips.push("Soutien parental : clarifier la demande (guidance vs suivi de l’enfant) et ce qui est attendu de la première séance.");
+  }
+  if (/anxi|angoiss|panique|stress/.test(text)) {
+    tips.push("Anxiété évoquée : privilégier un accueil sécurisant, rythmer la séance, éventuellement outils de régulation (respiration, ancrage) si adapté.");
+  }
+  if (/deuil|perte|décès|deces/.test(text)) {
+    tips.push("Deuil / perte : laisser de la place au récit, éviter d’accélérer vers des « solutions », évaluer le soutien social.");
+  }
+  if (/sommeil|insomn/.test(text)) {
+    tips.push("Sommeil : noter hygiène de sommeil et lien avec anxiété/ruminations pour le prochain RDV.");
+  }
+  if (/harcel|ecole|école|collège|lycée|notes/.test(text)) {
+    tips.push("Contexte scolaire / harcèlement possible : recueillir faits, ressources (parents, établissement) sans forcer le détail trop tôt.");
+  }
+  if (/\?/.test(lastPatientText(req) || "")) {
+    tips.push("Le patient pose des questions concrètes : y répondre clairement dans le message, puis approfondir en séance si besoin.");
+  }
+  if (!tips.length) {
+    tips.push("Première prise de contact : centrer sur l’alliance, clarifier le cadre (MSP/libre, présentiel/visio) et les objectifs prioritaires du patient.");
+    tips.push("En séance : reformuler la demande, repérer le niveau de détresse et ce qui a déjà été essayé.");
+  }
+  tips.push("Rappel éthique : rester dans le cadre du psychologue, secret professionnel, et réorienter si la situation dépasse le cadre (urgence, psychiatrie).");
+  return "Conseils pour le prochain rendez-vous :\n\n• " + tips.join("\n• ");
+}
+
+async function aiChat(system, user) {
+  const key = (cfg.aiApiKey || "").trim();
+  if (!key) return null;
+  const base = (cfg.aiBaseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
+  const model = cfg.aiModel || "gpt-4o-mini";
+  const res = await fetch(base + "/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + key
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.5,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user }
+      ]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    throw new Error("API " + res.status + (err ? " : " + err.slice(0, 180) : ""));
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content?.trim() || "";
+}
+
+async function generateReplySuggestion(req) {
+  const local = localSuggestReply(req);
+  const key = (cfg.aiApiKey || "").trim();
+  if (!key) return { text: local, source: "local" };
+  const msgs = normalizeMessages(req);
+  const history = msgs.map(m => (m.from === "psy" ? "Psychologue" : "Patient") + " : " + m.text).join("\n");
+  const system = "Tu aides une psychologue française à rédiger un e-mail court, chaleureux, professionnel et non paternaliste. Tu ne poses pas de diagnostic. Tu confirms éventuellement un créneau parmi ceux proposés. Réponds UNIQUEMENT avec le texte du message, sans guillemets ni préambule.";
+  const user = "Créneaux proposés par le patient :\n1. " + (req.slot1 || "—") + "\n2. " + (req.slot2 || "—") + "\n3. " + (req.slot3 || "—") + "\nCadre : " + (req.type || "") + " / " + (req.who || "") + "\n\nHistorique :\n" + history + "\n\nRédige la réponse de la psychologue.";
+  try {
+    const text = await aiChat(system, user);
+    return { text: text || local, source: text ? "ia" : "local" };
+  } catch (e) {
+    return { text: local, source: "local", error: e.message };
+  }
+}
+
+async function generateAdvice(req) {
+  const local = localAdvice(req);
+  const key = (cfg.aiApiKey || "").trim();
+  if (!key) return { text: local, source: "local" };
+  const msgs = normalizeMessages(req);
+  const history = msgs.map(m => (m.from === "psy" ? "Psychologue" : "Patient") + " : " + m.text).join("\n");
+  const system = "Tu es un superviseur bienveillant pour une psychologue clinicienne. Donne 4 à 6 pistes concrètes et éthiques pour préparer le prochain rendez-vous, en français, sous forme de puces. Pas de diagnostic formel. Pas de conseil médical hors champ. Sois synthétique.";
+  const user = "Public : " + (req.who || "") + "\nCadre : " + (req.type || "") + "\n\nÉchanges :\n" + history;
+  try {
+    const text = await aiChat(system, user);
+    return { text: text || local, source: text ? "ia" : "local" };
+  } catch (e) {
+    return { text: local, source: "local", error: e.message };
+  }
+}
+
+
 function buildDemandesPanel() {
   if (!cachedReqs.length) {
     return `<p style="color:var(--muted);font-size:.95rem;padding:1rem 0">Aucune demande pour le moment.</p>`;
@@ -1995,7 +2186,15 @@ function buildDemandesPanel() {
         <button type="button" data-action="delete-req" style="color:#b91c1c">Supprimer</button>
       </div>
       <div class="req-reply-box" style="display:none">
-        <textarea placeholder="Votre réponse au patient…"></textarea>
+        <div class="ai-box">
+          <div class="ai-title">✨ Assistant</div>
+          <div class="ai-actions">
+            <button type="button" data-action="ai-reply">Proposer une réponse</button>
+            <button type="button" data-action="ai-advice">Conseils pour le RDV</button>
+          </div>
+          <div class="ai-out" data-ai-out></div>
+        </div>
+        <textarea placeholder="Votre réponse au patient…" style="margin-top:.55rem"></textarea>
         <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.4rem">
           <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.85rem" data-action="send-reply">Envoyer (site + e-mail)</button>
           <button type="button" class="btn btn-secondary" style="padding:.4rem .9rem;font-size:.85rem" data-action="save-reply">Enregistrer seulement</button>
@@ -2158,6 +2357,38 @@ function bindDemandesEvents() {
     card.querySelector('[data-action="toggle-reply"]')?.addEventListener("click", () => {
       const box = card.querySelector(".req-reply-box");
       box.style.display = box.style.display === "none" ? "block" : "none";
+    });
+    card.querySelector('[data-action="ai-reply"]')?.addEventListener("click", async () => {
+      const btn = card.querySelector('[data-action="ai-reply"]');
+      const out = card.querySelector("[data-ai-out]");
+      const textarea = card.querySelector("textarea");
+      btn.disabled = true; btn.textContent = "Rédaction…";
+      out.classList.add("visible");
+      out.innerHTML = `<div class="ai-label">Proposition de réponse</div>Génération…`;
+      try {
+        const result = await generateReplySuggestion(req);
+        out.innerHTML = `<div class="ai-label">Proposition de réponse (${result.source === "ia" ? "IA" : "assistant local"}${result.error ? " — API indisponible" : ""})</div>${esc(result.text)}<br><button type="button" class="ai-use" data-action="ai-use">Utiliser cette réponse</button>`;
+        out.querySelector('[data-action="ai-use"]')?.addEventListener("click", () => {
+          textarea.value = result.text;
+        });
+      } catch (e) {
+        out.textContent = "Erreur : " + (e.message || e);
+      }
+      btn.disabled = false; btn.textContent = "Proposer une réponse";
+    });
+    card.querySelector('[data-action="ai-advice"]')?.addEventListener("click", async () => {
+      const btn = card.querySelector('[data-action="ai-advice"]');
+      const out = card.querySelector("[data-ai-out]");
+      btn.disabled = true; btn.textContent = "Analyse…";
+      out.classList.add("visible");
+      out.innerHTML = `<div class="ai-label">Conseils pour le prochain RDV</div>Analyse…`;
+      try {
+        const result = await generateAdvice(req);
+        out.innerHTML = `<div class="ai-label">Conseils (${result.source === "ia" ? "IA" : "assistant local"}${result.error ? " — API indisponible" : ""})</div>${esc(result.text)}`;
+      } catch (e) {
+        out.textContent = "Erreur : " + (e.message || e);
+      }
+      btn.disabled = false; btn.textContent = "Conseils pour le RDV";
     });
     card.querySelector('[data-action="save-reply"]')?.addEventListener("click", async () => {
       const reply = card.querySelector("textarea").value.trim();
@@ -2526,6 +2757,15 @@ function buildContactPanel() {
     ${field("beforeText", "Avant la séance — texte", "textarea", 3)}
     ${field("formBtn", "Bouton envoyer")}
     ${field("formNote", "Note sous formulaire", "textarea", 2)}
+    <div class="group-title">Assistant IA (optionnel)</div>
+    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.5rem">
+      Sans clé API, l’assistant propose quand même des réponses et conseils (mode local).
+      Avec une clé OpenAI / compatible (Groq, OpenRouter…), les suggestions sont plus précises.
+      La clé reste dans ce navigateur uniquement.
+    </p>
+    ${field("aiApiKey", "Clé API (optionnel)")}
+    ${field("aiBaseUrl", "URL API (défaut OpenAI)")}
+    ${field("aiModel", "Modèle (ex. gpt-4o-mini, llama-3.1-8b-instant)")}
     <div class="group-title">Mentions légales</div>
     <p style="font-size:.8rem;color:var(--soft);margin-bottom:.5rem">Modifiables ici — affichées dans la fenêtre Mentions légales du pied de page.</p>
     ${field("legalEditor", "Éditeur / contact (nom, adresse, e-mail, ADELI)", "textarea", 4)}
