@@ -573,6 +573,43 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 
 
 
+
+.voyant {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .82rem; font-weight: 700;
+  padding: .3rem .7rem; border-radius: 999px;
+  margin-bottom: .75rem;
+}
+.voyant.new {
+  background: #dcfce7; color: #166534;
+}
+.voyant.new::before {
+  content: "";
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,.25);
+  animation: pulse-dot 1.4s ease infinite;
+}
+.voyant.none {
+  background: var(--sand); color: var(--muted); font-weight: 600;
+}
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: .7; }
+}
+.suivi-list-item {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .9rem 1rem;
+  margin-bottom: .6rem;
+  cursor: pointer;
+  background: var(--card);
+  transition: border-color .15s;
+}
+.suivi-list-item:hover { border-color: var(--clay); }
+.suivi-list-item .title { font-weight: 700; font-size: .95rem; }
+.suivi-list-item .sub { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
+
 /* Portail patient suivi */
 #patientPortal {
   position: fixed; inset: 0; z-index: 1500;
@@ -754,6 +791,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
     <a href="#monsoutien" data-key="navMsp">MonSoutienPsy</a>
     <a href="#tarifs" data-key="navTarifs">Tarifs</a>
     <a href="#faq" data-key="navFaq">FAQ</a>
+    <a href="#suivi" data-key="navSuivi">Suivi</a>
     <a class="nav-cta" href="#rdv" data-key="navRdv">Prendre RDV</a>
   </div>
 </nav>
@@ -1143,6 +1181,26 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
           <a class="btn btn-ghost" href="#faq" data-key="beforeBtn">Voir la FAQ</a>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="suivi" style="background: var(--sand);">
+  <div class="wrap">
+    <p class="section-label">Espace patient</p>
+    <h2>Suivre ma demande</h2>
+    <p class="section-intro">
+      Entrez l’e-mail utilisé lors de votre demande de rendez-vous pour voir la conversation et répondre directement ici — sans lien externe.
+    </p>
+    <div class="contact-card" style="max-width:480px">
+      <div class="form-row">
+        <label for="suiviEmail">Votre e-mail</label>
+        <input id="suiviEmail" type="email" placeholder="camille@email.com" autocomplete="email">
+      </div>
+      <button type="button" class="btn btn-primary" id="suiviOpenBtn" style="width:100%">Voir ma conversation</button>
+      <p id="suiviErr" style="display:none;margin-top:.7rem;color:#b91c1c;font-size:.9rem"></p>
+      <p class="form-note" style="margin-top:.7rem">Un voyant vous indique s’il y a une nouvelle réponse du cabinet.</p>
     </div>
   </div>
 </section>
@@ -1961,7 +2019,10 @@ async function persistReply(id, reply, status) {
   const req = cachedReqs.find(r => r.id === id);
   if (!req) return;
   const msgs = normalizeMessages(req);
-  if (reply) msgs.push({ from: "psy", text: reply, at: new Date().toISOString() });
+  if (reply) {
+    msgs.push({ from: "psy", text: reply, at: new Date().toISOString() });
+    req.patientRead = false; // voyant patient : nouvelle réponse
+  }
   req.messages = msgs;
   req.reply = reply;
   req.status = status;
@@ -1995,7 +2056,7 @@ async function sendReplyToPatient(req, replyText) {
     "Bonjour " + (req.name || "") + ",\n\n" +
     "Suite à votre demande de rendez-vous :\n\n" +
     replyText + "\n\n" +
-    "Vous pouvez répondre directement sur le site (sans Outlook) via ce lien :\n" +
+    "Vous pouvez suivre la conversation sur le site : section « Suivre ma demande », avec votre e-mail.\nLien direct (optionnel) :\n" +
     suiviUrl + "\n\n" +
     "Bien cordialement,\n" +
     (cfg.siteName || "Emmanuelle Ouvrard");
@@ -2072,7 +2133,8 @@ function bindDemandesEvents() {
   });
 }
 
-// ——— Portail patient (#suivi=token) ———
+
+// ——— Portail patient (e-mail ou lien #suivi=token) ———
 async function findByToken(token) {
   if (db) {
     try {
@@ -2082,38 +2144,126 @@ async function findByToken(token) {
         const d = snap.docs[0];
         return { id: d.id, ...d.data(), _source: "firebase" };
       }
-    } catch (e) {
-      console.warn("token query", e);
-    }
+    } catch (e) { console.warn("token query", e); }
   }
   return loadLocalReqs().find(r => r.token === token) || null;
+}
+
+async function findByEmail(email) {
+  const em = (email || "").trim().toLowerCase();
+  if (!em) return [];
+  let list = [];
+  if (db) {
+    try {
+      const snap = await getDocs(collection(db, "rdv_requests"));
+      list = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
+    } catch (e) {
+      console.warn("email query", e);
+    }
+  }
+  if (!list.length) list = loadLocalReqs();
+  return list
+    .filter(r => (r.email || "").trim().toLowerCase() === em)
+    .sort((a, b) => {
+      const ta = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : Date.parse(a.createdAt || 0);
+      const tb = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : Date.parse(b.createdAt || 0);
+      return (tb || 0) - (ta || 0);
+    });
+}
+
+function hasUnreadPsyReply(req) {
+  const msgs = normalizeMessages(req);
+  if (!msgs.length) return false;
+  // Dernier message du psy et pas encore lu par le patient
+  if (req.patientRead === true) return false;
+  const lastPsy = [...msgs].reverse().find(m => m.from === "psy");
+  if (!lastPsy) return false;
+  // S'il y a un message patient après la dernière réponse psy, considéré comme lu/répondu
+  const last = msgs[msgs.length - 1];
+  return last.from === "psy";
+}
+
+async function markPatientRead(req) {
+  req.patientRead = true;
+  await persistFull(req);
+}
+
+function renderPortalConversation(req) {
+  const body = document.getElementById("portalBody");
+  const foot = document.getElementById("portalFoot");
+  const status = document.getElementById("portalStatus");
+  window._portalReq = req;
+  const msgs = normalizeMessages(req);
+  const unread = hasUnreadPsyReply(req);
+  const voyant = unread
+    ? `<div class="voyant new">Nouvelle réponse du cabinet</div>`
+    : `<div class="voyant none">Pas de nouveau message</div>`;
+
+  body.innerHTML = `
+    ${voyant}
+    <div class="fiche-meta">
+      <strong>${esc(req.name || "")}</strong><br>
+      ${WHO_LABELS[req.who] || ""} · ${TYPE_LABELS[req.type] || ""}<br>
+      Créneaux : ${[req.slot1, req.slot2, req.slot3].filter(Boolean).map(formatSlot).join(" · ") || "—"}
+    </div>
+    <div id="portalChat">${chatHtml(msgs)}</div>`;
+  foot.style.display = "flex";
+  status.textContent = "Écrivez votre message ci-dessous pour répondre au cabinet.";
+  if (unread) markPatientRead(req);
 }
 
 async function openPatientPortal(token) {
   const portal = document.getElementById("patientPortal");
   const body = document.getElementById("portalBody");
   const foot = document.getElementById("portalFoot");
-  const status = document.getElementById("portalStatus");
   portal.classList.add("open");
   body.innerHTML = `<p style="color:var(--muted)">Chargement…</p>`;
   foot.style.display = "none";
-
   const req = await findByToken(token);
   if (!req) {
-    body.innerHTML = `<p style="color:#b91c1c">Lien invalide ou demande introuvable.</p>`;
+    body.innerHTML = `<p style="color:#b91c1c">Lien invalide ou demande introuvable. Utilisez la section « Suivre ma demande » avec votre e-mail.</p>`;
     return;
   }
-  window._portalReq = req;
-  const msgs = normalizeMessages(req);
+  renderPortalConversation(req);
+}
+
+async function openPatientPortalByEmail(email) {
+  const portal = document.getElementById("patientPortal");
+  const body = document.getElementById("portalBody");
+  const foot = document.getElementById("portalFoot");
+  portal.classList.add("open");
+  body.innerHTML = `<p style="color:var(--muted)">Recherche…</p>`;
+  foot.style.display = "none";
+
+  const list = await findByEmail(email);
+  if (!list.length) {
+    body.innerHTML = `<p style="color:#b91c1c">Aucune demande trouvée pour <strong>${esc(email)}</strong>. Vérifiez l’adresse utilisée lors de l’envoi.</p>`;
+    return;
+  }
+
+  if (list.length === 1) {
+    renderPortalConversation(list[0]);
+    return;
+  }
+
+  // Plusieurs demandes : liste
   body.innerHTML = `
-    <div class="fiche-meta">
-      <strong>${esc(req.name)}</strong><br>
-      ${WHO_LABELS[req.who] || ""} · ${TYPE_LABELS[req.type] || ""}<br>
-      Créneaux : ${[req.slot1, req.slot2, req.slot3].filter(Boolean).map(formatSlot).join(" · ") || "—"}
-    </div>
-    <div id="portalChat">${chatHtml(msgs)}</div>`;
-  foot.style.display = "flex";
-  status.textContent = "Vous pouvez écrire un message ci-dessous.";
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:.8rem">Plusieurs demandes pour cet e-mail — choisissez-en une :</p>
+    ${list.map((r, i) => {
+      const unread = hasUnreadPsyReply(r);
+      const when = r.createdAt ? new Date(r.createdAt.seconds ? r.createdAt.seconds * 1000 : r.createdAt).toLocaleString("fr-FR") : "";
+      return `<div class="suivi-list-item" data-idx="${i}">
+        <div class="title">${esc(r.name || "Demande")} ${unread ? '<span class="voyant new" style="margin:0 0 0 .4rem">Nouveau</span>' : ""}</div>
+        <div class="sub">${when} · ${TYPE_LABELS[r.type] || ""} · ${WHO_LABELS[r.who] || ""}</div>
+      </div>`;
+    }).join("")}`;
+
+  body.querySelectorAll(".suivi-list-item").forEach(el => {
+    el.addEventListener("click", () => {
+      const r = list[Number(el.dataset.idx)];
+      renderPortalConversation(r);
+    });
+  });
 }
 
 document.getElementById("portalClose")?.addEventListener("click", () => {
@@ -2133,12 +2283,12 @@ document.getElementById("portalSend")?.addEventListener("click", async () => {
   msgs.push({ from: "patient", text, at: new Date().toISOString() });
   req.messages = msgs;
   req.status = "pending";
+  req.patientRead = true;
   await persistFull(req);
   document.getElementById("portalReply").value = "";
   document.getElementById("portalChat").innerHTML = chatHtml(msgs);
   status.textContent = "Message envoyé. Le cabinet a été notifié.";
 
-  // Notifier le psy par e-mail
   const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
   if (toEmail && location.protocol !== "file:") {
     try {
@@ -2155,6 +2305,22 @@ document.getElementById("portalSend")?.addEventListener("click", async () => {
       });
     } catch (e) { console.warn(e); }
   }
+});
+
+document.getElementById("suiviOpenBtn")?.addEventListener("click", async () => {
+  const email = document.getElementById("suiviEmail")?.value.trim() || "";
+  const err = document.getElementById("suiviErr");
+  err.style.display = "none";
+  if (!email || !email.includes("@")) {
+    err.style.display = "block";
+    err.textContent = "Indiquez l’e-mail utilisé pour la demande.";
+    return;
+  }
+  await openPatientPortalByEmail(email);
+});
+
+document.getElementById("suiviEmail")?.addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("suiviOpenBtn")?.click();
 });
 
 function checkSuiviHash() {
