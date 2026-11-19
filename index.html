@@ -1029,7 +1029,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
             <textarea id="fMsg" name="message" rows="3" placeholder="Quelques mots sur ce qui vous amène…"></textarea>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%" data-key="formBtn">Envoyer la demande</button>
-          <p class="form-note" data-key="formNote">Votre demande est enregistrée. Vous recevrez une réponse par e-mail dès que possible.</p>
+          <p class="form-note" data-key="formNote">Votre demande est enregistrée sur le site et un e-mail de notification est envoyé. Si vous testez en ouvrant le fichier HTML en local, l’e-mail ne partira qu’une fois le site hébergé en ligne.</p>
           <p id="formOk" style="display:none;margin-top:.8rem;color:var(--sage-dark);font-weight:600">✓ Demande bien reçue. Merci, je vous recontacte rapidement.</p>
           <p id="formErr" style="display:none;margin-top:.8rem;color:#b91c1c;font-weight:600"></p>
         </form>
@@ -1576,54 +1576,66 @@ window.handleForm = async function(e) {
   const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
   let emailOk = false;
   let emailMsg = "";
-  if (toEmail && toEmail.includes("@")) {
+  const isFileProtocol = location.protocol === "file:";
+
+  if (isFileProtocol) {
+    emailMsg = "Le site est ouvert en local (fichier). L’e-mail ne peut pas partir ainsi — il faut l’héberger en ligne (ex. Netlify). La demande est quand même enregistrée sur le site.";
+  } else if (toEmail && toEmail.includes("@")) {
     try {
       const whoLabel = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" }[data.who] || data.who;
       const typeLabel = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" }[data.type] || data.type;
+      const payload = {
+        _subject: "Nouvelle demande de RDV — " + data.name,
+        _template: "table",
+        _captcha: "false",
+        name: data.name,
+        email: data.email,
+        phone: data.phone || "(non renseigné)",
+        consult_pour: whoLabel,
+        cadre: typeLabel,
+        creneau_1: data.slot1,
+        creneau_2: data.slot2,
+        creneau_3: data.slot3,
+        message: data.message || "(aucun)",
+        _replyto: data.email
+      };
       const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify({
-          _subject: "Nouvelle demande de RDV — " + data.name,
-          _template: "table",
-          _captcha: "false",
-          name: data.name,
-          email: data.email,
-          phone: data.phone || "(non renseigné)",
-          consult_pour: whoLabel,
-          cadre: typeLabel,
-          creneau_1: data.slot1,
-          creneau_2: data.slot2,
-          creneau_3: data.slot3,
-          message: data.message || "(aucun)",
-          _replyto: data.email
-        })
+        body: JSON.stringify(payload)
       });
       const json = await res.json().catch(() => ({}));
-      if (res.ok) {
+      console.log("FormSubmit status", res.status, json);
+      if (res.ok && (json.success === "true" || json.success === true || res.status === 200)) {
         emailOk = true;
+        // Première activation : FormSubmit répond souvent success mais envoie d'abord un mail de confirmation
+        if (json.message && String(json.message).toLowerCase().includes("confirm")) {
+          emailMsg = "FormSubmit : vérifiez la boîte " + toEmail + " (et les spams) et cliquez sur le lien de confirmation une fois.";
+          emailOk = false;
+        }
       } else {
-        emailMsg = json.message || "Envoi e-mail non confirmé";
+        emailMsg = (json.message || ("Erreur FormSubmit HTTP " + res.status)) + " — regardez aussi les spams de " + toEmail;
         console.warn("FormSubmit response", json);
       }
     } catch (e) {
       console.warn("FormSubmit error", e);
-      emailMsg = "Réseau : e-mail non envoyé, mais la demande est bien enregistrée.";
+      emailMsg = "Impossible de joindre le service e-mail (réseau / bloqueur). Demande enregistrée sur le site.";
     }
   } else {
     emailMsg = "Aucun e-mail de notification configuré (espace créateur → Contact).";
   }
 
   ok.style.display = "block";
+  err.style.display = "none";
   if (emailOk) {
-    ok.textContent = "✓ Demande bien reçue. Un e-mail a été envoyé. Merci, je vous recontacte rapidement.";
-  } else if (emailMsg) {
-    ok.textContent = "✓ Demande enregistrée. (" + emailMsg + ")";
+    ok.style.color = "var(--sage-dark)";
+    ok.textContent = "✓ Demande bien reçue. Un e-mail a été envoyé à " + toEmail + ". Merci !";
   } else {
-    ok.textContent = "✓ Demande bien reçue. Merci, je vous recontacte rapidement.";
+    ok.style.color = "#b45309";
+    ok.textContent = "✓ Demande enregistrée sur le site. E-mail : " + (emailMsg || "non envoyé");
   }
   form.reset();
   // reset flex buttons
