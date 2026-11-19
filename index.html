@@ -808,6 +808,7 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
       <a class="btn btn-primary" href="#rdv" data-key="btnPrimary">Prendre rendez-vous</a>
       <a class="btn btn-doctolib" id="doctolibBtn" href="#" target="_blank" rel="noopener" style="display:none">Réserver sur Doctolib</a>
       <a class="btn btn-secondary" href="#apropos" data-key="btnSecondary">En savoir plus</a>
+      <a class="btn btn-ghost" href="#suivi">Suivre ma demande</a>
     </div>
   </div>
   <div class="hero-card">
@@ -1558,6 +1559,11 @@ function apply() {
     const el = document.querySelector(`[data-key="${k}"]`);
     if (el) el.textContent = cfg[k] != null ? cfg[k] : def;
   });
+  // Mentions légales (préserver les sauts de ligne)
+  ["legalEditor","legalActivity","legalHost","legalRgpd","legalCookies","legalIP"].forEach(k => {
+    const el = document.querySelector(`[data-key="${k}"]`);
+    if (el && cfg[k] != null) el.innerHTML = String(cfg[k]).replace(/\n/g, "<br>");
+  });
 }
 
 apply();
@@ -2040,6 +2046,21 @@ async function deleteRequest(id) {
   cachedReqs = cachedReqs.filter(r => r.id !== id);
 }
 
+async function formSubmitSend(toEmail, fields) {
+  // FormData est plus fiable que JSON avec FormSubmit
+  const fd = new FormData();
+  Object.entries(fields).forEach(([k, v]) => {
+    if (v != null && v !== "") fd.append(k, String(v));
+  });
+  const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
+    method: "POST",
+    headers: { "Accept": "application/json" },
+    body: fd
+  });
+  const json = await res.json().catch(() => ({}));
+  return { res, json };
+}
+
 async function sendReplyToPatient(req, replyText) {
   const patientEmail = (req.email || "").trim();
   if (!patientEmail.includes("@")) return { ok: false, msg: "E-mail patient invalide." };
@@ -2050,38 +2071,83 @@ async function sendReplyToPatient(req, replyText) {
     req.token = makeToken();
     await persistFull(req);
   }
-  const suiviUrl = location.origin + location.pathname + "#suivi=" + req.token;
+  const suiviUrl = location.origin + location.pathname.replace(/index\.html$/i, "") + "#suivi=" + req.token;
+  const siteSuivi = location.origin + location.pathname.replace(/index\.html$/i, "") + "#suivi";
   const psyEmail = (cfg.notificationEmail || cfg.email || "").trim();
+  const subject = "Réponse de " + (cfg.siteName || "votre psychologue") + " — rendez-vous";
   const body =
     "Bonjour " + (req.name || "") + ",\n\n" +
-    "Suite à votre demande de rendez-vous :\n\n" +
-    replyText + "\n\n" +
-    "Vous pouvez suivre la conversation sur le site : section « Suivre ma demande », avec votre e-mail.\nLien direct (optionnel) :\n" +
-    suiviUrl + "\n\n" +
+    "Voici la réponse du cabinet concernant votre demande de rendez-vous :\n\n" +
+    "———\n" + replyText + "\n———\n\n" +
+    "Pour répondre ou relire la conversation, allez sur le site → section « Suivre ma demande » et saisissez votre e-mail :\n" +
+    siteSuivi + "\n\n" +
+    "Lien direct : " + suiviUrl + "\n\n" +
     "Bien cordialement,\n" +
     (cfg.siteName || "Emmanuelle Ouvrard");
 
+  // 1) Envoi direct au patient
   try {
-    const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(patientEmail), {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        _subject: "Réponse — " + (cfg.siteName || "Cabinet de psychologie"),
-        _template: "box",
-        _captcha: "false",
-        _replyto: psyEmail || undefined,
-        name: cfg.siteName || "Psychologue",
-        message: body,
-        email: psyEmail || patientEmail
-      })
+    const { res, json } = await formSubmitSend(patientEmail, {
+      _subject: subject,
+      _template: "table",
+      _captcha: "false",
+      _replyto: psyEmail || "",
+      name: cfg.siteName || "Psychologue",
+      email: psyEmail || patientEmail,
+      message: body
     });
-    const json = await res.json().catch(() => ({}));
-    if (res.ok) {
-      return { ok: true, msg: "E-mail envoyé à " + patientEmail + " (avec lien de suivi)." };
+    console.log("FormSubmit → patient", res.status, json);
+    const msg = String(json.message || "").toLowerCase();
+    if (res.ok && !msg.includes("confirm")) {
+      return { ok: true, msg: "E-mail envoyé au patient (" + patientEmail + "). Pensez à vérifier les spams." };
     }
-    return { ok: false, msg: json.message || "Erreur d’envoi e-mail" };
+    if (res.ok && msg.includes("confirm")) {
+      // Première fois pour cette adresse patient : FormSubmit demande une activation
+      // 2) Fallback : envoi via la boîte psy (déjà activée) en copie patient
+      if (psyEmail && psyEmail.toLowerCase() !== patientEmail.toLowerCase()) {
+        const fb = await formSubmitSend(psyEmail, {
+          _subject: subject + " [copie patient]",
+          _template: "table",
+          _captcha: "false",
+          _cc: patientEmail,
+          _replyto: psyEmail,
+          name: cfg.siteName || "Psychologue",
+          email: psyEmail,
+          message: body + "\n\n(Copie envoyée pour notification patient.)"
+        });
+        console.log("FormSubmit fallback CC", fb.res.status, fb.json);
+        if (fb.res.ok) {
+          return {
+            ok: true,
+            msg: "Notification envoyée. Si le patient ne voit rien : qu’il regarde ses spams, ou utilise « Suivre ma demande » sur le site (recommandé)."
+          };
+        }
+      }
+      return {
+        ok: false,
+        msg: "FormSubmit demande une activation pour " + patientEmail + " (e-mail de confirmation dans ses spams). Le message est bien sur le site : le patient peut le lire via « Suivre ma demande »."
+      };
+    }
+    // 3) Autre erreur → fallback CC via psy
+    if (psyEmail) {
+      const fb = await formSubmitSend(psyEmail, {
+        _subject: subject,
+        _template: "table",
+        _captcha: "false",
+        _cc: patientEmail,
+        _replyto: psyEmail,
+        name: cfg.siteName || "Psychologue",
+        email: psyEmail,
+        message: body
+      });
+      if (fb.res.ok) {
+        return { ok: true, msg: "E-mail envoyé (via notification cabinet, copie patient si acceptée par FormSubmit)." };
+      }
+    }
+    return { ok: false, msg: (json.message || "Envoi e-mail patient échoué") + " — le message reste visible sur le site (Suivre ma demande)." };
   } catch (e) {
-    return { ok: false, msg: "Échec réseau." };
+    console.warn(e);
+    return { ok: false, msg: "Échec réseau. Message enregistré sur le site pour le patient." };
   }
 }
 
@@ -2460,6 +2526,14 @@ function buildContactPanel() {
     ${field("beforeText", "Avant la séance — texte", "textarea", 3)}
     ${field("formBtn", "Bouton envoyer")}
     ${field("formNote", "Note sous formulaire", "textarea", 2)}
+    <div class="group-title">Mentions légales</div>
+    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.5rem">Modifiables ici — affichées dans la fenêtre Mentions légales du pied de page.</p>
+    ${field("legalEditor", "Éditeur / contact (nom, adresse, e-mail, ADELI)", "textarea", 4)}
+    ${field("legalActivity", "Activité professionnelle", "textarea", 2)}
+    ${field("legalHost", "Hébergement", "textarea", 2)}
+    ${field("legalRgpd", "Données personnelles / RGPD", "textarea", 3)}
+    ${field("legalCookies", "Cookies", "textarea", 2)}
+    ${field("legalIP", "Propriété intellectuelle", "textarea", 2)}
   `;
 }
 
