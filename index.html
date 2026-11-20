@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Emmanuelle Ouvrard — Psychologue</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700&family=Poppins:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Spectral:ital,wght@0,400;0,600;1,400&family=Cardo:ital,wght@0,400;0,700;1,400&family=Josefin+Sans:wght@300;400;600&family=Quicksand:wght@400;500;600;700&family=Mulish:wght@300;400;600;700&family=Rubik:wght@300;400;500;600&family=Karla:wght@300;400;600;700&family=Inconsolata:wght@400;600&family=Space+Grotesk:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Figtree:wght@300;400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,400;0,600;1,400&family=Literata:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
 <meta name="description" content="Emmanuelle Ouvrard, psychologue. Accompagnement des adultes, étudiants et enfants. Conventionnée MonSoutienPsy. Consultations en présentiel et en ligne.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700&family=Poppins:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Spectral:ital,wght@0,400;0,600;1,400&family=Cardo:ital,wght@0,400;0,700;1,400&family=Josefin+Sans:wght@300;400;600&family=Quicksand:wght@400;500;600;700&family=Mulish:wght@300;400;600;700&family=Rubik:wght@300;400;500;600&family=Karla:wght@300;400;600;700&family=Inconsolata:wght@400;600&family=Space+Grotesk:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Figtree:wght@300;400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,400;0,600;1,400&family=Literata:ital,wght@0,400;0,600;1,400&display=swap
 <style>
 :root {
   --ink: #1c1917;
@@ -804,6 +806,52 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
   border-radius: 10px;
   padding: .75rem .9rem;
   margin-bottom: 1rem;
+}
+
+
+.font-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .4rem;
+  max-height: 320px;
+  overflow-y: auto;
+  margin: .5rem 0 1rem;
+  padding: .25rem;
+}
+.font-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .55rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  font-size: .92rem;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: var(--ink);
+}
+.font-opt:hover { border-color: var(--clay); }
+.font-opt.selected {
+  border-color: var(--sage);
+  background: color-mix(in srgb, var(--sage) 12%, white);
+}
+.font-opt .fname { font-size: .72rem; color: var(--soft); }
+.code-area {
+  width: 100%;
+  min-height: 140px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8rem;
+  line-height: 1.45;
+  padding: .7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #1c1917;
+  color: #f5f0e8;
+  resize: vertical;
 }
 
 /* Mentions légales */
@@ -1634,7 +1682,7 @@ const DEFAULTS = {
 let cfg = structuredClone(DEFAULTS);
 try {
   const saved = JSON.parse(localStorage.getItem(STORAGE) || "null");
-  if (saved && typeof saved === "object") cfg = Object.assign(structuredClone(DEFAULTS), saved, { colors: Object.assign({}, DEFAULTS.colors, saved.colors || {}) });
+  if (saved && typeof saved === "object") cfg = Object.assign(structuredClone(DEFAULTS), { fontId: "classic-pair", customCss: "", customHtml: "" }, saved, { colors: Object.assign({}, DEFAULTS.colors, saved.colors || {}) });
 } catch (e) {}
 
 function esc(s) {
@@ -1665,6 +1713,8 @@ function applyDoctolib() {
 function apply() {
   applyColors();
   applyDoctolib();
+  applyFonts();
+  applyCustomCode();
   document.querySelectorAll("[data-key]").forEach(el => {
     const key = el.getAttribute("data-key");
     if (cfg[key] == null) return;
@@ -2210,6 +2260,154 @@ function buildIconesPanel() {
   return '<div class="group-title">Icônes</div>' + iconPicker("feat1Icon", "Atout 1") + iconPicker("feat2Icon", "Atout 2") + iconPicker("feat3Icon", "Atout 3") +
     iconPicker("iconAddress", "Adresse") + iconPicker("iconEmail", "E-mail") + iconPicker("iconPhone", "Téléphone") + iconPicker("iconHours", "Horaires");
 }
+
+const FONT_LIST = [
+  { id: "source-sans", label: "Source Sans 3", body: '"Source Sans 3", system-ui, sans-serif', heading: '"Cormorant Garamond", Georgia, serif' },
+  { id: "inter", label: "Inter", body: '"Inter", system-ui, sans-serif', heading: '"Inter", system-ui, sans-serif' },
+  { id: "roboto", label: "Roboto", body: '"Roboto", system-ui, sans-serif', heading: '"Roboto", system-ui, sans-serif' },
+  { id: "open-sans", label: "Open Sans", body: '"Open Sans", system-ui, sans-serif', heading: '"Open Sans", system-ui, sans-serif' },
+  { id: "montserrat", label: "Montserrat", body: '"Montserrat", system-ui, sans-serif', heading: '"Montserrat", system-ui, sans-serif' },
+  { id: "poppins", label: "Poppins", body: '"Poppins", system-ui, sans-serif', heading: '"Poppins", system-ui, sans-serif' },
+  { id: "nunito", label: "Nunito", body: '"Nunito", system-ui, sans-serif', heading: '"Nunito", system-ui, sans-serif' },
+  { id: "raleway", label: "Raleway", body: '"Raleway", system-ui, sans-serif', heading: '"Raleway", system-ui, sans-serif' },
+  { id: "work-sans", label: "Work Sans", body: '"Work Sans", system-ui, sans-serif', heading: '"Work Sans", system-ui, sans-serif' },
+  { id: "dm-sans", label: "DM Sans", body: '"DM Sans", system-ui, sans-serif', heading: '"DM Sans", system-ui, sans-serif' },
+  { id: "outfit", label: "Outfit", body: '"Outfit", system-ui, sans-serif', heading: '"Outfit", system-ui, sans-serif' },
+  { id: "manrope", label: "Manrope", body: '"Manrope", system-ui, sans-serif', heading: '"Manrope", system-ui, sans-serif' },
+  { id: "mulish", label: "Mulish", body: '"Mulish", system-ui, sans-serif', heading: '"Mulish", system-ui, sans-serif' },
+  { id: "rubik", label: "Rubik", body: '"Rubik", system-ui, sans-serif', heading: '"Rubik", system-ui, sans-serif' },
+  { id: "karla", label: "Karla", body: '"Karla", system-ui, sans-serif', heading: '"Karla", system-ui, sans-serif' },
+  { id: "josefin", label: "Josefin Sans", body: '"Josefin Sans", system-ui, sans-serif', heading: '"Josefin Sans", system-ui, sans-serif' },
+  { id: "quicksand", label: "Quicksand", body: '"Quicksand", system-ui, sans-serif', heading: '"Quicksand", system-ui, sans-serif' },
+  { id: "figtree", label: "Figtree", body: '"Figtree", system-ui, sans-serif', heading: '"Figtree", system-ui, sans-serif' },
+  { id: "sora", label: "Sora", body: '"Sora", system-ui, sans-serif', heading: '"Sora", system-ui, sans-serif' },
+  { id: "space-grotesk", label: "Space Grotesk", body: '"Space Grotesk", system-ui, sans-serif', heading: '"Space Grotesk", system-ui, sans-serif' },
+  { id: "instrument", label: "Instrument Sans", body: '"Instrument Sans", system-ui, sans-serif', heading: '"Instrument Sans", system-ui, sans-serif' },
+  { id: "lora", label: "Lora", body: '"Lora", Georgia, serif', heading: '"Lora", Georgia, serif' },
+  { id: "merriweather", label: "Merriweather", body: '"Merriweather", Georgia, serif', heading: '"Merriweather", Georgia, serif' },
+  { id: "playfair", label: "Playfair Display", body: '"Source Sans 3", system-ui, sans-serif', heading: '"Playfair Display", Georgia, serif' },
+  { id: "cormorant", label: "Cormorant Garamond", body: '"Source Sans 3", system-ui, sans-serif', heading: '"Cormorant Garamond", Georgia, serif' },
+  { id: "eb-garamond", label: "EB Garamond", body: '"EB Garamond", Georgia, serif', heading: '"EB Garamond", Georgia, serif' },
+  { id: "libre-baskerville", label: "Libre Baskerville", body: '"Libre Baskerville", Georgia, serif', heading: '"Libre Baskerville", Georgia, serif' },
+  { id: "crimson", label: "Crimson Pro", body: '"Crimson Pro", Georgia, serif', heading: '"Crimson Pro", Georgia, serif' },
+  { id: "spectral", label: "Spectral", body: '"Spectral", Georgia, serif', heading: '"Spectral", Georgia, serif' },
+  { id: "cardo", label: "Cardo", body: '"Cardo", Georgia, serif', heading: '"Cardo", Georgia, serif' },
+  { id: "fraunces", label: "Fraunces", body: '"Source Sans 3", system-ui, sans-serif', heading: '"Fraunces", Georgia, serif' },
+  { id: "literata", label: "Literata", body: '"Literata", Georgia, serif', heading: '"Literata", Georgia, serif' },
+  { id: "georgia", label: "Georgia (système)", body: "Georgia, serif", heading: "Georgia, serif" },
+  { id: "times", label: "Times New Roman", body: '"Times New Roman", Times, serif', heading: '"Times New Roman", Times, serif' },
+  { id: "arial", label: "Arial", body: "Arial, Helvetica, sans-serif", heading: "Arial, Helvetica, sans-serif" },
+  { id: "helvetica", label: "Helvetica", body: "Helvetica, Arial, sans-serif", heading: "Helvetica, Arial, sans-serif" },
+  { id: "verdana", label: "Verdana", body: "Verdana, Geneva, sans-serif", heading: "Verdana, Geneva, sans-serif" },
+  { id: "tahoma", label: "Tahoma", body: "Tahoma, Geneva, sans-serif", heading: "Tahoma, Geneva, sans-serif" },
+  { id: "trebuchet", label: "Trebuchet MS", body: '"Trebuchet MS", Helvetica, sans-serif', heading: '"Trebuchet MS", Helvetica, sans-serif' },
+  { id: "courier", label: "Courier New", body: '"Courier New", Courier, monospace', heading: '"Courier New", Courier, monospace' },
+  { id: "inconsolata", label: "Inconsolata", body: '"Inconsolata", monospace', heading: '"Inconsolata", monospace' },
+  { id: "palatino", label: "Palatino", body: '"Palatino Linotype", Palatino, serif', heading: '"Palatino Linotype", Palatino, serif' },
+  { id: "garamond-sys", label: "Garamond (système)", body: "Garamond, serif", heading: "Garamond, serif" },
+  { id: "optima", label: "Optima / Segoe", body: "Optima, Segoe UI, sans-serif", heading: "Optima, Segoe UI, sans-serif" },
+  { id: "avenir", label: "Avenir / Nunito", body: "Avenir, Nunito, sans-serif", heading: "Avenir, Nunito, sans-serif" },
+  { id: "classic-pair", label: "Classique psy (défaut)", body: '"Source Sans 3", system-ui, sans-serif', heading: '"Cormorant Garamond", Georgia, serif' },
+  { id: "soft-modern", label: "Moderne doux", body: '"Nunito", system-ui, sans-serif', heading: '"Fraunces", Georgia, serif' },
+  { id: "editorial", label: "Éditorial", body: '"Literata", Georgia, serif', heading: '"Playfair Display", Georgia, serif' },
+  { id: "clean-clinic", label: "Clinique épuré", body: '"Inter", system-ui, sans-serif', heading: '"Inter", system-ui, sans-serif' },
+  { id: "warm-serif", label: "Sérif chaleureux", body: '"Lora", Georgia, serif', heading: '"Lora", Georgia, serif' },
+  // extended set for ~100 choices (variants / pairings)
+  { id: "pair-playfair-inter", label: "Playfair + Inter", body: '"Inter", system-ui, sans-serif', heading: '"Playfair Display", Georgia, serif' },
+  { id: "pair-cormorant-inter", label: "Cormorant + Inter", body: '"Inter", system-ui, sans-serif', heading: '"Cormorant Garamond", Georgia, serif' },
+  { id: "pair-eb-source", label: "EB Garamond + Source Sans", body: '"Source Sans 3", system-ui, sans-serif', heading: '"EB Garamond", Georgia, serif' },
+  { id: "pair-spectral-dm", label: "Spectral + DM Sans", body: '"DM Sans", system-ui, sans-serif', heading: '"Spectral", Georgia, serif' },
+  { id: "pair-cardo-nunito", label: "Cardo + Nunito", body: '"Nunito", system-ui, sans-serif', heading: '"Cardo", Georgia, serif' },
+  { id: "pair-libre-karla", label: "Libre Baskerville + Karla", body: '"Karla", system-ui, sans-serif', heading: '"Libre Baskerville", Georgia, serif' },
+  { id: "pair-crimson-mulish", label: "Crimson + Mulish", body: '"Mulish", system-ui, sans-serif', heading: '"Crimson Pro", Georgia, serif' },
+  { id: "pair-merri-open", label: "Merriweather + Open Sans", body: '"Open Sans", system-ui, sans-serif', heading: '"Merriweather", Georgia, serif' },
+  { id: "pair-lora-raleway", label: "Lora + Raleway", body: '"Raleway", system-ui, sans-serif', heading: '"Lora", Georgia, serif' },
+  { id: "pair-fraunces-manrope", label: "Fraunces + Manrope", body: '"Manrope", system-ui, sans-serif', heading: '"Fraunces", Georgia, serif' },
+  { id: "pair-literata-figtree", label: "Literata + Figtree", body: '"Figtree", system-ui, sans-serif', heading: '"Literata", Georgia, serif' },
+  { id: "mono-clean", label: "Mono lisible", body: '"Inconsolata", monospace', heading: '"Space Grotesk", system-ui, sans-serif' },
+  { id: "rounded", label: "Arrondi doux", body: '"Quicksand", system-ui, sans-serif', heading: '"Quicksand", system-ui, sans-serif' },
+  { id: "geometric", label: "Géométrique", body: '"Outfit", system-ui, sans-serif', heading: '"Outfit", system-ui, sans-serif' },
+  { id: "humanist", label: "Humaniste", body: '"Source Sans 3", system-ui, sans-serif', heading: '"Source Sans 3", system-ui, sans-serif' },
+  { id: "news", label: "Journal", body: '"Merriweather", Georgia, serif', heading: '"Merriweather", Georgia, serif' },
+  { id: "magazine", label: "Magazine", body: '"Roboto", system-ui, sans-serif', heading: '"Playfair Display", Georgia, serif' },
+  { id: "minimal", label: "Minimal", body: '"Helvetica", Arial, sans-serif', heading: '"Helvetica", Arial, sans-serif' },
+  { id: "book", label: "Livre", body: '"EB Garamond", Georgia, serif', heading: '"EB Garamond", Georgia, serif' },
+  { id: "air", label: "Aéré", body: '"Josefin Sans", system-ui, sans-serif', heading: '"Josefin Sans", system-ui, sans-serif' },
+  { id: "soft-serif", label: "Sérif doux", body: '"Cardo", Georgia, serif', heading: '"Cardo", Georgia, serif' },
+  { id: "strong", label: "Assertif", body: '"Montserrat", system-ui, sans-serif', heading: '"Montserrat", system-ui, sans-serif' },
+  { id: "friendly", label: "Accessible", body: '"Nunito", system-ui, sans-serif', heading: '"Nunito", system-ui, sans-serif' },
+  { id: "tech", label: "Tech doux", body: '"Space Grotesk", system-ui, sans-serif', heading: '"Space Grotesk", system-ui, sans-serif' },
+  { id: "calm", label: "Calme", body: '"Lora", Georgia, serif', heading: '"Cormorant Garamond", Georgia, serif' },
+  { id: "focus", label: "Focus", body: '"Inter", system-ui, sans-serif', heading: '"Sora", system-ui, sans-serif' },
+  { id: "nature", label: "Nature", body: '"Karla", system-ui, sans-serif', heading: '"Fraunces", Georgia, serif' },
+  { id: "ink", label: "Encre", body: '"Libre Baskerville", Georgia, serif', heading: '"Libre Baskerville", Georgia, serif' },
+  { id: "paper", label: "Papier", body: '"Spectral", Georgia, serif', heading: '"Spectral", Georgia, serif' },
+  { id: "studio", label: "Studio", body: '"Work Sans", system-ui, sans-serif', heading: '"Work Sans", system-ui, sans-serif' },
+  { id: "atelier", label: "Atelier", body: '"DM Sans", system-ui, sans-serif', heading: '"Playfair Display", Georgia, serif' },
+  { id: "cabinet-a", label: "Cabinet A", body: '"Source Sans 3", system-ui, sans-serif', heading: '"Lora", Georgia, serif' },
+  { id: "cabinet-b", label: "Cabinet B", body: '"Nunito", system-ui, sans-serif', heading: '"Cormorant Garamond", Georgia, serif' },
+  { id: "cabinet-c", label: "Cabinet C", body: '"Inter", system-ui, sans-serif', heading: '"EB Garamond", Georgia, serif' },
+  { id: "cabinet-d", label: "Cabinet D", body: '"Manrope", system-ui, sans-serif', heading: '"Merriweather", Georgia, serif' },
+  { id: "cabinet-e", label: "Cabinet E", body: '"Figtree", system-ui, sans-serif', heading: '"Fraunces", Georgia, serif' },
+  { id: "system-ui", label: "Système UI", body: "system-ui, -apple-system, Segoe UI, sans-serif", heading: "system-ui, -apple-system, Segoe UI, sans-serif" },
+  { id: "serif-system", label: "Sérif système", body: "ui-serif, Georgia, serif", heading: "ui-serif, Georgia, serif" },
+  { id: "mono-system", label: "Mono système", body: "ui-monospace, monospace", heading: "ui-monospace, monospace" }
+];
+
+function applyFonts() {
+  const id = cfg.fontId || "classic-pair";
+  const f = FONT_LIST.find(x => x.id === id) || FONT_LIST.find(x => x.id === "classic-pair");
+  if (!f) return;
+  document.documentElement.style.setProperty("--font-sans", f.body);
+  document.documentElement.style.setProperty("--font-serif", f.heading);
+  document.body.style.fontFamily = f.body;
+  document.querySelectorAll("h1, h2, h3, .logo, .hero-title, [data-key='title']").forEach(el => {
+    el.style.fontFamily = f.heading;
+  });
+}
+
+function applyCustomCode() {
+  let styleEl = document.getElementById("eo-custom-css");
+  if (!styleEl) {
+    styleEl = document.createElement("style");
+    styleEl.id = "eo-custom-css";
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = cfg.customCss || "";
+
+  let box = document.getElementById("eo-custom-html");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "eo-custom-html";
+    document.body.appendChild(box);
+  }
+  box.innerHTML = cfg.customHtml || "";
+}
+
+function buildPolicesPanel() {
+  const current = cfg.fontId || "classic-pair";
+  const opts = FONT_LIST.map(f => {
+    const sel = f.id === current ? " selected" : "";
+    return '<button type="button" class="font-opt' + sel + '" data-font-id="' + f.id + '">' +
+      '<span style="font-family:' + f.heading.replace(/"/g, "&quot;") + '">Aa — ' + esc(f.label) + '</span>' +
+      '<span class="fname">' + esc(f.id) + '</span></button>';
+  }).join("");
+  return '<div class="group-title">Police du site (' + FONT_LIST.length + ' choix)</div>' +
+    '<p style="font-size:.8rem;color:var(--soft);margin-bottom:.5rem">Cliquez pour prévisualiser. Enregistrez pour garder le choix.</p>' +
+    '<div class="font-grid">' + opts + '</div>';
+}
+
+function buildCodePanel() {
+  return '<div class="group-title">CSS personnalisé</div>' +
+    '<p style="font-size:.8rem;color:var(--soft);margin-bottom:.4rem">Ajoutez vos règles CSS (couleurs, tailles, masquage d’éléments…).</p>' +
+    '<textarea class="code-area" data-edit="customCss" rows="10" placeholder=".hero { padding-top: 4rem; }&#10;h1 { letter-spacing: 0.02em; }">' + esc(cfg.customCss || "") + '</textarea>' +
+    '<div class="group-title" style="margin-top:1rem">HTML personnalisé</div>' +
+    '<p style="font-size:.8rem;color:var(--soft);margin-bottom:.4rem">Bloc HTML injecté en bas de page (bandeau, script tiers, iframe…).</p>' +
+    '<textarea class="code-area" data-edit="customHtml" rows="8" placeholder="&lt;!-- ex. bandeau ou widget --&gt;">' + esc(cfg.customHtml || "") + '</textarea>' +
+    '<p style="font-size:.78rem;color:var(--muted);margin-top:.6rem">Astuce : après modification, cliquez sur <strong>Enregistrer</strong>. Le CSS s’applique tout de suite au site.</p>';
+}
+
+
 function buildContactPanel() {
   return '<div class="group-title">E-mail de notification</div>' + field("notificationEmail", "Adresse qui reçoit les demandes") +
     '<div class="group-title">Doctolib</div>' + field("doctolibUrl", "Lien Doctolib") + field("doctolibText", "Texte Doctolib", "textarea", 2) +
@@ -2256,6 +2454,8 @@ function renderPanel(name) {
   else if (name === "couleurs") html = buildCouleursPanel();
   else if (name === "icones") html = buildIconesPanel();
   else if (name === "contact") html = buildContactPanel();
+  else if (name === "polices") html = buildPolicesPanel();
+  else if (name === "code") html = buildCodePanel();
   cBody.innerHTML = html;
   cBody.querySelectorAll("[data-color]").forEach(input => {
     const key = input.dataset.color;
@@ -2263,6 +2463,23 @@ function renderPanel(name) {
     input.oninput = () => { if (text) text.value = input.value; };
     if (text) text.oninput = () => { if (/^#[0-9a-fA-F]{6}$/.test(text.value)) input.value = text.value; };
   });
+  
+  cBody.querySelectorAll("[data-font-id]").forEach(btn => {
+    btn.onclick = () => {
+      cfg.fontId = btn.dataset.fontId;
+      cBody.querySelectorAll("[data-font-id]").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      applyFonts();
+    };
+  });
+  // live preview custom css while typing
+  cBody.querySelectorAll('[data-edit="customCss"]').forEach(el => {
+    el.addEventListener("input", () => {
+      cfg.customCss = el.value;
+      applyCustomCode();
+    });
+  });
+
   cBody.querySelectorAll("[data-icon-for]").forEach(btn => {
     btn.onclick = () => {
       const key = btn.dataset.iconFor;
