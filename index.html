@@ -1477,9 +1477,6 @@ footer .legal { margin-top: 1.2rem; font-size: .8rem; opacity: .75; }
 </div>
 
 <script type="module">
-// Firebase chargé dynamiquement pour ne pas bloquer tout le site si le CDN échoue
-let db = null;
-let _fs = null; // firestore helpers
 const firebaseConfig = {
   apiKey: "AIzaSyBUZJOAct8owIJpHrgefe_SgoXH_MjDd9A",
   authDomain: "emmanuelle-ouvrard-psychologue.firebaseapp.com",
@@ -1488,25 +1485,22 @@ const firebaseConfig = {
   messagingSenderId: "59893095440",
   appId: "1:59893095440:web:90b08be2dc291a0eacbe95"
 };
-
+let db = null;
 const FS = {};
 async function ensureFirebase() {
   if (db && FS.getDoc) return true;
   try {
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js");
     const fs = await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js");
-    const app = initializeApp(firebaseConfig);
-    db = fs.getFirestore(app);
+    db = fs.getFirestore(initializeApp(firebaseConfig));
     Object.assign(FS, {
-      doc: fs.doc, getDoc: fs.getDoc, collection: fs.collection,
-      addDoc: fs.addDoc, getDocs: fs.getDocs, updateDoc: fs.updateDoc,
-      deleteDoc: fs.deleteDoc, query: fs.query, orderBy: fs.orderBy,
-      where: fs.where, serverTimestamp: fs.serverTimestamp
+      doc: fs.doc, getDoc: fs.getDoc, collection: fs.collection, addDoc: fs.addDoc,
+      getDocs: fs.getDocs, updateDoc: fs.updateDoc, deleteDoc: fs.deleteDoc,
+      query: fs.query, orderBy: fs.orderBy, where: fs.where, serverTimestamp: fs.serverTimestamp
     });
     return true;
-  } catch (err) {
-    console.warn("Firebase indisponible — mode local uniquement", err);
-    db = null;
+  } catch (e) {
+    console.warn("Firebase indisponible", e);
     return false;
   }
 }
@@ -1514,233 +1508,193 @@ ensureFirebase();
 
 const STORAGE = "eo_psy_cfg_v3";
 const LOCAL_REQS = "eo_rdv_requests_v1";
-
 const DEFAULTS = {
-  siteName: "Emmanuelle Ouvrard",
-  brandMark: "EO",
-  badge: "Psychologue · ADELI en cours d’affichage",
-  title: "Un espace d’écoute\nbienveillant et sécurisant",
-  lead: "J’accompagne les adultes, les étudiants et les enfants dans les moments de doute, de transition ou de souffrance. Conventionnée MonSoutienPsy.",
-  btnPrimary: "Prendre rendez-vous",
-  btnSecondary: "En savoir plus",
-  heroIcon: "🌿",
-  heroName: "Emmanuelle Ouvrard",
-  heroRole: "Psychologue clinicienne",
-  heroPoint1: "✓ Conventionnée MonSoutienPsy",
-  heroPoint2: "✓ Accueil des enfants formé",
-  heroPoint3: "✓ Consultations étudiants",
-  heroPoint4: "✓ Présentiel & visio",
-  navApproche: "Approche",
-  navPublics: "Publics",
-  navMsp: "MonSoutienPsy",
-  navTarifs: "Tarifs",
-  navFaq: "FAQ",
-  navRdv: "Prendre RDV",
-  aboutLabel: "Qui suis-je",
-  aboutTitle: "Une présence attentive, sans jugement",
-  aboutIntro: "Je suis psychologue, formée à l’écoute clinique et à l’accompagnement des parcours de vie. Mon travail s’appuie sur une posture d’accueil, de respect du rythme de chacun et d’alliance thérapeutique.",
-  card1Icon: "🎓", card1Title: "Formation solide", card1Text: "Parcours universitaire en psychologie clinique, avec une attention particulière à la psychopathologie et aux dispositifs de soin.",
-  card2Icon: "🧒", card2Title: "Enfants & adolescents", card2Text: "Formation spécifique à l’accueil et à l’accompagnement des enfants. Espace adapté, langage accessible, travail possible avec les parents.",
-  card3Icon: "💚", card3Title: "MonSoutienPsy", card3Text: "Conventionnée dans le dispositif national : jusqu’à 12 séances remboursées par an, sur orientation d’un médecin.",
-  publicsLabel: "Pour qui",
-  publicsTitle: "Adultes, étudiants, enfants",
-  publicsIntro: "Chaque âge de la vie a ses défis. Je propose un cadre adapté à votre situation, que vous veniez seul·e, en tant que parent, ou pour votre enfant.",
-  publicsBtn: "Réserver une première séance",
-  public1: "Adultes — anxiété, burn-out, deuil, estime de soi, transitions de vie, relations",
-  public2: "Étudiants — stress, orientation, isolement, pression, confiance, phobie sociale",
-  public3: "Enfants — difficultés scolaires, émotions, sommeil, séparation, harcèlement",
-  public4: "Parents — soutien à la parentalité, guidance, compréhension du comportement de l’enfant",
-  mspLabel: "Dispositif",
-  mspTitle: "MonSoutienPsy",
-  mspIntro: "Le dispositif national permet un accès facilité à un psychologue, avec un reste à charge réduit ou nul selon votre situation.",
-  msp1Icon: "📋", msp1Title: "Comment ça marche ?", msp1Text: "Votre médecin (généraliste, pédiatre, etc.) vous oriente vers un psychologue partenaire. Vous pouvez ensuite prendre rendez-vous directement.",
-  msp2Icon: "💶", msp2Title: "Combien de séances ?", msp2Text: "Jusqu’à 12 séances par an peuvent être prises en charge. Le tarif est fixé par le dispositif (remboursement Sécurité sociale + mutuelle selon contrats).",
-  msp3Icon: "🎓", msp3Title: "Étudiants aussi", msp3Text: "Les étudiants peuvent bénéficier de MonSoutienPsy. N’hésitez pas à en parler à votre médecin ou au service de santé universitaire.",
-  mspNote: "Je suis conventionnée MonSoutienPsy. Lors de la prise de rendez-vous, indiquez simplement que vous venez dans ce cadre (avec l’orientation médicale).",
-  approcheLabel: "Méthode",
-  approcheTitle: "Mon approche",
-  approcheIntro: "Je travaille dans une perspective intégrative : écoute clinique, outils issus des thérapies cognitivo-comportementales et humanistes, et attention au corps et aux émotions.",
-  app1Title: "Alliance", app1Text: "Un climat de confiance, de confidentialité et de non-jugement.",
-  app2Title: "Rythme respecté", app2Text: "Pas de méthode imposée : on avance à votre rythme, avec vos objectifs.",
-  app3Title: "Outils concrets", app3Text: "Respiration, reformulation, exposition progressive, travail sur les pensées…",
-  app4Title: "Enfants", app4Text: "Jeux, dessin, métaphores et échanges adaptés à l’âge, avec ou sans les parents.",
-  app5Title: "Présentiel & visio", app5Text: "Cabinet et consultations en ligne selon vos contraintes.",
-  app6Title: "Éthique", app6Text: "Secret professionnel, respect du code de déontologie des psychologues.",
-  stepsLabel: "Parcours",
-  stepsTitle: "Comment se déroule un accompagnement ?",
-  stepsIntro: "Un cadre clair, souple et adapté à votre demande. Voici les grandes étapes.",
-  step1Title: "Premier contact", step1Text: "Vous m’écrivez ou prenez rendez-vous. On clarifie ensemble le cadre (MonSoutienPsy ou libre, présentiel/visio).",
-  step2Title: "Première séance", step2Text: "Temps d’accueil et d’écoute. On pose ensemble les objectifs et le rythme qui vous conviennent.",
-  step3Title: "Suivi", step3Text: "Séances régulières ou espacées selon vos besoins. Ajustements au fil de l’eau.",
-  step4Title: "Fin & bilan", step4Text: "On fait le point ensemble. Vous décidez de la suite en toute liberté.",
-  confidentialite: "Confidentialité — Tout ce qui se dit en séance est protégé par le secret professionnel. Je m’engage à respecter le code de déontologie des psychologues.",
-  tarifsLabel: "Pratique",
-  tarifsTitle: "Tarifs & modalités",
-  tarifsIntro: "Les tarifs peuvent évoluer. Les montants exacts vous seront confirmés lors de la prise de rendez-vous.",
-  price1Tag: "MonSoutienPsy",
-  price1Title: "Séance MonSoutienPsy",
-  price1AmountMain: "Tarif conventionné",
-  price1AmountSub: "/ séance",
-  price1L1: "Jusqu’à 12 séances / an",
-  price1L2: "Orientation médicale requise",
-  price1L3: "Remboursement selon parcours de soins",
-  price1L4: "Adultes, adolescents, enfants",
-  price2Title: "Consultation libre",
-  price2AmountMain: "À partir de 60 €",
-  price2AmountSub: "/ séance",
-  price2L1: "Adultes & étudiants",
-  price2L2: "Durée indicative 45–50 min",
-  price2L3: "Présentiel ou visio",
-  price2L4: "Possibilité de facture pour mutuelle",
-  price3Title: "Enfant / adolescent",
-  price3AmountMain: "À partir de 60 €",
-  price3AmountSub: "/ séance",
-  price3L1: "Espace adapté",
-  price3L2: "Temps d’échange possible avec le parent",
-  price3L3: "Également possible en MonSoutienPsy",
-  tarifsNote: "Les tarifs « consultation libre » sont indicatifs et peuvent varier selon la durée ou le type d’accompagnement. Les séances MonSoutienPsy suivent le barème national en vigueur.",
-  rdvLabel: "Contact",
-  rdvTitle: "Prendre rendez-vous",
-  rdvIntro: "Proposez jusqu’à 3 créneaux qui vous conviennent. Je vérifierai mon agenda (Doctolib) et vous confirmerai le créneau possible.",
-  formTitle: "Demande de rendez-vous",
-  labelName: "Prénom & nom",
-  labelEmail: "E-mail",
-  labelPhoneF: "Téléphone (optionnel)",
-  labelWho: "Vous consultez pour",
-  labelType: "Cadre souhaité",
-  labelSlots: "3 créneaux souhaités (par ordre de préférence)",
-  slotsNote: "Indiquez 3 propositions. Je comparerai avec mon agenda et vous confirmerai le créneau disponible.",
-  labelMsg: "Message (optionnel)",
-  formBtn: "Envoyer la demande",
-  formNote: "Votre demande est enregistrée. Vous recevrez une réponse par e-mail dès que possible.",
-  doctolibUrl: "",
-  doctolibText: "Vous préférez réserver en ligne directement ? Utilisez Doctolib.",
-  coordsTitle: "Coordonnées",
-  labelAddress: "Cabinet",
-  address: "Adresse à préciser — France",
-  labelEmailC: "E-mail",
-  email: "vincent.legall974@gmail.com",
-  notificationEmail: "vincent.legall974@gmail.com",
-  aiApiKey: "",
-  aiModel: "gpt-4o-mini",
-  aiBaseUrl: "https://api.openai.com/v1",
-  labelPhone: "Téléphone",
-  phone: "Sur demande lors du premier contact",
-  labelHours: "Horaires",
-  hours: "Sur rendez-vous — jours de semaine",
-  icoAddress: "📍", icoEmail: "✉️", icoPhone: "📞", icoHours: "🕒",
-  beforeTitle: "Avant la première séance",
-  beforeText: "Si vous venez dans le cadre MonSoutienPsy, munissez-vous de l’orientation de votre médecin. Pour les enfants, la présence d’au moins un parent est généralement souhaitée pour la première rencontre.",
-  beforeBtn: "Voir la FAQ",
-  faqLabel: "Questions",
-  faqTitle: "Foire aux questions",
-  faq1Q: "Comment se passe une première séance ?",
-  faq1A: "Nous prenons le temps de faire connaissance, de comprendre ce qui vous amène et de définir ensemble un cadre (objectifs, rythme, présentiel ou visio). Rien n’est imposé.",
-  faq2Q: "Faut-il une orientation médicale pour MonSoutienPsy ?",
-  faq2A: "Oui. Un médecin (généraliste, pédiatre, psychiatre, etc.) doit vous orienter vers un psychologue partenaire du dispositif. Conservez le document d’orientation pour le premier rendez-vous.",
-  faq3Q: "Proposez-vous des consultations pour les enfants ?",
-  faq3A: "Oui. J’ai reçu une formation pour accueillir les enfants. L’espace et les outils sont adaptés à leur âge. Un échange avec le(s) parent(s) fait souvent partie du parcours.",
-  faq4Q: "Les étudiants sont-ils les bienvenus ?",
-  faq4A: "Absolument. Le stress des études, l’isolement, les questions d’orientation ou d’estime de soi sont des motifs fréquents. MonSoutienPsy est également accessible aux étudiants.",
-  faq5Q: "Les séances en visio sont-elles possibles ?",
-  faq5A: "Oui, selon les situations et les disponibilités. La visio peut convenir pour le suivi ou lorsque le déplacement est difficile. La première rencontre peut se faire en présentiel si vous le souhaitez.",
-  faq6Q: "Combien de temps dure un accompagnement ?",
-  faq6A: "Cela dépend de votre demande. Certaines personnes viennent pour quelques séances ciblées, d’autres pour un suivi plus long. Nous en discutons régulièrement pour ajuster.",
-  footerName: "Emmanuelle Ouvrard",
-  footerTagline: "Psychologue · Accompagnement adultes, étudiants & enfants",
-  footerMsp: "Conventionnée MonSoutienPsy",
-  footerLegal: "Site vitrine — les informations pratiques (adresse, tarifs exacts, n° ADELI) sont à finaliser dans l’espace créateur.",
-  footerCopy: "Emmanuelle Ouvrard — Tous droits réservés",
-  etudiantLabel: "Étudiants",
-  etudiantTitle: "Soutien psychologique étudiant",
-  etudiantText: "Les étudiants peuvent bénéficier de MonSoutienPsy (orientation médicale) et, selon leur établissement, de dispositifs de soutien psychologique universitaires. N’hésitez pas à indiquer votre statut étudiant lors de la prise de rendez-vous : le cadre peut être adapté (horaires, rythme, sujets liés aux études).",
-  faq7Q: "Comment se passe le paiement ?",
-  faq7A: "Pour MonSoutienPsy : le tarif est fixé par le dispositif ; une partie est prise en charge par l’Assurance Maladie et éventuellement votre mutuelle (selon votre contrat), après orientation médicale. Pour une consultation libre : le règlement se fait en fin de séance (espèces, chèque ou virement — les modalités exactes vous seront confirmées). Une facture peut être fournie pour votre mutuelle.",
-  legalEditor: "Emmanuelle Ouvrard — Psychologue\nAdresse du cabinet : à compléter\nE-mail : vincent.legall974@gmail.com\nNuméro ADELI : en cours d’affichage",
-  legalActivity: "Exercice de la psychologie conformément au code de déontologie des psychologues. Conventionnée MonSoutienPsy.",
-  legalHost: "Le site est hébergé par l’hébergeur choisi lors de la mise en ligne (à compléter : nom, adresse, contact de l’hébergeur).",
-  legalRgpd: "Les informations envoyées via le formulaire de contact (nom, e-mail, téléphone, message, créneaux souhaités) sont utilisées uniquement pour répondre à votre demande de rendez-vous. Elles ne sont pas revendues. Conformément au RGPD, vous pouvez demander l’accès, la rectification ou la suppression de vos données en écrivant à l’adresse e-mail indiquée ci-dessus.",
-  legalCookies: "Ce site n’utilise pas de cookies publicitaires. Des données techniques peuvent être stockées localement dans votre navigateur (préférences d’affichage) pour le bon fonctionnement du site.",
-  legalIP: "L’ensemble des contenus de ce site (textes, structure, éléments graphiques) est protégé. Toute reproduction non autorisée est interdite.",
-  colors: {
-    ink: "#1c1917", muted: "#57534e", soft: "#78716c", bg: "#faf7f2", card: "#ffffff",
-    sand: "#f5f0e8", clay: "#c4a574", clayDark: "#a68b5b", sage: "#6b7f6a",
-    sageDark: "#556654", blush: "#e8d5c4", line: "#e7e0d5"
+  "siteName": "Emmanuelle Ouvrard",
+  "navApropos": "Approche",
+  "navPublics": "Pour qui",
+  "navTarifs": "Tarifs",
+  "navFaq": "FAQ",
+  "navContact": "Contact",
+  "badge": "Psychologue · MonSoutienPsy · La Rivière",
+  "title": "Un espace d'écoute\nbienveillant et sécurisant",
+  "lead": "Psychologue à La Rivière (Réunion). Accompagnement des enfants (à partir de 12 ans), adolescents, étudiants et adultes. Conventionnée MonSoutienPsy et Assurance Maladie.",
+  "btnPrimary": "Prendre rendez-vous",
+  "btnSecondary": "En savoir plus",
+  "heroName": "Emmanuelle Ouvrard",
+  "heroRole": "Psychologue",
+  "heroCheck1": "Conventionnée MonSoutienPsy",
+  "heroCheck2": "Conventionnée Assurance Maladie",
+  "heroCheck3": "Enfants dès 12 ans, ados, étudiants, adultes",
+  "aboutLabel": "Qui suis-je",
+  "aboutTitle": "Une présence attentive, sans jugement",
+  "aboutBody": "Rattachée au dispositif MonSoutienPsy, je reçois et j'accompagne les enfants (à partir de 12 ans) et les adolescents face aux problématiques scolaires : séparation difficile, entrée au collège ou au lycée, inquiétudes, confiance en soi, stress, difficultés émotionnelles (hors troubles neurodéveloppementaux : TDAH, DYS, TSA).\n\nJ'accompagne également les étudiants et les salariés : stress, épuisement, perte de sens, souffrance professionnelle ou en lien avec les études. Accompagnement psychologique des troubles légers à modérés.",
+  "feat1Icon": "💚",
+  "feat1Title": "MonSoutienPsy & AM",
+  "feat1Text": "Conventionnée Assurance Maladie et dispositif MonSoutienPsy : jusqu'à 12 séances remboursées par an, sur orientation d'un médecin.",
+  "feat2Icon": "🧒",
+  "feat2Title": "Adolescents & étudiants",
+  "feat2Text": "Accompagnement des 12 ans et plus : collège, lycée, études, confiance, stress, émotions — hors TDAH, DYS, TSA.",
+  "feat3Icon": "🧠",
+  "feat3Title": "Travail & burn-out",
+  "feat3Text": "Soutien face au stress professionnel, à l'épuisement et à la souffrance au travail.",
+  "cabinetLabel": "Le cabinet",
+  "cabinetTitle": "Un espace calme, pensé pour l'accueil",
+  "cabinetIntro": "Cabinet situé à La Rivière (97450) — rez-de-chaussée, parking gratuit.",
+  "cabinetCap1": "Espace de travail et d'échange",
+  "cabinetCap2": "Coin d'entretien, lumière naturelle",
+  "publicsLabel": "Pour qui",
+  "publicsTitle": "Adultes, étudiants, adolescents",
+  "publicsIntro": "Chaque âge a ses défis. Je propose un cadre adapté.",
+  "public1": "Adultes — burn-out, stress, souffrance au travail, estime de soi, transitions de vie",
+  "public2": "Étudiants — stress, épuisement, perte de sens, confiance, pression des études",
+  "public3": "Enfants (dès 12 ans) & ados — école, collège, lycée, émotions, séparation, confiance",
+  "public4": "Parents — soutien face aux problématiques scolaires et émotionnelles de l'adolescent",
+  "publicsCta": "Réserver une première séance",
+  "tarifsLabel": "Tarifs",
+  "tarifsTitle": "Des tarifs clairs",
+  "tarifsIntro": "Consultation de psychologie : 50 €. Conventionnée Assurance Maladie et MonSoutienPsy.",
+  "price1Title": "MonSoutienPsy",
+  "price1AmountMain": "50 €",
+  "price1AmountSub": "/ séance",
+  "price1Feat1": "Jusqu'à 12 séances / an",
+  "price1Feat2": "Orientation médicale",
+  "price1Feat3": "Conventionné AM",
+  "price2Title": "Consultation",
+  "price2AmountMain": "50 €",
+  "price2AmountSub": "/ séance",
+  "price2Feat1": "Adultes & étudiants",
+  "price2Feat2": "Adolescents",
+  "price2Feat3": "Sur rendez-vous",
+  "price3Title": "Au cabinet",
+  "price3AmountMain": "50 €",
+  "price3AmountSub": "/ séance",
+  "price3Feat1": "La Rivière 97450",
+  "price3Feat2": "Parking gratuit",
+  "price3Feat3": "Rez-de-chaussée",
+  "mspTitle": "MonSoutienPsy",
+  "mspText": "Jusqu'à 12 séances remboursées par an après orientation d'un médecin.",
+  "faqLabel": "FAQ",
+  "faqTitle": "Questions fréquentes",
+  "rdvLabel": "Rendez-vous",
+  "rdvTitle": "Demander un rendez-vous",
+  "rdvIntro": "Proposez jusqu'à 3 créneaux, ou indiquez que vous êtes flexible. Vous pouvez aussi réserver via Doctolib.",
+  "formTitle": "Votre demande",
+  "labelSlots": "Créneaux souhaités",
+  "slotsNote": "Un seul créneau suffit si vous êtes flexible.",
+  "coordsTitle": "Cabinet",
+  "beforeTitle": "Informations pratiques",
+  "beforeText": "Moyens de paiement : chèques, espèces ou virement (cartes bancaires non acceptées). Carte Vitale non acceptée. Rez-de-chaussée, parking gratuit.",
+  "formBtn": "Envoyer la demande",
+  "formNote": "Votre demande est enregistrée. Un e-mail de notification est envoyé au cabinet.",
+  "address": "Chemin des Bananiers, La Rivière\n97450 La Rivière (La Réunion)",
+  "email": "vincent.legall974@gmail.com",
+  "phone": "Sur rendez-vous",
+  "hours": "Lun–Ven : 9h–13h / 14h–17h",
+  "paymentInfo": "Chèques, espèces, virement — CB non acceptée",
+  "accessInfo": "Rez-de-chaussée · Parking gratuit",
+  "rpps": "10009333682",
+  "siren": "502330202",
+  "labelAddress": "Adresse",
+  "labelEmailC": "E-mail",
+  "labelPhone": "Téléphone",
+  "labelHours": "Horaires",
+  "footerCopy": "Emmanuelle Ouvrard — Tous droits réservés",
+  "doctolibUrl": "",
+  "doctolibText": "Réservez aussi directement sur Doctolib si vous préférez.",
+  "notificationEmail": "vincent.legall974@gmail.com",
+  "aiApiKey": "",
+  "aiModel": "gpt-4o-mini",
+  "aiBaseUrl": "https://api.openai.com/v1",
+  "legalEditor": "Emmanuelle Ouvrard — Psychologue\nChemin des Bananiers, La Rivière\n97450 La Rivière (La Réunion)\nE-mail : vincent.legall974@gmail.com\nRPPS : 10009333682\nSIREN : 502330202",
+  "legalActivity": "Exercice de la psychologie. Conventionnée Assurance Maladie et MonSoutienPsy.",
+  "legalHost": "Site hébergé via GitHub Pages / Netlify ou équivalent.",
+  "legalRgpd": "Les demandes de rendez-vous sont traitées pour répondre à votre message. Vous pouvez demander accès, rectification ou suppression en écrivant au cabinet.",
+  "legalCookies": "Stockage local du navigateur pour l'espace créateur et le suivi des demandes.",
+  "legalIP": "Contenu protégé. Reproduction non autorisée interdite.",
+  "iconAddress": "📍",
+  "iconEmail": "✉️",
+  "iconPhone": "📞",
+  "iconHours": "🕒",
+  "colors": {
+    "ink": "#1c1917",
+    "muted": "#57534e",
+    "soft": "#78716c",
+    "bg": "#faf7f2",
+    "card": "#ffffff",
+    "sand": "#f5f0e8",
+    "clay": "#c4a574",
+    "clayDark": "#a68b5b",
+    "sage": "#6b7f6a",
+    "sageDark": "#556654",
+    "blush": "#e8d5c4",
+    "line": "#e7e0d5"
   }
 };
 
 let cfg = structuredClone(DEFAULTS);
 try {
-  const raw = localStorage.getItem(STORAGE);
-  if (raw) {
-    const parsed = JSON.parse(raw);
-    cfg = { ...structuredClone(DEFAULTS), ...parsed, colors: { ...DEFAULTS.colors, ...(parsed.colors || {}) } };
-  }
+  const saved = JSON.parse(localStorage.getItem(STORAGE) || "null");
+  if (saved && typeof saved === "object") cfg = Object.assign(structuredClone(DEFAULTS), saved, { colors: Object.assign({}, DEFAULTS.colors, saved.colors || {}) });
 } catch (e) {}
 
+function esc(s) {
+  return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\u0022/g, "&quot;");
+}
+function nl(s) { return String(s ?? "").replace(/\n/g, "<br>"); }
+
 function applyColors() {
-  const r = document.documentElement.style;
   const c = cfg.colors || DEFAULTS.colors;
-  Object.entries({
+  const r = document.documentElement.style;
+  const map = {
     "--ink": c.ink, "--muted": c.muted, "--soft": c.soft, "--bg": c.bg, "--card": c.card,
     "--sand": c.sand, "--clay": c.clay, "--clay-dark": c.clayDark, "--sage": c.sage,
     "--sage-dark": c.sageDark, "--blush": c.blush, "--line": c.line
-  }).forEach(([k, v]) => r.setProperty(k, v));
+  };
+  Object.entries(map).forEach(([k, v]) => { if (v) r.setProperty(k, v); });
 }
-
 function applyDoctolib() {
   const url = (cfg.doctolibUrl || "").trim();
   const btn1 = document.getElementById("doctolibBtn");
   const btn2 = document.getElementById("doctolibBtn2");
   const box = document.getElementById("doctolibBox");
-  if (url) {
-    btn1.href = url; btn1.style.display = "inline-flex";
-    btn2.href = url; box.style.display = "flex";
-  } else {
-    btn1.style.display = "none";
-    box.style.display = "none";
-  }
+  if (url && btn1) { btn1.href = url; btn1.style.display = "inline-flex"; }
+  else if (btn1) btn1.style.display = "none";
+  if (url && btn2 && box) { btn2.href = url; box.style.display = "flex"; }
+  else if (box) box.style.display = "none";
 }
-
 function apply() {
   applyColors();
   applyDoctolib();
   document.querySelectorAll("[data-key]").forEach(el => {
     const key = el.getAttribute("data-key");
     if (cfg[key] == null) return;
-    if (key === "title") {
-      el.innerHTML = String(cfg[key]).replace(/\n/g, "<br>");
-    } else if (key === "lead" && cfg[key].includes("MonSoutienPsy")) {
-      el.innerHTML = String(cfg[key]).replace(/MonSoutienPsy/g, "<strong>MonSoutienPsy</strong>");
-    } else if (key.startsWith("public") && String(cfg[key]).includes(" — ")) {
-      const [strong, rest] = String(cfg[key]).split(" — ");
-      el.innerHTML = `<strong>${strong}</strong> — ${rest}`;
-    } else if (key === "confidentialite") {
-      el.innerHTML = String(cfg[key]).replace(/^Confidentialité/, "<strong>Confidentialité</strong>");
+    if (key === "title" || key === "aboutBody" || key === "legalEditor" || key === "legalActivity" || key === "legalHost" || key === "legalRgpd" || key === "legalCookies" || key === "legalIP" || key === "beforeText") {
+      el.innerHTML = nl(cfg[key]);
+    } else if (key === "lead") {
+      el.innerHTML = nl(String(cfg[key]).replace(/MonSoutienPsy/g, "<strong>MonSoutienPsy</strong>"));
+    } else if (String(cfg[key]).includes(" — ") && key.startsWith("public")) {
+      const [a, b] = String(cfg[key]).split(" — ");
+      el.innerHTML = "<strong>" + esc(a) + "</strong> — " + esc(b || "");
     } else {
       el.textContent = cfg[key];
     }
   });
   ["address","email","phone","hours"].forEach(k => {
-    const el = document.getElementById({ address:"cAddress", email:"cEmail", phone:"cPhone", hours:"cHours" }[k]);
-    if (el && cfg[k] != null) el.textContent = cfg[k];
+    const id = { address: "cAddress", email: "cEmail", phone: "cPhone", hours: "cHours" }[k];
+    const el = document.getElementById(id);
+    if (el && cfg[k] != null) {
+      if (k === "address") el.innerHTML = nl(cfg[k]);
+      else el.textContent = cfg[k];
+    }
   });
-  // Prix (main + sub séparés pour un affichage propre)
-  [["price1AmountMain","Tarif conventionné"],["price1AmountSub","/ séance"],
-   ["price2AmountMain","À partir de 60 €"],["price2AmountSub","/ séance"],
-   ["price3AmountMain","À partir de 60 €"],["price3AmountSub","/ séance"]].forEach(([k, def]) => {
-    const el = document.querySelector(`[data-key="${k}"]`);
+  [["price1AmountMain","50 €"],["price1AmountSub","/ séance"],["price2AmountMain","50 €"],["price2AmountSub","/ séance"],["price3AmountMain","50 €"],["price3AmountSub","/ séance"]].forEach(([k, def]) => {
+    const el = document.querySelector('[data-key="' + k + '"]');
     if (el) el.textContent = cfg[k] != null ? cfg[k] : def;
   });
-  // Mentions légales (préserver les sauts de ligne)
-  ["legalEditor","legalActivity","legalHost","legalRgpd","legalCookies","legalIP"].forEach(k => {
-    const el = document.querySelector(`[data-key="${k}"]`);
-    if (el && cfg[k] != null) el.innerHTML = String(cfg[k]).replace(/\n/g, "<br>");
-  });
 }
-
 apply();
-document.getElementById("y").textContent = new Date().getFullYear();
+const yEl = document.getElementById("y");
+if (yEl) yEl.textContent = new Date().getFullYear();
 
 document.querySelectorAll(".faq-q").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -1751,51 +1705,19 @@ document.querySelectorAll(".faq-q").forEach(btn => {
   });
 });
 
-// Créneaux flexibles
 document.querySelectorAll(".flex-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const n = btn.dataset.for;
-    const kind = btn.dataset.flex; // date | time
+    const kind = btn.dataset.flex;
     const input = document.getElementById("slot" + n + kind);
     if (!input) return;
     const active = btn.classList.toggle("active");
-    if (active) {
-      input.value = "";
-      input.disabled = true;
-      input.dataset.flex = "1";
-    } else {
-      input.disabled = false;
-      input.dataset.flex = "0";
-    }
-  });
-});
-// Si l'utilisateur saisit une date/heure, désactive le mode flexible
-["1","2","3"].forEach(n => {
-  ["date","time"].forEach(kind => {
-    const input = document.getElementById("slot" + n + kind);
-    if (!input) return;
-    input.addEventListener("input", () => {
-      if (input.value) {
-        input.disabled = false;
-        input.dataset.flex = "0";
-        const btn = document.querySelector(`.flex-btn[data-flex="${kind}"][data-for="${n}"]`);
-        if (btn) btn.classList.remove("active");
-      }
-    });
+    if (active) { input.disabled = true; input.dataset.flex = "1"; input.value = ""; }
+    else { input.disabled = false; input.dataset.flex = "0"; }
   });
 });
 
-// Mentions légales
-const legalModal = document.getElementById("legalModal");
-document.getElementById("openLegal")?.addEventListener("click", e => {
-  e.preventDefault();
-  legalModal.classList.add("open");
-});
-document.getElementById("closeLegal")?.addEventListener("click", () => legalModal.classList.remove("open"));
-legalModal?.addEventListener("click", e => { if (e.target === legalModal) legalModal.classList.remove("open"); });
-
-
-// ========== Espace créateur (état + login) ==========
+// Creator state
 const creator = document.getElementById("creator");
 const cBody = document.getElementById("cBody");
 const cFoot = document.getElementById("cFoot");
@@ -1803,36 +1725,23 @@ const cTabs = document.getElementById("cTabs");
 let unlocked = sessionStorage.getItem("eo_creator_ok") === "1";
 let currentPanel = "demandes";
 let cachedReqs = [];
+const ICONS = ["🌿","🎓","🧒","💚","📋","💶","📍","✉️","📞","🕒","🧠","🤝","🌱","✨","💬","🧘","📖","🏠","⏰","✅","🔒","🌸"];
+const WHO_LABELS = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" };
+const TYPE_LABELS = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" };
 
-const ICONS = ["🌿","🎓","🧒","💚","📋","💶","📍","✉️","📞","🕒","🧠","🤝","🌱","✨","💬","🧘","📖","🏠","⏰","✅","🔒","🌸","🍃","🕊️","🤍","🪴","🪨","🌊","☀️"];
-
-function esc(s) {
-  return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-function field(key, label, type = "text", rows = 2) {
+function field(key, label, type, rows) {
   const val = cfg[key] ?? "";
-  if (type === "textarea") return `<label>${label}</label><textarea data-edit="${key}" rows="${rows}">${esc(val)}</textarea>`;
-  return `<label>${label}</label><input data-edit="${key}" value="${esc(val)}">`;
+  if (type === "textarea") return '<label>' + esc(label) + '</label><textarea data-edit="' + key + '" rows="' + (rows || 2) + '">' + esc(val) + '</textarea>';
+  return '<label>' + esc(label) + '</label><input data-edit="' + key + '" value="' + esc(val) + '">';
 }
-
 function colorField(key, label) {
-  const val = (cfg.colors && cfg.colors[key]) || (DEFAULTS.colors && DEFAULTS.colors[key]) || "#000000";
-  return `<div class="color-row">
-    <input type="color" data-color="${key}" value="${val}">
-    <input type="text" data-color-text="${key}" value="${val}" style="font-family:monospace;font-size:.85rem">
-    <span style="font-size:.8rem;color:var(--muted);min-width:4.5rem">${label}</span>
-  </div>`;
+  const val = (cfg.colors && cfg.colors[key]) || DEFAULTS.colors[key] || "#000000";
+  return '<div class="color-row"><input type="color" data-color="' + key + '" value="' + val + '"><input type="text" data-color-text="' + key + '" value="' + val + '" style="font-family:monospace;font-size:.85rem"><span style="font-size:.8rem;color:var(--muted)">' + esc(label) + '</span></div>';
 }
-
 function iconPicker(key, label) {
   const current = cfg[key] || "🌿";
-  const buttons = ICONS.map(ic =>
-    `<button type="button" data-icon-for="${key}" data-icon="${ic}" class="${ic === current ? "selected" : ""}">${ic}</button>`
-  ).join("");
-  return `<label>${label}</label>
-    <input data-edit="${key}" value="${esc(current)}" style="margin-bottom:.35rem">
-    <div class="icon-grid">${buttons}</div>`;
+  const buttons = ICONS.map(ic => '<button type="button" data-icon-for="' + key + '" data-icon="' + ic + '" class="' + (ic === current ? "selected" : "") + '">' + ic + '</button>').join("");
+  return '<label>' + esc(label) + '</label><input data-edit="' + key + '" value="' + esc(current) + '" style="margin-bottom:.35rem"><div class="icon-grid">' + buttons + '</div>';
 }
 
 async function sha256(text) {
@@ -1840,97 +1749,62 @@ async function sha256(text) {
   const buf = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
-
 async function checkKey(key) {
   await ensureFirebase();
-  // Cache local du hash après une première validation réussie
   const CACHE = "eo_creator_hash_cache";
   if (db) {
     try {
       const snap = await FS.getDoc(FS.doc(db, "config", "creator"));
-      if (!snap.exists()) throw new Error("Document config/creator introuvable dans Firestore");
+      if (!snap.exists()) throw new Error("config/creator introuvable");
       const stored = (snap.data().keyHash || "").toLowerCase().trim();
-      if (!stored) throw new Error("Aucun keyHash dans config/creator");
       const ok = (await sha256(key)) === stored;
       if (ok) localStorage.setItem(CACHE, stored);
       return ok;
-    } catch (e) {
-      console.warn("checkKey firebase", e);
-    }
+    } catch (e) { console.warn(e); }
   }
   const cached = (localStorage.getItem(CACHE) || "").toLowerCase().trim();
   if (cached) return (await sha256(key)) === cached;
-  throw new Error("Impossible de vérifier la clé (Firebase inaccessible). Réessayez avec une connexion internet, une fois connecté la clé fonctionnera aussi hors-ligne.");
+  throw new Error("Impossible de vérifier la clé (Firebase inaccessible).");
 }
-
 function showLogin() {
   cTabs.style.display = "none";
   cFoot.style.display = "none";
-  cBody.innerHTML = `
-    <div class="login-box">
-      <p>Entrez la clé d’accès pour modifier le contenu et gérer les demandes de RDV.</p>
-      <input type="password" id="cKey" placeholder="Clé d’accès" autocomplete="current-password" style="margin-bottom:.8rem;text-align:center">
-      <button class="btn btn-primary" type="button" id="cUnlock" style="width:100%">Déverrouiller</button>
-      <p id="cErr" style="margin-top:.75rem;font-size:.85rem;color:#b91c1c;display:none"></p>
-      <p style="margin-top:1rem;font-size:.8rem;color:var(--soft)">La clé est stockée de façon sécurisée dans Firebase (hash).</p>
-    </div>`;
-  const err = document.getElementById("cErr");
-  const btn = document.getElementById("cUnlock");
-  const input = document.getElementById("cKey");
+  cBody.innerHTML = '<div class="login-box"><p>Entrez la clé d’accès pour modifier le contenu et gérer les demandes.</p><input type="password" id="cKey" placeholder="Clé d’accès" style="margin-bottom:.8rem;text-align:center;width:100%"><button class="btn btn-primary" type="button" id="cUnlock" style="width:100%">Déverrouiller</button><p id="cErr" style="margin-top:.75rem;font-size:.85rem;color:#b91c1c;display:none"></p></div>';
   const tryUnlock = async () => {
-    const v = input.value.trim();
+    const v = document.getElementById("cKey").value.trim();
+    const err = document.getElementById("cErr");
+    const btn = document.getElementById("cUnlock");
     if (!v) { err.style.display = "block"; err.textContent = "Saisissez la clé."; return; }
     btn.disabled = true; btn.textContent = "Vérification…"; err.style.display = "none";
     try {
-      if (await checkKey(v)) {
-        unlocked = true;
-        sessionStorage.setItem("eo_creator_ok", "1");
-        await showEditor();
-      } else {
-        err.style.display = "block"; err.textContent = "Clé incorrecte.";
-      }
+      if (await checkKey(v)) { unlocked = true; sessionStorage.setItem("eo_creator_ok", "1"); await showEditor(); }
+      else { err.style.display = "block"; err.textContent = "Clé incorrecte."; }
     } catch (e) {
-      err.style.display = "block"; err.textContent = e.message || "Erreur Firebase.";
-      console.error(e);
+      err.style.display = "block"; err.textContent = e.message || "Erreur";
     } finally {
       btn.disabled = false; btn.textContent = "Déverrouiller";
     }
   };
-  btn.onclick = tryUnlock;
-  input.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+  document.getElementById("cUnlock").onclick = tryUnlock;
+  document.getElementById("cKey").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
 }
 
-
-// ========== Demandes RDV ==========
 function loadLocalReqs() {
   try { return JSON.parse(localStorage.getItem(LOCAL_REQS) || "[]"); } catch { return []; }
 }
 function saveLocalReqs(list) {
   localStorage.setItem(LOCAL_REQS, JSON.stringify(list.slice(0, 100)));
 }
-
 async function fetchRequests() {
   await ensureFirebase();
   let remote = [];
-  let remoteErr = null;
   if (db) {
     try {
-      // Sans orderBy d'abord (évite l'échec si index manquant), puis tri local
       const snap = await FS.getDocs(FS.collection(db, "rdv_requests"));
       remote = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
-    } catch (e) {
-      remoteErr = e;
-      console.warn("Firestore read failed", e);
-      try {
-        const snap = await FS.getDocs(FS.collection(db, "rdv_requests"));
-        remote = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
-      } catch (e2) {
-        console.warn("Firestore read retry failed", e2);
-      }
-    }
+    } catch (e) { console.warn(e); }
   }
   const local = loadLocalReqs().map((r, i) => ({ ...r, id: r.id || ("local_" + i), _source: "local" }));
-  // Fusion par id (firebase prioritaire)
   const map = new Map();
   local.forEach(r => map.set(String(r.id), r));
   remote.forEach(r => map.set(String(r.id), r));
@@ -1940,46 +1814,47 @@ async function fetchRequests() {
     const tb = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : Date.parse(b.createdAt || 0) || 0;
     return tb - ta;
   });
-  list._remoteErr = remoteErr;
   return list;
 }
-
 function updateBadges(list) {
-  const pending = list.filter(r => {
+  const pending = (list || []).filter(r => {
     if (r.status !== "replied" && r.status !== "closed") return true;
     const msgs = Array.isArray(r.messages) ? r.messages : [];
     if (msgs.length && msgs[msgs.length - 1].from === "patient") return true;
-    if (!msgs.length && r.message && !r.reply) return true;
     return false;
   }).length;
   const badge = document.getElementById("lockBadge");
   const tabDot = document.getElementById("tabDot");
   if (unlocked && pending > 0) {
-    badge.style.display = "grid";
-    badge.textContent = pending;
+    if (badge) { badge.style.display = "grid"; badge.textContent = pending; }
     if (tabDot) { tabDot.style.display = "inline-grid"; tabDot.textContent = pending; }
   } else {
-    badge.style.display = "none";
+    if (badge) badge.style.display = "none";
     if (tabDot) tabDot.style.display = "none";
   }
 }
 
-function makeToken() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-
+function makeToken() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 function normalizeMessages(req) {
   if (Array.isArray(req.messages) && req.messages.length) return req.messages;
   const msgs = [];
-  if (req.message) {
-    msgs.push({ from: "patient", text: req.message, at: req.createdAt || new Date().toISOString() });
-  }
-  if (req.reply) {
-    msgs.push({ from: "psy", text: req.reply, at: req.repliedAt || new Date().toISOString() });
-  }
+  if (req.message) msgs.push({ from: "patient", text: req.message, at: req.createdAt || new Date().toISOString() });
+  if (req.reply) msgs.push({ from: "psy", text: req.reply, at: req.repliedAt || new Date().toISOString() });
   return msgs;
 }
-
+function formatSlot(s) {
+  if (!s) return "—";
+  if (s.includes("·")) {
+    const parts = s.split("·").map(x => x.trim());
+    let d = parts[0] || "", t = parts[1] || "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+      const [y, m, day] = d.split("-");
+      d = day + "/" + m + "/" + y;
+    }
+    return d + (t ? " · " + t : "");
+  }
+  return s;
+}
 function readSlot(n) {
   const dateEl = document.getElementById("slot" + n + "date");
   const timeEl = document.getElementById("slot" + n + "time");
@@ -1988,20 +1863,7 @@ function readSlot(n) {
   const d = dateFlex ? "Jour flexible" : (dateEl?.value || "");
   const t = timeFlex ? "Heure flexible" : (timeEl?.value || "");
   if (!d && !t) return "";
-  return `${d || "Jour flexible"} · ${t || "Heure flexible"}`;
-}
-
-function validateSlots(slots) {
-  const filled = slots.filter(Boolean);
-  if (!filled.length) {
-    return "Indiquez au moins un créneau (date/heure ou « n’importe quel jour / heure »).";
-  }
-  // Si le 1er est entièrement flexible (jour + heure flex), les autres sont optionnels
-  const firstFlex = slots[0] && slots[0].includes("Jour flexible");
-  if (firstFlex) return null;
-  // Sinon exiger les 3 pour faciliter le planning — sauf si chaque slot manquant est accepté quand flexible mode used on at least one full slot
-  // Règle douce : au moins 1 créneau OK ; si 2e/3e vides et 1er précis, OK aussi
-  return null;
+  return (d || "Jour flexible") + " · " + (t || "Heure flexible");
 }
 
 window.handleForm = async function(e) {
@@ -2010,147 +1872,70 @@ window.handleForm = async function(e) {
   const fd = new FormData(form);
   const err = document.getElementById("formErr");
   const ok = document.getElementById("formOk");
-  err.style.display = "none";
-  ok.style.display = "none";
-
+  err.style.display = "none"; ok.style.display = "none";
   const slots = [1, 2, 3].map(readSlot);
-  const slotErr = validateSlots(slots);
-  if (slotErr) {
+  if (!slots.some(Boolean)) {
     err.style.display = "block";
-    err.textContent = slotErr;
+    err.textContent = "Indiquez au moins un créneau.";
     return false;
   }
-
   const token = makeToken();
   const initialMsg = (fd.get("message") || "").trim();
   const now = new Date().toISOString();
-  const messages = [];
-  if (initialMsg) messages.push({ from: "patient", text: initialMsg, at: now });
-
+  const messages = initialMsg ? [{ from: "patient", text: initialMsg, at: now }] : [];
   const data = {
-    name: fd.get("name"),
-    email: fd.get("email"),
-    phone: fd.get("phone") || "",
-    who: fd.get("who"),
-    type: fd.get("type"),
-    slot1: slots[0] || "",
-    slot2: slots[1] || "",
-    slot3: slots[2] || "",
-    message: initialMsg,
-    messages,
-    status: "pending",
-    reply: "",
-    token,
-    createdAt: now
+    name: fd.get("name"), email: fd.get("email"), phone: fd.get("phone") || "",
+    who: fd.get("who"), type: fd.get("type"),
+    slot1: slots[0] || "", slot2: slots[1] || "", slot3: slots[2] || "",
+    message: initialMsg, messages, status: "pending", reply: "", token, createdAt: now
   };
-
-  let savedId = null;
   let saved = false;
   await ensureFirebase();
   if (db) {
     try {
-      const ref = await FS.addDoc(FS.collection(db, "rdv_requests"), {
-        ...data,
-        createdAt: FS.serverTimestamp()
-      });
-      savedId = ref.id;
+      await FS.addDoc(FS.collection(db, "rdv_requests"), { ...data, createdAt: FS.serverTimestamp() });
       saved = true;
-    } catch (e) {
-      console.warn("Firestore write failed", e);
-    }
+    } catch (e) { console.warn(e); }
   }
   if (!saved) {
-    savedId = "local_" + Date.now();
     const list = loadLocalReqs();
-    list.unshift({ ...data, id: savedId });
+    list.unshift({ ...data, id: "local_" + Date.now() });
     saveLocalReqs(list);
   }
-
   const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
-  let emailOk = false;
-  let emailMsg = "";
-  const isFileProtocol = location.protocol === "file:";
-  const suiviUrl = location.origin + location.pathname + "#suivi=" + token;
-
-  if (isFileProtocol) {
-    emailMsg = "Site ouvert en local : e-mail impossible. Hébergez en https.";
-  } else if (toEmail && toEmail.includes("@")) {
+  let emailOk = false, emailMsg = "";
+  if (location.protocol === "file:") emailMsg = "Hébergez le site en https pour l’e-mail.";
+  else if (toEmail.includes("@")) {
     try {
-      const whoLabel = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" }[data.who] || data.who;
-      const typeLabel = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" }[data.type] || data.type;
       const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           _subject: "Nouvelle demande de RDV — " + data.name,
-          _template: "table",
-          _captcha: "false",
-          name: data.name,
-          email: data.email,
-          phone: data.phone || "(non renseigné)",
-          consult_pour: whoLabel,
-          cadre: typeLabel,
-          creneau_1: data.slot1 || "—",
-          creneau_2: data.slot2 || "—",
-          creneau_3: data.slot3 || "—",
-          message: data.message || "(aucun)",
-          lien_suivi: suiviUrl,
-          _replyto: data.email
+          _template: "table", _captcha: "false",
+          name: data.name, email: data.email, phone: data.phone || "(non renseigné)",
+          consult_pour: WHO_LABELS[data.who] || data.who,
+          cadre: TYPE_LABELS[data.type] || data.type,
+          creneau_1: data.slot1 || "—", creneau_2: data.slot2 || "—", creneau_3: data.slot3 || "—",
+          message: data.message || "(aucun)", _replyto: data.email
         })
       });
-      const json = await res.json().catch(() => ({}));
-      if (res.ok) {
-        emailOk = true;
-        if (json.message && String(json.message).toLowerCase().includes("confirm")) {
-          emailOk = false;
-          emailMsg = "Confirmez FormSubmit dans " + toEmail + " (spams possibles).";
-        }
-      } else {
-        emailMsg = json.message || "Envoi e-mail échoué";
-      }
-    } catch (e) {
-      emailMsg = "Réseau : e-mail non envoyé.";
-    }
+      if (res.ok) emailOk = true;
+      else emailMsg = "Envoi e-mail échoué";
+    } catch (e) { emailMsg = "Réseau : e-mail non envoyé."; }
   }
-
   ok.style.display = "block";
-  if (emailOk) {
-    ok.style.color = "var(--sage-dark)";
-    ok.textContent = "✓ Demande envoyée. Vous pourrez suivre la conversation via le lien reçu par e-mail après la première réponse.";
-  } else {
-    ok.style.color = "#b45309";
-    ok.textContent = "✓ Demande enregistrée. " + (emailMsg || "");
-  }
+  ok.style.color = emailOk ? "var(--sage-dark)" : "#b45309";
+  ok.textContent = emailOk ? "✓ Demande envoyée. Merci !" : ("✓ Demande enregistrée. " + emailMsg);
   form.reset();
   document.querySelectorAll(".flex-btn").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll('input[type="date"], input[type="time"]').forEach(inp => {
-    inp.disabled = false;
-    inp.dataset.flex = "0";
-  });
+  document.querySelectorAll('input[type="date"], input[type="time"]').forEach(inp => { inp.disabled = false; inp.dataset.flex = "0"; });
   if (unlocked) fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
   return false;
 };
 
-function formatSlot(s) {
-  if (!s) return "—";
-  if (s.includes("·")) {
-    const parts = s.split("·").map(x => x.trim());
-    let d = parts[0] || "";
-    let t = parts[1] || "";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
-      const [y, m, day] = d.split("-");
-      d = `${day}/${m}/${y}`;
-    }
-    return `${d}${t ? " · " + t : ""}`;
-  }
-  return s;
-}
-
-const WHO_LABELS = { adulte: "Adulte", etudiant: "Étudiant·e", enfant: "Enfant", parent: "Parentalité" };
-const TYPE_LABELS = { msp: "MonSoutienPsy", libre: "Consultation libre", info: "À préciser" };
-
 function chatHtml(messages) {
-  if (!messages.length) return `<p style="color:var(--muted);font-size:.9rem">Aucun message pour l’instant.</p>`;
+  if (!messages.length) return '<p style="color:var(--muted);font-size:.9rem">Aucun message.</p>';
   return messages.map(m => {
     const who = m.from === "psy" ? (cfg.siteName || "Psychologue") : "Patient";
     const cls = m.from === "psy" ? "psy" : "patient";
@@ -2158,391 +1943,44 @@ function chatHtml(messages) {
     try {
       const t = m.at?.seconds ? m.at.seconds * 1000 : m.at;
       when = t ? new Date(t).toLocaleString("fr-FR") : "";
-    } catch {}
-    return `<div class="chat-bubble ${cls}"><div class="chat-meta">${who}${when ? " · " + when : ""}</div>${esc(m.text)}</div>`;
+    } catch (e) {}
+    return '<div class="chat-bubble ' + cls + '"><div class="chat-meta">' + esc(who) + (when ? " · " + when : "") + '</div>' + esc(m.text) + '</div>';
   }).join("");
 }
 
-
-
-// ——— Assistant réponses / conseils (créateur) ———
-function lastPatientText(req) {
-  const msgs = normalizeMessages(req);
-  const patientMsgs = msgs.filter(m => m.from === "patient");
-  if (patientMsgs.length) return patientMsgs.map(m => m.text).join("\n\n");
-  return req.message || "";
-}
-
-function conversationDigest(req) {
-  const msgs = normalizeMessages(req);
-  return msgs.map(m => (m.from === "psy" ? "Psychologue" : "Patient") + " : " + m.text).join("\n");
-}
-
-function detectSignals(req) {
-  const text = (lastPatientText(req) || "").toLowerCase();
-  const flags = [];
-  if (/suicid|me tuer|en finir|plus la force de vivre|ne veux plus vivre/.test(text)) {
-    flags.push({ type: "warn", label: "Détresse grave possible — évaluer le risque et les ressources d’urgence" });
-  }
-  if (/urgence|crise|hôpital|hopital|samu/.test(text)) {
-    flags.push({ type: "warn", label: "Urgence évoquée — clarifier et orienter si besoin" });
-  }
-  if (/anxi|angoiss|panique|stress/.test(text)) flags.push({ type: "info", label: "Anxiété / stress" });
-  if (/deuil|perte|décès|deces/.test(text)) flags.push({ type: "info", label: "Deuil / perte" });
-  if (/sommeil|insomn/.test(text)) flags.push({ type: "info", label: "Sommeil" });
-  if (/enfant|fils|fille|collège|lycée|école|ecole/.test(text) || req.who === "enfant") {
-    flags.push({ type: "info", label: "Contexte enfant / scolaire" });
-  }
-  if (/visio|en ligne/.test(text)) flags.push({ type: "ok", label: "Préférence visio possible" });
-  if (/monsoutien|orientation|médecin|medecin/.test(text) || req.type === "msp") {
-    flags.push({ type: "ok", label: "Cadre MonSoutienPsy" });
-  }
-  if (/\?/.test(lastPatientText(req) || "")) flags.push({ type: "info", label: "Questions concrètes à traiter" });
-  return flags;
-}
-
-function localSuggestVariants(req) {
-  const text = (lastPatientText(req) || "").toLowerCase();
-  const firstName = (req.name || "").trim().split(/\s+/)[0] || "";
-  const hello = firstName ? `Bonjour ${firstName},` : "Bonjour,";
-  const sign = (cfg.siteName || "Emmanuelle Ouvrard");
-  const slots = [req.slot1, req.slot2, req.slot3].filter(Boolean).map(formatSlot);
-  const s1 = slots[0], s2 = slots[1];
-
-  const asksCancel = /annul|report|déplacer|deplacer|pas disponible|empêch/.test(text);
-  const asksPrice = /tarif|prix|co[uû]t|rembours|mutuelle|monsoutien/.test(text);
-  const asksVisio = /visio|visioconf|en ligne|distance/.test(text);
-  const asksConfirm = /confirm|possible|disponible|ça vous va|ca vous va|ok pour|valider/.test(text);
-
-  const variants = [];
-
-  if (asksCancel) {
-    variants.push({
-      tone: "Chaleureuse",
-      text: `${hello}\n\nMerci de m’avoir prévenue. Bien sûr, on peut reporter sans souci.\nQuand vous aurez 2 ou 3 nouvelles disponibilités, envoyez-les-moi et je verrai ce qui est possible de mon côté.\n\nÀ très bientôt,\n${sign}`
-    });
-    variants.push({
-      tone: "Courte",
-      text: `${hello}\n\nMessage bien reçu : aucun problème pour reporter. Proposez-moi d’autres créneaux et je vous confirme.\n\nCordialement,\n${sign}`
-    });
-    variants.push({
-      tone: "Clarifiante",
-      text: `${hello}\n\nJe comprends, les imprévus arrivent. Pour reprogrammer proprement, indiquez-moi vos nouvelles disponibilités (jours + horaires). Je vous dirai ensuite lequel je peux bloquer.\n\nBien à vous,\n${sign}`
-    });
-    return variants;
-  }
-
-  if (asksPrice) {
-    variants.push({
-      tone: "Chaleureuse",
-      text: `${hello}\n\nMerci pour votre question. Pour MonSoutienPsy, le tarif suit le barème national (avec orientation médicale). En consultation libre, je vous confirme le montant au moment de convenir du rendez-vous ; une facture peut être établie pour la mutuelle.\nDites-moi si vous souhaitez plutôt le dispositif MonSoutienPsy ou une consultation libre.\n\nBien cordialement,\n${sign}`
-    });
-    variants.push({
-      tone: "Courte",
-      text: `${hello}\n\nMonSoutienPsy = tarif conventionné (orientation médicale). Consultation libre = tarif confirmé à la prise de RDV, facture possible pour mutuelle.\nJe reste disponible pour en parler.\n\nCordialement,\n${sign}`
-    });
-    variants.push({
-      tone: "Clarifiante",
-      text: `${hello}\n\nAvec plaisir. Deux cadres possibles :\n• MonSoutienPsy (orientation par un médecin, barème national)\n• Consultation libre (tarif précisé avant la séance, facture sur demande)\nLequel vous correspond le mieux ?\n\nBien à vous,\n${sign}`
-    });
-    return variants;
-  }
-
-  if (asksVisio) {
-    variants.push({
-      tone: "Chaleureuse",
-      text: `${hello}\n\nOui, la visio est possible selon les situations. Si c’est plus confortable pour vous pour une première rencontre ou un suivi, on peut l’envisager.\nDites-moi votre préférence (présentiel ou visio) et un créneau, et je m’organise.\n\nÀ bientôt,\n${sign}`
-    });
-  }
-
-  if (s1) {
-    variants.push({
-      tone: "Chaleureuse",
-      text: `${hello}\n\nMerci pour votre message. Le créneau du ${s1} me convient bien.\nPouvez-vous me confirmer que cela vous arrange aussi ? Une fois validé, je le réserve pour vous.\n\nBien cordialement,\n${sign}`
-    });
-    variants.push({
-      tone: "Courte",
-      text: `${hello}\n\nCréneau possible de mon côté : ${s1}.\nVous confirmez ?\n\nCordialement,\n${sign}`
-    });
-    if (s2) {
-      variants.push({
-        tone: "Souple",
-        text: `${hello}\n\nMerci pour les propositions. Je peux vous recevoir le ${s1}. Si ce n’est plus possible, le ${s2} peut aussi être envisagé.\nDites-moi ce qui vous arrange le mieux.\n\nBien à vous,\n${sign}`
-      });
-    } else {
-      variants.push({
-        tone: "Clarifiante",
-        text: `${hello}\n\nJ’ai bien noté votre demande. Je vous propose de retenir le ${s1}.\nConfirmez-moi simplement votre accord, ou indiquez une autre disponibilité si besoin.\n\nCordialement,\n${sign}`
-      });
-    }
-  } else {
-    variants.push({
-      tone: "Chaleureuse",
-      text: `${hello}\n\nMerci pour votre message, je l’ai bien lu. Pour convenir d’un moment adapté, pouvez-vous me proposer un ou deux créneaux qui vous arrangent ? Je vous dirai ensuite ce qui est possible.\n\nBien cordialement,\n${sign}`
-    });
-    variants.push({
-      tone: "Courte",
-      text: `${hello}\n\nMessage bien reçu. Proposez-moi un créneau et je vous confirme rapidement.\n\nCordialement,\n${sign}`
-    });
-    variants.push({
-      tone: "Clarifiante",
-      text: `${hello}\n\nMerci. Afin d’avancer concrètement, indiquez-moi vos disponibilités (jour + heure), le cadre souhaité (MonSoutienPsy ou consultation libre), et si vous préférez le présentiel ou la visio.\n\nBien à vous,\n${sign}`
-    });
-  }
-
-  // Toujours au moins 2–3
-  while (variants.length < 3 && variants.length > 0) {
-    variants.push({
-      tone: "Très humaine",
-      text: `${hello}\n\nMerci d’avoir pris le temps d’écrire. Je reviens vers vous dès que possible pour stabiliser un créneau qui vous convienne.\nEn attendant, prenez soin de vous.\n\n${sign}`
-    });
-    break;
-  }
-  return variants.slice(0, 3);
-}
-
-function localAdvice(req) {
-  const text = (lastPatientText(req) || "").toLowerCase();
-  const who = req.who || "";
-  const tips = [];
-  const flags = detectSignals(req);
-
-  if (who === "enfant") {
-    tips.push("Prévoir un temps parent en début ou fin de séance ; adapter le langage et les supports (jeu, dessin) à l’âge.");
-  }
-  if (who === "etudiant") {
-    tips.push("Explorer charge de travail, isolement, sommeil et pression de réussite ; rappeler le cadre MonSoutienPsy si besoin.");
-  }
-  if (who === "parent") {
-    tips.push("Clarifier si la demande est un soutien à la parentalité ou un suivi de l’enfant, et les attentes de la première séance.");
-  }
-  if (/anxi|angoiss|panique|stress/.test(text)) {
-    tips.push("Anxiété : accueillir d’abord le vécu, rythmer la séance, éventuellement un outil simple de régulation si la personne est d’accord.");
-  }
-  if (/deuil|perte|décès|deces/.test(text)) {
-    tips.push("Deuil : laisser de la place au récit, éviter de « réparer » trop vite, repérer le réseau de soutien.");
-  }
-  if (/sommeil|insomn/.test(text)) {
-    tips.push("Sommeil : faire le lien avec ruminations / horaires / écrans, sans moraliser.");
-  }
-  if (/\?/.test(lastPatientText(req) || "")) {
-    tips.push("Des questions concrètes sont posées : y répondre clairement par message, puis approfondir en séance si utile.");
-  }
-  if (!tips.length) {
-    tips.push("Première prise de contact : soigner l’alliance, clarifier le cadre (MSP/libre, présentiel/visio) et la demande prioritaire.");
-    tips.push("En séance : reformuler, évaluer le niveau de détresse et ce qui a déjà été tenté.");
-  }
-  tips.push("Garde-fou éthique : secret professionnel, limites du cadre, orientation si urgence ou besoin psychiatrique.");
-
-  let out = "Pistes pour le prochain rendez-vous :\n\n• " + tips.join("\n• ");
-  if (flags.length) {
-    out = "Signaux repérés : " + flags.map(f => f.label).join(" · ") + "\n\n" + out;
-  }
-  return out;
-}
-
-function localAskAssistant(question, req) {
-  const q = (question || "").toLowerCase();
-  const tips = [];
-  if (/cadence|fréquence|frequence|espacer|rythme/.test(q)) {
-    tips.push("La cadence se co-construit : souvent hebdomadaire au début, puis on espace selon l’évolution et la demande.");
-  }
-  if (/visio|présentiel|presentiel/.test(q)) {
-    tips.push("La visio peut convenir au suivi ; une première séance en présentiel aide parfois l’alliance, sans être une règle absolue.");
-  }
-  if (/enfant|parent|garde/.test(q)) {
-    tips.push("Avec un enfant : cadre clair avec les parents, temps dédié à l’enfant, et attention à ne pas en faire un « messager » du conflit parental.");
-  }
-  if (/secret|confident|parents/.test(q)) {
-    tips.push("Secret professionnel : expliquer les limites (danger pour soi/autrui). Avec les mineurs, doser ce qui est partagé aux parents dans l’intérêt de l’enfant.");
-  }
-  if (/monsoutien|rembours|séance|seance|12/.test(q)) {
-    tips.push("MonSoutienPsy : jusqu’à 12 séances/an après orientation médicale ; au-delà, discuter d’un autre cadre ou orientation.");
-  }
-  if (/urgence|suicid|crise/.test(q)) {
-    tips.push("Si risque suicidaire ou crise : évaluer intention/plan/protection, ne pas rester seul·e avec la situation, orienter vers urgences / 3114 / médecin selon le niveau de risque.");
-  }
-  if (!tips.length) {
-    tips.push("En cas de doute clinique : revenir au cadre (demande, alliance, limites), reformuler avec la personne, et documenter ce qui guide votre décision.");
-    tips.push("Vous pouvez aussi proposer une supervision ou un échange entre pairs pour les situations complexes.");
-  }
-  const ctx = req ? "\n\n(Contexte dossier : " + (req.name || "") + " · " + (req.who || "") + " · " + (req.type || "") + ")" : "";
-  return "Pistes de réflexion (assistant local) :" + ctx + "\n\n• " + tips.join("\n• ") + "\n\nCe n’est pas une supervision formelle : en situation à risque, appuyez-vous sur les procédures d’urgence et votre jugement clinique.";
-}
-
-async function aiChat(system, user) {
-  const key = (cfg.aiApiKey || "").trim();
-  if (!key) return null;
-  const base = (cfg.aiBaseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
-  const model = cfg.aiModel || "gpt-4o-mini";
-  const res = await fetch(base + "/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + key
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.55,
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user }
-      ]
-    })
-  });
-  if (!res.ok) {
-    const err = await res.text().catch(() => "");
-    throw new Error("API " + res.status + (err ? " : " + err.slice(0, 180) : ""));
-  }
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content?.trim() || "";
-}
-
-function renderVariantsHtml(variants, source, error) {
-  const head = `<div class="ai-label">Propositions (${source === "ia" ? "IA" : "assistant local"}${error ? " — API indisponible, mode local" : ""})</div>`;
-  const body = variants.map((v, i) => `
-    <div class="ai-variant">
-      <div class="vtone">${esc(v.tone || ("Variante " + (i + 1)))}</div>
-      <div>${esc(v.text)}</div>
-      <button type="button" class="ai-use" data-ai-use="${i}">Utiliser cette version</button>
-    </div>`).join("");
-  return head + body;
-}
-
-async function generateReplyVariants(req) {
-  const local = localSuggestVariants(req);
-  const key = (cfg.aiApiKey || "").trim();
-  if (!key) return { variants: local, source: "local" };
-
-  const system = `Tu aides une psychologue clinicienne française à répondre à un patient par message.
-Règles :
-- Français naturel, chaleureux, humain, non paternaliste, non infantilisant
-- Pas de diagnostic, pas de promesse de guérison
-- 3 variantes distinctes : 1) chaleureuse, 2) courte et claire, 3) plus précise / clarifiante
-- Chaque variante est un message complet prêt à envoyer (bonjour + corps + signature avec le nom donné)
-- Confirme un créneau s'il y en a, ou demande une confirmation
-Réponds UNIQUEMENT en JSON valide : [{"tone":"...","text":"..."},{"tone":"...","text":"..."},{"tone":"...","text":"..."}]`;
-
-  const user = `Nom du cabinet/signature : ${cfg.siteName || "Emmanuelle Ouvrard"}
-Créneaux patient : 1) ${req.slot1 || "—"} 2) ${req.slot2 || "—"} 3) ${req.slot3 || "—"}
-Cadre : ${req.type || ""} / public : ${req.who || ""}
-Historique :\n${conversationDigest(req)}`;
-
-  try {
-    const raw = await aiChat(system, user);
-    let variants = null;
-    try {
-      const cleaned = raw.replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
-      variants = JSON.parse(cleaned);
-    } catch {
-      variants = null;
-    }
-    if (Array.isArray(variants) && variants.length) {
-      return {
-        variants: variants.slice(0, 3).map(v => ({ tone: v.tone || "Proposition", text: v.text || String(v) })),
-        source: "ia"
-      };
-    }
-    return { variants: local, source: "local", error: "Réponse IA non lisible" };
-  } catch (e) {
-    return { variants: local, source: "local", error: e.message };
-  }
-}
-
-async function generateAdvice(req) {
-  const local = localAdvice(req);
-  const key = (cfg.aiApiKey || "").trim();
-  if (!key) return { text: local, source: "local" };
-  const system = `Tu es un binôme de réflexion pour une psychologue clinicienne (pas un remplacement de supervision).
-Donne 5 à 7 pistes concrètes, humaines et éthiques pour préparer le prochain RDV.
-Français, puces, ton respectueux du patient. Pas de diagnostic formel. Mentionne un garde-fou si détresse élevée.`;
-  const user = `Public : ${req.who || ""}\nCadre : ${req.type || ""}\n\nÉchanges :\n${conversationDigest(req)}`;
-  try {
-    const text = await aiChat(system, user);
-    return { text: text || local, source: text ? "ia" : "local" };
-  } catch (e) {
-    return { text: local, source: "local", error: e.message };
-  }
-}
-
-async function askAssistant(question, req) {
-  const local = localAskAssistant(question, req);
-  const key = (cfg.aiApiKey || "").trim();
-  if (!key) return { text: local, source: "local" };
-  const system = `Tu es un assistant de réflexion pour une psychologue clinicienne française.
-Réponds de façon nuancée, éthique, concrète. Tu ne remplaces pas une supervision ni un avis médical d'urgence.
-Si la question touche au risque suicidaire ou à l'urgence, rappelle les bons réflexes (évaluation, 3114, urgences).
-Français, structure claire, ton humain et professionnel.`;
-  const user = `Question de la psychologue :\n${question}\n\nContexte dossier (si utile) :\n${req ? conversationDigest(req) : "Aucun dossier ouvert"}`;
-  try {
-    const text = await aiChat(system, user);
-    return { text: text || local, source: text ? "ia" : "local" };
-  } catch (e) {
-    return { text: local, source: "local", error: e.message };
-  }
-}
-
-
 function buildDemandesPanel() {
-  if (!cachedReqs.length) {
-    return `<p style="color:var(--muted);font-size:.95rem;padding:1rem 0">Aucune demande pour le moment.</p>`;
-  }
-  // Group by email for fiche patient feel, but still list threads
+  if (!cachedReqs.length) return '<p style="color:var(--muted)">Aucune demande pour le moment.</p>';
   return cachedReqs.map(r => {
-    const isPending = r.status !== "replied" && r.status !== "closed";
     const msgs = normalizeMessages(r);
-    const unreadPatient = [...msgs].reverse().find(m => m.from === "patient");
     const lastIsPatient = msgs.length && msgs[msgs.length - 1].from === "patient";
-    return `
-    <div class="req-card ${isPending || lastIsPatient ? "pending" : "replied"}" data-req-id="${esc(r.id)}">
-      <div class="req-head">
-        <div>
-          <div class="req-name">${esc(r.name)}</div>
-          <div class="req-date">${r.createdAt ? new Date(r.createdAt.seconds ? r.createdAt.seconds * 1000 : r.createdAt).toLocaleString("fr-FR") : ""}</div>
-        </div>
-        <span class="status-pill ${isPending || lastIsPatient ? "pending" : "replied"}">${lastIsPatient && !isPending ? "Nouveau message" : (isPending ? "En attente" : "Répondu")}</span>
-      </div>
-      <div class="req-meta">
-        ${esc(r.email)}${r.phone ? " · " + esc(r.phone) : ""}<br>
-        ${WHO_LABELS[r.who] || r.who} · ${TYPE_LABELS[r.type] || r.type}
-      </div>
-      <div class="req-slots">
-        <strong>Créneaux proposés</strong>
-        ${r.slot1 ? "1. " + formatSlot(r.slot1) + "<br>" : ""}
-        ${r.slot2 ? "2. " + formatSlot(r.slot2) + "<br>" : ""}
-        ${r.slot3 ? "3. " + formatSlot(r.slot3) : ""}
-        ${!r.slot1 && !r.slot2 && !r.slot3 ? "—" : ""}
-      </div>
-      <div style="margin-top:.6rem">${chatHtml(msgs)}</div>
-      <div class="req-actions">
-        <button type="button" class="btn-reply" data-action="toggle-reply">Répondre</button>
-        <button type="button" data-action="mark-replied">Marquer traité</button>
-        <button type="button" data-action="delete-req" style="color:#b91c1c">Supprimer</button>
-      </div>
-      <div class="req-reply-box" style="display:none">
-        <div class="ai-box">
-          <div class="ai-title">✨ Assistant de cabinet</div>
-          <div data-ai-flags style="margin-bottom:.35rem"></div>
-          <div class="ai-actions">
-            <button type="button" data-action="ai-reply">3 propositions de réponse</button>
-            <button type="button" data-action="ai-advice">Conseils pour le RDV</button>
-            <button type="button" data-action="ai-humanize">Rendre plus humain</button>
-          </div>
-          <div class="ai-out" data-ai-out></div>
-          <div class="ai-chat">
-            <div class="ai-label" style="margin-bottom:.35rem">Question libre (doute, cadre, posture…)</div>
-            <textarea data-ai-question placeholder="Ex. : Comment cadrer un parent très anxieux à la première séance ?"></textarea>
-            <button type="button" class="btn btn-secondary" style="padding:.35rem .75rem;font-size:.8rem" data-action="ai-ask">Demander à l’assistant</button>
-          </div>
-        </div>
-        <textarea placeholder="Votre réponse au patient…" style="margin-top:.55rem"></textarea>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.4rem">
-          <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.85rem" data-action="send-reply">Envoyer (site + e-mail)</button>
-          <button type="button" class="btn btn-secondary" style="padding:.4rem .9rem;font-size:.85rem" data-action="save-reply">Enregistrer seulement</button>
-        </div>
-        <p class="req-send-status" style="font-size:.8rem;margin-top:.5rem;display:none"></p>
-      </div>
-    </div>`;
+    const isPending = r.status !== "replied" && r.status !== "closed";
+    return '<div class="req-card ' + (isPending || lastIsPatient ? "pending" : "replied") + '" data-req-id="' + esc(r.id) + '">' +
+      '<div class="req-head"><div><div class="req-name">' + esc(r.name) + '</div><div class="req-date">' +
+      (r.createdAt ? new Date(r.createdAt.seconds ? r.createdAt.seconds * 1000 : r.createdAt).toLocaleString("fr-FR") : "") +
+      '</div></div><span class="status-pill ' + (isPending || lastIsPatient ? "pending" : "replied") + '">' +
+      (lastIsPatient && !isPending ? "Nouveau message" : (isPending ? "En attente" : "Répondu")) + '</span></div>' +
+      '<div class="req-meta">' + esc(r.email) + (r.phone ? " · " + esc(r.phone) : "") + '<br>' +
+      (WHO_LABELS[r.who] || r.who) + " · " + (TYPE_LABELS[r.type] || r.type) + '</div>' +
+      '<div class="req-slots"><strong>Créneaux</strong><br>' +
+      [r.slot1, r.slot2, r.slot3].filter(Boolean).map((s, i) => (i + 1) + ". " + formatSlot(s)).join("<br>") + '</div>' +
+      '<div style="margin-top:.6rem">' + chatHtml(msgs) + '</div>' +
+      '<div class="req-actions">' +
+      '<button type="button" class="btn-reply" data-action="toggle-reply">Répondre</button>' +
+      '<button type="button" data-action="mark-replied">Marquer traité</button>' +
+      '<button type="button" data-action="delete-req" style="color:#b91c1c">Supprimer</button></div>' +
+      '<div class="req-reply-box" style="display:none">' +
+      '<div class="ai-box"><div class="ai-title">✨ Assistant</div><div class="ai-actions">' +
+      '<button type="button" data-action="ai-reply">3 propositions</button>' +
+      '<button type="button" data-action="ai-advice">Conseils RDV</button>' +
+      '<button type="button" data-action="ai-humanize">Plus humain</button></div>' +
+      '<div class="ai-out" data-ai-out></div>' +
+      '<div class="ai-chat"><textarea data-ai-question placeholder="Question libre (doute, cadre…)" rows="2"></textarea>' +
+      '<button type="button" class="btn btn-secondary" style="padding:.35rem .75rem;font-size:.8rem;margin-top:.35rem" data-action="ai-ask">Demander</button></div></div>' +
+      '<textarea placeholder="Votre réponse…" style="margin-top:.55rem"></textarea>' +
+      '<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem">' +
+      '<button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.85rem" data-action="send-reply">Envoyer (site + e-mail)</button>' +
+      '<button type="button" class="btn btn-secondary" style="padding:.4rem .9rem;font-size:.85rem" data-action="save-reply">Enregistrer seulement</button></div>' +
+      '<p class="req-send-status" style="font-size:.8rem;margin-top:.5rem;display:none"></p></div></div>';
   }).join("");
 }
 
@@ -2557,140 +1995,98 @@ async function persistFull(req) {
   }
   const list = loadLocalReqs();
   const idx = list.findIndex(r => r.id === req.id);
-  if (idx >= 0) list[idx] = req;
-  else list.unshift(req);
+  if (idx >= 0) list[idx] = req; else list.unshift(req);
   saveLocalReqs(list);
 }
-
 async function persistReply(id, reply, status) {
   const req = cachedReqs.find(r => r.id === id);
   if (!req) return;
   const msgs = normalizeMessages(req);
-  if (reply) {
-    msgs.push({ from: "psy", text: reply, at: new Date().toISOString() });
-    req.patientRead = false; // voyant patient : nouvelle réponse
-  }
-  req.messages = msgs;
-  req.reply = reply;
-  req.status = status;
+  if (reply) { msgs.push({ from: "psy", text: reply, at: new Date().toISOString() }); req.patientRead = false; }
+  req.messages = msgs; req.reply = reply; req.status = status;
   await persistFull(req);
 }
-
 async function deleteRequest(id) {
   await ensureFirebase();
   if (db && !String(id).startsWith("local_")) {
-    try {
-      await FS.deleteDoc(FS.doc(db, "rdv_requests", id));
-    } catch (e) { console.warn(e); }
+    try { await FS.deleteDoc(FS.doc(db, "rdv_requests", id)); } catch (e) { console.warn(e); }
   }
-  const list = loadLocalReqs().filter(r => r.id !== id);
-  saveLocalReqs(list);
+  saveLocalReqs(loadLocalReqs().filter(r => r.id !== id));
   cachedReqs = cachedReqs.filter(r => r.id !== id);
 }
 
 async function formSubmitSend(toEmail, fields) {
-  // FormData est plus fiable que JSON avec FormSubmit
   const fd = new FormData();
-  Object.entries(fields).forEach(([k, v]) => {
-    if (v != null && v !== "") fd.append(k, String(v));
-  });
-  const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
-    method: "POST",
-    headers: { "Accept": "application/json" },
-    body: fd
-  });
+  Object.entries(fields).forEach(([k, v]) => { if (v != null && v !== "") fd.append(k, String(v)); });
+  const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), { method: "POST", headers: { Accept: "application/json" }, body: fd });
   const json = await res.json().catch(() => ({}));
   return { res, json };
 }
-
 async function sendReplyToPatient(req, replyText) {
   const patientEmail = (req.email || "").trim();
   if (!patientEmail.includes("@")) return { ok: false, msg: "E-mail patient invalide." };
   if (!replyText) return { ok: false, msg: "Écrivez d’abord votre réponse." };
-  if (location.protocol === "file:") return { ok: false, msg: "Hébergez le site en https pour envoyer l’e-mail." };
-
-  if (!req.token) {
-    req.token = makeToken();
-    await persistFull(req);
-  }
-  const suiviUrl = location.origin + location.pathname.replace(/index\.html$/i, "") + "#suivi=" + req.token;
+  if (location.protocol === "file:") return { ok: false, msg: "Hébergez le site en https." };
+  if (!req.token) { req.token = makeToken(); await persistFull(req); }
   const siteSuivi = location.origin + location.pathname.replace(/index\.html$/i, "") + "#suivi";
   const psyEmail = (cfg.notificationEmail || cfg.email || "").trim();
-  const subject = "Réponse de " + (cfg.siteName || "votre psychologue") + " — rendez-vous";
-  const body =
-    "Bonjour " + (req.name || "") + ",\n\n" +
-    "Voici la réponse du cabinet concernant votre demande de rendez-vous :\n\n" +
-    "———\n" + replyText + "\n———\n\n" +
-    "Pour répondre ou relire la conversation, allez sur le site → section « Suivre ma demande » et saisissez votre e-mail :\n" +
-    siteSuivi + "\n\n" +
-    "Lien direct : " + suiviUrl + "\n\n" +
-    "Bien cordialement,\n" +
-    (cfg.siteName || "Emmanuelle Ouvrard");
-
-  // 1) Envoi direct au patient
+  const body = "Bonjour " + (req.name || "") + ",\n\n" + replyText + "\n\nPour répondre : section « Suivre ma demande » sur le site avec votre e-mail.\n" + siteSuivi + "\n\nBien cordialement,\n" + (cfg.siteName || "Emmanuelle Ouvrard");
   try {
     const { res, json } = await formSubmitSend(patientEmail, {
-      _subject: subject,
-      _template: "table",
-      _captcha: "false",
-      _replyto: psyEmail || "",
-      name: cfg.siteName || "Psychologue",
-      email: psyEmail || patientEmail,
-      message: body
+      _subject: "Réponse — " + (cfg.siteName || "Cabinet"), _template: "table", _captcha: "false",
+      _replyto: psyEmail || "", name: cfg.siteName || "Psychologue", email: psyEmail || patientEmail, message: body
     });
-    console.log("FormSubmit → patient", res.status, json);
-    const msg = String(json.message || "").toLowerCase();
-    if (res.ok && !msg.includes("confirm")) {
-      return { ok: true, msg: "E-mail envoyé au patient (" + patientEmail + "). Pensez à vérifier les spams." };
+    if (res.ok && !String(json.message || "").toLowerCase().includes("confirm")) {
+      return { ok: true, msg: "E-mail envoyé à " + patientEmail };
     }
-    if (res.ok && msg.includes("confirm")) {
-      // Première fois pour cette adresse patient : FormSubmit demande une activation
-      // 2) Fallback : envoi via la boîte psy (déjà activée) en copie patient
-      if (psyEmail && psyEmail.toLowerCase() !== patientEmail.toLowerCase()) {
-        const fb = await formSubmitSend(psyEmail, {
-          _subject: subject + " [copie patient]",
-          _template: "table",
-          _captcha: "false",
-          _cc: patientEmail,
-          _replyto: psyEmail,
-          name: cfg.siteName || "Psychologue",
-          email: psyEmail,
-          message: body + "\n\n(Copie envoyée pour notification patient.)"
-        });
-        console.log("FormSubmit fallback CC", fb.res.status, fb.json);
-        if (fb.res.ok) {
-          return {
-            ok: true,
-            msg: "Notification envoyée. Si le patient ne voit rien : qu’il regarde ses spams, ou utilise « Suivre ma demande » sur le site (recommandé)."
-          };
-        }
-      }
-      return {
-        ok: false,
-        msg: "FormSubmit demande une activation pour " + patientEmail + " (e-mail de confirmation dans ses spams). Le message est bien sur le site : le patient peut le lire via « Suivre ma demande »."
-      };
-    }
-    // 3) Autre erreur → fallback CC via psy
     if (psyEmail) {
-      const fb = await formSubmitSend(psyEmail, {
-        _subject: subject,
-        _template: "table",
-        _captcha: "false",
-        _cc: patientEmail,
-        _replyto: psyEmail,
-        name: cfg.siteName || "Psychologue",
-        email: psyEmail,
-        message: body
-      });
-      if (fb.res.ok) {
-        return { ok: true, msg: "E-mail envoyé (via notification cabinet, copie patient si acceptée par FormSubmit)." };
-      }
+      await formSubmitSend(psyEmail, { _subject: "Réponse patient (copie)", _cc: patientEmail, _captcha: "false", message: body, name: cfg.siteName || "Psy", email: psyEmail });
+      return { ok: true, msg: "Notification envoyée (vérifiez aussi « Suivre ma demande » sur le site)." };
     }
-    return { ok: false, msg: (json.message || "Envoi e-mail patient échoué") + " — le message reste visible sur le site (Suivre ma demande)." };
+    return { ok: false, msg: "E-mail difficile à délivrer — message visible sur le site pour le patient." };
   } catch (e) {
-    console.warn(e);
-    return { ok: false, msg: "Échec réseau. Message enregistré sur le site pour le patient." };
+    return { ok: false, msg: "Échec réseau. Message enregistré sur le site." };
   }
+}
+
+function localSuggestVariants(req) {
+  const name = (req.name || "").split(/\s+/)[0] || "";
+  const hello = name ? "Bonjour " + name + "," : "Bonjour,";
+  const sign = cfg.siteName || "Emmanuelle Ouvrard";
+  const slots = [req.slot1, req.slot2, req.slot3].filter(Boolean).map(formatSlot);
+  const s1 = slots[0], s2 = slots[1];
+  const variants = [];
+  if (s1) {
+    variants.push({ tone: "Chaleureuse", text: hello + "\n\nMerci pour votre message. Le créneau du " + s1 + " me convient bien.\nPouvez-vous me confirmer ?\n\nBien cordialement,\n" + sign });
+    variants.push({ tone: "Courte", text: hello + "\n\nCréneau possible : " + s1 + ".\nVous confirmez ?\n\nCordialement,\n" + sign });
+    if (s2) variants.push({ tone: "Souple", text: hello + "\n\nJe peux vous recevoir le " + s1 + ". Sinon le " + s2 + " est aussi envisageable.\nDites-moi ce qui vous arrange.\n\nBien à vous,\n" + sign });
+  } else {
+    variants.push({ tone: "Chaleureuse", text: hello + "\n\nMerci pour votre message. Proposez-moi un créneau qui vous arrange, je vous confirmerai dès que possible.\n\nBien cordialement,\n" + sign });
+  }
+  while (variants.length < 3) {
+    variants.push({ tone: "Humaine", text: hello + "\n\nMerci d’avoir écrit. Je reviens vers vous rapidement pour convenir d’un moment.\n\n" + sign });
+  }
+  return variants.slice(0, 3);
+}
+function localAdvice(req) {
+  const tips = ["Centrer la première séance sur l’alliance et la clarification de la demande.", "Rappeler le cadre (MSP/libre, présentiel) si besoin.", "Garde-fou éthique : secret professionnel et orientation si urgence."];
+  if (req.who === "enfant" || req.who === "parent") tips.unshift("Adapter le langage à l’âge ; prévoir un temps parent si pertinent.");
+  if (req.who === "etudiant") tips.unshift("Explorer stress académique, sommeil et pression de performance.");
+  return "Pistes pour le prochain RDV :\n\n• " + tips.join("\n• ");
+}
+
+async function aiChat(system, user) {
+  const key = (cfg.aiApiKey || "").trim();
+  if (!key) return null;
+  const base = (cfg.aiBaseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
+  const res = await fetch(base + "/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
+    body: JSON.stringify({ model: cfg.aiModel || "gpt-4o-mini", temperature: 0.5, messages: [{ role: "system", content: system }, { role: "user", content: user }] })
+  });
+  if (!res.ok) throw new Error("API " + res.status);
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content?.trim() || "";
 }
 
 function bindDemandesEvents() {
@@ -2700,109 +2096,6 @@ function bindDemandesEvents() {
     card.querySelector('[data-action="toggle-reply"]')?.addEventListener("click", () => {
       const box = card.querySelector(".req-reply-box");
       box.style.display = box.style.display === "none" ? "block" : "none";
-    });
-    // Signaux repérés
-    const flagsEl = card.querySelector("[data-ai-flags]");
-    if (flagsEl) {
-      const flags = detectSignals(req);
-      flagsEl.innerHTML = flags.map(f => `<span class="ai-flag ${f.type}">${esc(f.label)}</span>`).join("");
-    }
-
-    card.querySelector('[data-action="ai-reply"]')?.addEventListener("click", async () => {
-      const btn = card.querySelector('[data-action="ai-reply"]');
-      const out = card.querySelector("[data-ai-out]");
-      const textarea = card.querySelector("textarea");
-      btn.disabled = true; btn.textContent = "Rédaction…";
-      out.classList.add("visible");
-      out.innerHTML = `<div class="ai-label">Propositions de réponse</div>Génération des variantes…`;
-      try {
-        const result = await generateReplyVariants(req);
-        out.innerHTML = renderVariantsHtml(result.variants, result.source, result.error);
-        out.querySelectorAll("[data-ai-use]").forEach(b => {
-          b.addEventListener("click", () => {
-            const i = Number(b.getAttribute("data-ai-use"));
-            textarea.value = result.variants[i].text;
-          });
-        });
-      } catch (e) {
-        out.textContent = "Erreur : " + (e.message || e);
-      }
-      btn.disabled = false; btn.textContent = "3 propositions de réponse";
-    });
-
-    card.querySelector('[data-action="ai-advice"]')?.addEventListener("click", async () => {
-      const btn = card.querySelector('[data-action="ai-advice"]');
-      const out = card.querySelector("[data-ai-out]");
-      btn.disabled = true; btn.textContent = "Analyse…";
-      out.classList.add("visible");
-      out.innerHTML = `<div class="ai-label">Conseils pour le prochain RDV</div>Analyse…`;
-      try {
-        const result = await generateAdvice(req);
-        out.innerHTML = `<div class="ai-label">Conseils (${result.source === "ia" ? "IA" : "assistant local"}${result.error ? " — API indisponible" : ""})</div>${esc(result.text)}`;
-      } catch (e) {
-        out.textContent = "Erreur : " + (e.message || e);
-      }
-      btn.disabled = false; btn.textContent = "Conseils pour le RDV";
-    });
-
-    card.querySelector('[data-action="ai-humanize"]')?.addEventListener("click", async () => {
-      const btn = card.querySelector('[data-action="ai-humanize"]');
-      const out = card.querySelector("[data-ai-out]");
-      const textarea = card.querySelector("textarea");
-      const draft = textarea.value.trim();
-      if (!draft) {
-        out.classList.add("visible");
-        out.innerHTML = `<div class="ai-label">Rendre plus humain</div>Écrivez d’abord un brouillon dans la zone de réponse, ou générez des propositions.`;
-        return;
-      }
-      btn.disabled = true; btn.textContent = "Réécriture…";
-      out.classList.add("visible");
-      const key = (cfg.aiApiKey || "").trim();
-      try {
-        let text = draft;
-        let source = "local";
-        if (key) {
-          const system = "Réécris ce message de psychologue en français plus humain, chaleureux et naturel, sans perdre le contenu ni le professionnalisme. Pas de diagnostic. Réponds uniquement avec le message final.";
-          const rewritten = await aiChat(system, draft);
-          if (rewritten) { text = rewritten; source = "ia"; }
-        } else {
-          // Léger adoucissement local
-          text = draft
-            .replace(/Je vous informe que/gi, "Je vous écris car")
-            .replace(/Veuillez/gi, "Pouvez-vous")
-            .replace(/Cordialement,/gi, "Bien cordialement,");
-          if (!/merci/i.test(text) && /^Bonjour/im.test(text)) {
-            text = text.replace(/^Bonjour[^\n]*/im, function(m) { return m + "\n\nMerci pour votre message."; });
-          }
-        }
-        out.innerHTML = `<div class="ai-label">Version plus humaine (${source})</div><div class="ai-variant"><div>${esc(text)}</div><button type="button" class="ai-use" data-action="ai-use-human">Utiliser cette version</button></div>`;
-        out.querySelector('[data-action="ai-use-human"]')?.addEventListener("click", () => { textarea.value = text; });
-      } catch (e) {
-        out.textContent = "Erreur : " + (e.message || e);
-      }
-      btn.disabled = false; btn.textContent = "Rendre plus humain";
-    });
-
-    card.querySelector('[data-action="ai-ask"]')?.addEventListener("click", async () => {
-      const btn = card.querySelector('[data-action="ai-ask"]');
-      const out = card.querySelector("[data-ai-out]");
-      const qEl = card.querySelector("[data-ai-question]");
-      const question = (qEl?.value || "").trim();
-      if (!question) {
-        out.classList.add("visible");
-        out.innerHTML = `<div class="ai-label">Question libre</div>Posez votre question dans le champ ci-dessus.`;
-        return;
-      }
-      btn.disabled = true; btn.textContent = "Réflexion…";
-      out.classList.add("visible");
-      out.innerHTML = `<div class="ai-label">Réponse à votre question</div>…`;
-      try {
-        const result = await askAssistant(question, req);
-        out.innerHTML = `<div class="ai-label">Réponse (${result.source === "ia" ? "IA" : "assistant local"}${result.error ? " — API indisponible" : ""})</div>${esc(result.text)}`;
-      } catch (e) {
-        out.textContent = "Erreur : " + (e.message || e);
-      }
-      btn.disabled = false; btn.textContent = "Demander à l’assistant";
     });
     card.querySelector('[data-action="save-reply"]')?.addEventListener("click", async () => {
       const reply = card.querySelector("textarea").value.trim();
@@ -2816,11 +2109,7 @@ function bindDemandesEvents() {
       const statusEl = card.querySelector(".req-send-status");
       const btn = card.querySelector('[data-action="send-reply"]');
       const reply = textarea.value.trim();
-      statusEl.style.display = "block";
-      statusEl.style.color = "var(--muted)";
-      statusEl.textContent = "Envoi…";
-      btn.disabled = true;
-      // Always save on site first
+      statusEl.style.display = "block"; statusEl.textContent = "Envoi…"; btn.disabled = true;
       await persistReply(id, reply, "replied");
       const result = await sendReplyToPatient(req, reply);
       statusEl.style.color = result.ok ? "var(--sage-dark)" : "#b91c1c";
@@ -2830,378 +2119,113 @@ function bindDemandesEvents() {
       if (result.ok) setTimeout(() => renderPanel("demandes"), 1000);
     });
     card.querySelector('[data-action="mark-replied"]')?.addEventListener("click", async () => {
-      req.status = "replied";
-      await persistFull(req);
-      updateBadges(cachedReqs);
-      renderPanel("demandes");
+      req.status = "replied"; await persistFull(req); updateBadges(cachedReqs); renderPanel("demandes");
     });
     card.querySelector('[data-action="delete-req"]')?.addEventListener("click", async () => {
-      if (!confirm("Supprimer définitivement cette demande et la conversation ?")) return;
-      await deleteRequest(id);
-      updateBadges(cachedReqs);
-      renderPanel("demandes");
+      if (!confirm("Supprimer cette demande ?")) return;
+      await deleteRequest(id); updateBadges(cachedReqs); renderPanel("demandes");
+    });
+    card.querySelector('[data-action="ai-reply"]')?.addEventListener("click", async () => {
+      const out = card.querySelector("[data-ai-out]");
+      const textarea = card.querySelector("textarea");
+      out.classList.add("visible");
+      out.innerHTML = "Génération…";
+      let variants = localSuggestVariants(req);
+      try {
+        if ((cfg.aiApiKey || "").trim()) {
+          const raw = await aiChat("Tu aides une psychologue. Réponds UNIQUEMENT en JSON: [{\"tone\":\"...\",\"text\":\"...\"}] x3. Français chaleureux.", "Créneaux: " + [req.slot1, req.slot2, req.slot3].join(" | ") + "\nMessages: " + normalizeMessages(req).map(m => m.from + ": " + m.text).join("\n"));
+          const parsed = JSON.parse(raw.replace(/^```json\s*/i, "").replace(/```$/i, "").trim());
+          if (Array.isArray(parsed) && parsed.length) variants = parsed.slice(0, 3);
+        }
+      } catch (e) {}
+      out.innerHTML = variants.map((v, i) => '<div class="ai-variant"><div class="vtone">' + esc(v.tone || ("Variante " + (i + 1))) + '</div><div>' + esc(v.text) + '</div><button type="button" class="ai-use" data-i="' + i + '">Utiliser</button></div>').join("");
+      out.querySelectorAll("[data-i]").forEach(b => b.addEventListener("click", () => { textarea.value = variants[Number(b.dataset.i)].text; }));
+    });
+    card.querySelector('[data-action="ai-advice"]')?.addEventListener("click", async () => {
+      const out = card.querySelector("[data-ai-out]");
+      out.classList.add("visible");
+      let text = localAdvice(req);
+      try {
+        if ((cfg.aiApiKey || "").trim()) {
+          const t = await aiChat("Superviseure bienveillante pour psychologue. 5 pistes concrètes en français, puces.", normalizeMessages(req).map(m => m.from + ": " + m.text).join("\n"));
+          if (t) text = t;
+        }
+      } catch (e) {}
+      out.innerHTML = '<div class="ai-label">Conseils</div>' + esc(text);
+    });
+    card.querySelector('[data-action="ai-humanize"]')?.addEventListener("click", async () => {
+      const out = card.querySelector("[data-ai-out]");
+      const textarea = card.querySelector("textarea");
+      let draft = textarea.value.trim();
+      if (!draft) { out.classList.add("visible"); out.textContent = "Écrivez d’abord un brouillon."; return; }
+      try {
+        if ((cfg.aiApiKey || "").trim()) {
+          const t = await aiChat("Réécris ce message de psychologue plus humain et chaleureux. Uniquement le message final.", draft);
+          if (t) draft = t;
+        } else {
+          draft = draft.replace(/Je vous informe que/gi, "Je vous écris car").replace(/Veuillez/gi, "Pouvez-vous");
+        }
+      } catch (e) {}
+      out.classList.add("visible");
+      out.innerHTML = '<div class="ai-label">Version plus humaine</div><div class="ai-variant">' + esc(draft) + '<br><button type="button" class="ai-use" data-use-h>Utiliser</button></div>';
+      out.querySelector("[data-use-h]")?.addEventListener("click", () => { textarea.value = draft; });
+    });
+    card.querySelector('[data-action="ai-ask"]')?.addEventListener("click", async () => {
+      const q = card.querySelector("[data-ai-question]")?.value.trim();
+      const out = card.querySelector("[data-ai-out]");
+      if (!q) return;
+      out.classList.add("visible"); out.textContent = "Réflexion…";
+      let text = "Revenez au cadre, à la demande du patient et à vos limites professionnelles. En cas de risque, orientez vers les urgences / 3114.";
+      try {
+        if ((cfg.aiApiKey || "").trim()) {
+          const t = await aiChat("Assistant de réflexion pour psychologue clinicienne. Nuancé, éthique, français.", q);
+          if (t) text = t;
+        }
+      } catch (e) {}
+      out.innerHTML = '<div class="ai-label">Réponse</div>' + esc(text);
     });
   });
 }
-
-
-// ——— Portail patient (e-mail ou lien #suivi=token) ———
-async function findByToken(token) {
-  await ensureFirebase();
-  if (db) {
-    try {
-      const q = FS.query(FS.collection(db, "rdv_requests"), FS.where("token", "==", token));
-      const snap = await FS.getDocs(q);
-      if (!snap.empty) {
-        const d = snap.docs[0];
-        return { id: d.id, ...d.data(), _source: "firebase" };
-      }
-    } catch (e) { console.warn("token query", e); }
-  }
-  return loadLocalReqs().find(r => r.token === token) || null;
-}
-
-async function findByEmail(email) {
-  const em = (email || "").trim().toLowerCase();
-  if (!em) return [];
-  await ensureFirebase();
-  let list = [];
-  if (db) {
-    try {
-      const snap = await FS.getDocs(FS.collection(db, "rdv_requests"));
-      list = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firebase" }));
-    } catch (e) {
-      console.warn("email query", e);
-    }
-  }
-  if (!list.length) list = loadLocalReqs();
-  return list
-    .filter(r => (r.email || "").trim().toLowerCase() === em)
-    .sort((a, b) => {
-      const ta = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : Date.parse(a.createdAt || 0);
-      const tb = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : Date.parse(b.createdAt || 0);
-      return (tb || 0) - (ta || 0);
-    });
-}
-
-function hasUnreadPsyReply(req) {
-  const msgs = normalizeMessages(req);
-  if (!msgs.length) return false;
-  // Dernier message du psy et pas encore lu par le patient
-  if (req.patientRead === true) return false;
-  const lastPsy = [...msgs].reverse().find(m => m.from === "psy");
-  if (!lastPsy) return false;
-  // S'il y a un message patient après la dernière réponse psy, considéré comme lu/répondu
-  const last = msgs[msgs.length - 1];
-  return last.from === "psy";
-}
-
-async function markPatientRead(req) {
-  req.patientRead = true;
-  await persistFull(req);
-}
-
-function renderPortalConversation(req) {
-  const body = document.getElementById("portalBody");
-  const foot = document.getElementById("portalFoot");
-  const status = document.getElementById("portalStatus");
-  window._portalReq = req;
-  const msgs = normalizeMessages(req);
-  const unread = hasUnreadPsyReply(req);
-  const voyant = unread
-    ? `<div class="voyant new">Nouvelle réponse du cabinet</div>`
-    : `<div class="voyant none">Pas de nouveau message</div>`;
-
-  body.innerHTML = `
-    ${voyant}
-    <div class="fiche-meta">
-      <strong>${esc(req.name || "")}</strong><br>
-      ${WHO_LABELS[req.who] || ""} · ${TYPE_LABELS[req.type] || ""}<br>
-      Créneaux : ${[req.slot1, req.slot2, req.slot3].filter(Boolean).map(formatSlot).join(" · ") || "—"}
-    </div>
-    <div id="portalChat">${chatHtml(msgs)}</div>`;
-  foot.style.display = "flex";
-  status.textContent = "Écrivez votre message ci-dessous pour répondre au cabinet.";
-  if (unread) markPatientRead(req);
-}
-
-async function openPatientPortal(token) {
-  const portal = document.getElementById("patientPortal");
-  const body = document.getElementById("portalBody");
-  const foot = document.getElementById("portalFoot");
-  portal.classList.add("open");
-  body.innerHTML = `<p style="color:var(--muted)">Chargement…</p>`;
-  foot.style.display = "none";
-  const req = await findByToken(token);
-  if (!req) {
-    body.innerHTML = `<p style="color:#b91c1c">Lien invalide ou demande introuvable. Utilisez la section « Suivre ma demande » avec votre e-mail.</p>`;
-    return;
-  }
-  renderPortalConversation(req);
-}
-
-async function openPatientPortalByEmail(email) {
-  const portal = document.getElementById("patientPortal");
-  const body = document.getElementById("portalBody");
-  const foot = document.getElementById("portalFoot");
-  portal.classList.add("open");
-  body.innerHTML = `<p style="color:var(--muted)">Recherche…</p>`;
-  foot.style.display = "none";
-
-  const list = await findByEmail(email);
-  if (!list.length) {
-    body.innerHTML = `<p style="color:#b91c1c">Aucune demande trouvée pour <strong>${esc(email)}</strong>. Vérifiez l’adresse utilisée lors de l’envoi.</p>`;
-    return;
-  }
-
-  if (list.length === 1) {
-    renderPortalConversation(list[0]);
-    return;
-  }
-
-  // Plusieurs demandes : liste
-  body.innerHTML = `
-    <p style="font-size:.9rem;color:var(--muted);margin-bottom:.8rem">Plusieurs demandes pour cet e-mail — choisissez-en une :</p>
-    ${list.map((r, i) => {
-      const unread = hasUnreadPsyReply(r);
-      const when = r.createdAt ? new Date(r.createdAt.seconds ? r.createdAt.seconds * 1000 : r.createdAt).toLocaleString("fr-FR") : "";
-      return `<div class="suivi-list-item" data-idx="${i}">
-        <div class="title">${esc(r.name || "Demande")} ${unread ? '<span class="voyant new" style="margin:0 0 0 .4rem">Nouveau</span>' : ""}</div>
-        <div class="sub">${when} · ${TYPE_LABELS[r.type] || ""} · ${WHO_LABELS[r.who] || ""}</div>
-      </div>`;
-    }).join("")}`;
-
-  body.querySelectorAll(".suivi-list-item").forEach(el => {
-    el.addEventListener("click", () => {
-      const r = list[Number(el.dataset.idx)];
-      renderPortalConversation(r);
-    });
-  });
-}
-
-document.getElementById("portalClose")?.addEventListener("click", () => {
-  document.getElementById("patientPortal").classList.remove("open");
-  if (location.hash.startsWith("#suivi=")) history.replaceState(null, "", location.pathname + location.search);
-});
-
-document.getElementById("portalSend")?.addEventListener("click", async () => {
-  const req = window._portalReq;
-  const text = document.getElementById("portalReply").value.trim();
-  const status = document.getElementById("portalStatus");
-  if (!req || !text) {
-    status.textContent = "Écrivez un message.";
-    return;
-  }
-  const msgs = normalizeMessages(req);
-  msgs.push({ from: "patient", text, at: new Date().toISOString() });
-  req.messages = msgs;
-  req.status = "pending";
-  req.patientRead = true;
-  await persistFull(req);
-  document.getElementById("portalReply").value = "";
-  document.getElementById("portalChat").innerHTML = chatHtml(msgs);
-  status.textContent = "Message envoyé. Le cabinet a été notifié.";
-
-  const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
-  if (toEmail && location.protocol !== "file:") {
-    try {
-      await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          _subject: "Nouveau message patient — " + (req.name || ""),
-          _captcha: "false",
-          name: req.name,
-          email: req.email,
-          message: text
-        })
-      });
-    } catch (e) { console.warn(e); }
-  }
-});
-
-document.getElementById("suiviOpenBtn")?.addEventListener("click", async () => {
-  const email = document.getElementById("suiviEmail")?.value.trim() || "";
-  const err = document.getElementById("suiviErr");
-  err.style.display = "none";
-  if (!email || !email.includes("@")) {
-    err.style.display = "block";
-    err.textContent = "Indiquez l’e-mail utilisé pour la demande.";
-    return;
-  }
-  await openPatientPortalByEmail(email);
-});
-
-document.getElementById("suiviEmail")?.addEventListener("keydown", e => {
-  if (e.key === "Enter") document.getElementById("suiviOpenBtn")?.click();
-});
-
-function checkSuiviHash() {
-  const m = location.hash.match(/^#suivi=(.+)$/);
-  if (m) openPatientPortal(m[1]);
-}
-window.addEventListener("hashchange", checkSuiviHash);
-checkSuiviHash();
-
 
 function buildTextesPanel() {
-  return `
-    <div class="group-title">Identité & Hero</div>
-    ${field("siteName", "Nom affiché")}
-    ${field("brandMark", "Initiales (logo)")}
-    ${field("badge", "Badge sous le titre")}
-    ${field("title", "Titre principal (\\n = saut de ligne)", "textarea", 2)}
-    ${field("lead", "Texte d’introduction", "textarea", 3)}
-    ${field("btnPrimary", "Bouton principal")}
-    ${field("btnSecondary", "Bouton secondaire")}
-    ${field("heroName", "Nom (carte)")}
-    ${field("heroRole", "Rôle")}
-    ${field("heroPoint1", "Point 1")} ${field("heroPoint2", "Point 2")}
-    ${field("heroPoint3", "Point 3")} ${field("heroPoint4", "Point 4")}
-    <div class="group-title">Navigation</div>
-    ${field("navApproche", "Approche")} ${field("navPublics", "Publics")}
-    ${field("navMsp", "MonSoutienPsy")} ${field("navTarifs", "Tarifs")}
-    ${field("navFaq", "FAQ")} ${field("navRdv", "Prendre RDV")}
-    <div class="group-title">Qui suis-je</div>
-    ${field("aboutLabel", "Label")} ${field("aboutTitle", "Titre")}
-    ${field("aboutIntro", "Introduction", "textarea", 3)}
-    ${field("card1Title", "Carte 1 titre")} ${field("card1Text", "Carte 1 texte", "textarea", 2)}
-    ${field("card2Title", "Carte 2 titre")} ${field("card2Text", "Carte 2 texte", "textarea", 2)}
-    ${field("card3Title", "Carte 3 titre")} ${field("card3Text", "Carte 3 texte", "textarea", 2)}
-    <div class="group-title">Publics</div>
-    ${field("publicsLabel", "Label")} ${field("publicsTitle", "Titre")}
-    ${field("publicsIntro", "Intro", "textarea", 2)} ${field("publicsBtn", "Bouton")}
-    ${field("public1", "Ligne Adultes")} ${field("public2", "Ligne Étudiants")}
-    ${field("public3", "Ligne Enfants")} ${field("public4", "Ligne Parents")}
-    <div class="group-title">MonSoutienPsy</div>
-    ${field("mspLabel", "Label")} ${field("mspTitle", "Titre")}
-    ${field("mspIntro", "Intro", "textarea", 2)}
-    ${field("msp1Title", "Carte 1")} ${field("msp1Text", "Texte", "textarea", 2)}
-    ${field("msp2Title", "Carte 2")} ${field("msp2Text", "Texte", "textarea", 2)}
-    ${field("msp3Title", "Carte 3")} ${field("msp3Text", "Texte", "textarea", 2)}
-    ${field("mspNote", "Note", "textarea", 2)}
-    <div class="group-title">Approche</div>
-    ${field("approcheLabel", "Label")} ${field("approcheTitle", "Titre")}
-    ${field("approcheIntro", "Intro", "textarea", 2)}
-    ${field("app1Title", "1 titre")} ${field("app1Text", "1 texte")}
-    ${field("app2Title", "2 titre")} ${field("app2Text", "2 texte")}
-    ${field("app3Title", "3 titre")} ${field("app3Text", "3 texte")}
-    ${field("app4Title", "4 titre")} ${field("app4Text", "4 texte")}
-    ${field("app5Title", "5 titre")} ${field("app5Text", "5 texte")}
-    ${field("app6Title", "6 titre")} ${field("app6Text", "6 texte")}
-    <div class="group-title">Déroulement</div>
-    ${field("stepsLabel", "Label")} ${field("stepsTitle", "Titre")}
-    ${field("stepsIntro", "Intro", "textarea", 2)}
-    ${field("step1Title", "Étape 1")} ${field("step1Text", "Texte", "textarea", 2)}
-    ${field("step2Title", "Étape 2")} ${field("step2Text", "Texte", "textarea", 2)}
-    ${field("step3Title", "Étape 3")} ${field("step3Text", "Texte", "textarea", 2)}
-    ${field("step4Title", "Étape 4")} ${field("step4Text", "Texte", "textarea", 2)}
-    ${field("confidentialite", "Confidentialité", "textarea", 2)}
-    <div class="group-title">Tarifs</div>
-    ${field("tarifsLabel", "Label")} ${field("tarifsTitle", "Titre")}
-    ${field("tarifsIntro", "Intro", "textarea", 2)}
-    ${field("price1Tag", "Tag MSP")} ${field("price1Title", "Titre MSP")} ${field("price1Amount", "Montant MSP")}
-    ${field("price1L1", "L1")} ${field("price1L2", "L2")} ${field("price1L3", "L3")} ${field("price1L4", "L4")}
-    ${field("price2Title", "Titre libre")} ${field("price2Amount", "Montant libre")}
-    ${field("price2L1", "L1")} ${field("price2L2", "L2")} ${field("price2L3", "L3")} ${field("price2L4", "L4")}
-    ${field("price3Title", "Titre enfant")} ${field("price3Amount", "Montant enfant")}
-    ${field("price3L1", "L1")} ${field("price3L2", "L2")} ${field("price3L3", "L3")}
-    ${field("tarifsNote", "Note", "textarea", 2)}
-    <div class="group-title">FAQ</div>
-    ${field("faqLabel", "Label")} ${field("faqTitle", "Titre")}
-    ${field("faq1Q", "Q1")} ${field("faq1A", "R1", "textarea", 2)}
-    ${field("faq2Q", "Q2")} ${field("faq2A", "R2", "textarea", 2)}
-    ${field("faq3Q", "Q3")} ${field("faq3A", "R3", "textarea", 2)}
-    ${field("faq4Q", "Q4")} ${field("faq4A", "R4", "textarea", 2)}
-    ${field("faq5Q", "Q5")} ${field("faq5A", "R5", "textarea", 2)}
-    ${field("faq6Q", "Q6")} ${field("faq6A", "R6", "textarea", 2)}
-    <div class="group-title">Pied de page</div>
-    ${field("footerName", "Nom")} ${field("footerTagline", "Accroche")}
-    ${field("footerMsp", "Ligne MSP")} ${field("footerLegal", "Légal", "textarea", 2)}
-    ${field("footerCopy", "Copyright")}
-  `;
+  return '<div class="group-title">Hero</div>' + field("badge", "Badge") + field("title", "Titre", "textarea", 2) + field("lead", "Chapô", "textarea", 3) +
+    field("btnPrimary", "Bouton principal") + field("btnSecondary", "Bouton secondaire") +
+    '<div class="group-title">À propos</div>' + field("aboutTitle", "Titre") + field("aboutBody", "Texte", "textarea", 5) +
+    field("feat1Title", "Atout 1 titre") + field("feat1Text", "Atout 1 texte", "textarea", 2) +
+    field("feat2Title", "Atout 2 titre") + field("feat2Text", "Atout 2 texte", "textarea", 2) +
+    field("feat3Title", "Atout 3 titre") + field("feat3Text", "Atout 3 texte", "textarea", 2) +
+    '<div class="group-title">Publics</div>' + field("public1", "Public 1") + field("public2", "Public 2") + field("public3", "Public 3") + field("public4", "Public 4") +
+    '<div class="group-title">Tarifs</div>' + field("tarifsIntro", "Intro tarifs", "textarea", 2) +
+    field("price1Title", "Tarif 1 titre") + field("price1AmountMain", "Tarif 1 montant") +
+    field("price2Title", "Tarif 2 titre") + field("price2AmountMain", "Tarif 2 montant") +
+    field("price3Title", "Tarif 3 titre") + field("price3AmountMain", "Tarif 3 montant");
 }
-
 function buildCouleursPanel() {
-  return `
-    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Couleurs du thème. Sauvegardez pour appliquer.</p>
-    <div class="group-title">Principales</div>
-    ${colorField("sage", "Primaire")} ${colorField("sageDark", "Primaire foncé")}
-    ${colorField("clay", "Accent")} ${colorField("clayDark", "Accent foncé")}
-    <div class="group-title">Fonds & textes</div>
-    ${colorField("bg", "Fond page")} ${colorField("sand", "Fond sections")}
-    ${colorField("card", "Cartes")} ${colorField("ink", "Texte")}
-    ${colorField("muted", "Secondaire")} ${colorField("soft", "Léger")}
-    ${colorField("blush", "Dégradé")} ${colorField("line", "Bordures")}
-  `;
+  return '<div class="group-title">Couleurs</div>' +
+    colorField("bg", "Fond") + colorField("card", "Cartes") + colorField("sand", "Sable") +
+    colorField("sage", "Sauge") + colorField("sageDark", "Sauge foncé") + colorField("clay", "Terre") +
+    colorField("ink", "Texte") + colorField("muted", "Texte secondaire");
 }
-
 function buildIconesPanel() {
-  return `
-    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.8rem">Choisissez une icône ou tapez un emoji.</p>
-    ${iconPicker("heroIcon", "Hero")}
-    ${iconPicker("card1Icon", "Formation")} ${iconPicker("card2Icon", "Enfants")} ${iconPicker("card3Icon", "MSP")}
-    ${iconPicker("msp1Icon", "MSP 1")} ${iconPicker("msp2Icon", "MSP 2")} ${iconPicker("msp3Icon", "MSP 3")}
-    ${iconPicker("icoAddress", "Adresse")} ${iconPicker("icoEmail", "E-mail")}
-    ${iconPicker("icoPhone", "Téléphone")} ${iconPicker("icoHours", "Horaires")}
-  `;
+  return '<div class="group-title">Icônes</div>' + iconPicker("feat1Icon", "Atout 1") + iconPicker("feat2Icon", "Atout 2") + iconPicker("feat3Icon", "Atout 3") +
+    iconPicker("iconAddress", "Adresse") + iconPicker("iconEmail", "E-mail") + iconPicker("iconPhone", "Téléphone") + iconPicker("iconHours", "Horaires");
 }
-
 function buildContactPanel() {
-  return `
-    <div class="group-title">E-mail de notification (demandes RDV)</div>
-    ${field("notificationEmail", "Adresse qui reçoit les demandes de rendez-vous")}
-    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">
-      Les nouvelles demandes sont envoyées à cet e-mail (via FormSubmit). Vous pouvez le changer ici à tout moment.
-      <strong>Première utilisation :</strong> FormSubmit envoie un e-mail de confirmation à cette adresse — cliquez sur le lien une seule fois pour activer.
-    </p>
-    <div class="group-title">Doctolib</div>
-    ${field("doctolibUrl", "Lien page Doctolib (https://www.doctolib.fr/...)")}
-    ${field("doctolibText", "Texte à côté du bouton Doctolib", "textarea", 2)}
-    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">Si le lien est renseigné, un bouton « Réserver sur Doctolib » apparaît dans le hero et dans la section RDV.</p>
-    <div class="group-title">Coordonnées</div>
-    ${field("address", "Adresse")} ${field("email", "E-mail affiché sur le site")}
-    ${field("phone", "Téléphone")} ${field("hours", "Horaires")}
-    <div class="group-title">Textes contact</div>
-    ${field("rdvLabel", "Label")} ${field("rdvTitle", "Titre")}
-    ${field("rdvIntro", "Introduction", "textarea", 2)}
-    ${field("formTitle", "Titre formulaire")}
-    ${field("labelSlots", "Label créneaux")}
-    ${field("slotsNote", "Note sous les créneaux", "textarea", 2)}
-    ${field("coordsTitle", "Titre coordonnées")}
-    ${field("beforeTitle", "Avant la séance — titre")}
-    ${field("beforeText", "Avant la séance — texte", "textarea", 3)}
-    ${field("formBtn", "Bouton envoyer")}
-    ${field("formNote", "Note sous formulaire", "textarea", 2)}
-    <div class="group-title">Assistant IA (optionnel)</div>
-    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.5rem">
-      Sans clé API, l’assistant propose quand même des réponses et conseils (mode local).
-      Avec une clé OpenAI / compatible (Groq, OpenRouter…), les suggestions sont plus précises.
-      La clé reste dans ce navigateur uniquement.
-    </p>
-    ${field("aiApiKey", "Clé API (optionnel)")}
-    ${field("aiBaseUrl", "URL API (défaut OpenAI)")}
-    ${field("aiModel", "Modèle (ex. gpt-4o-mini, llama-3.1-8b-instant)")}
-    <div class="group-title">Mentions légales</div>
-    <p style="font-size:.8rem;color:var(--soft);margin-bottom:.5rem">Modifiables ici — affichées dans la fenêtre Mentions légales du pied de page.</p>
-    ${field("legalEditor", "Éditeur / contact (nom, adresse, e-mail, ADELI)", "textarea", 4)}
-    ${field("legalActivity", "Activité professionnelle", "textarea", 2)}
-    ${field("legalHost", "Hébergement", "textarea", 2)}
-    ${field("legalRgpd", "Données personnelles / RGPD", "textarea", 3)}
-    ${field("legalCookies", "Cookies", "textarea", 2)}
-    ${field("legalIP", "Propriété intellectuelle", "textarea", 2)}
-  `;
+  return '<div class="group-title">E-mail de notification</div>' + field("notificationEmail", "Adresse qui reçoit les demandes") +
+    '<div class="group-title">Doctolib</div>' + field("doctolibUrl", "Lien Doctolib") + field("doctolibText", "Texte Doctolib", "textarea", 2) +
+    '<div class="group-title">Coordonnées</div>' + field("address", "Adresse", "textarea", 2) + field("email", "E-mail affiché") +
+    field("phone", "Téléphone") + field("hours", "Horaires") + field("paymentInfo", "Paiement") + field("accessInfo", "Accès") +
+    field("rpps", "RPPS") + field("siren", "SIREN") +
+    '<div class="group-title">Assistant IA</div>' + field("aiApiKey", "Clé API (optionnel)") + field("aiBaseUrl", "URL API") + field("aiModel", "Modèle") +
+    '<div class="group-title">Mentions légales</div>' + field("legalEditor", "Éditeur / contact", "textarea", 4) +
+    field("legalActivity", "Activité", "textarea", 2) + field("legalHost", "Hébergement", "textarea", 2) +
+    field("legalRgpd", "RGPD", "textarea", 3) + field("legalCookies", "Cookies", "textarea", 2) + field("legalIP", "Propriété intellectuelle", "textarea", 2);
 }
 
 async function showEditor() {
   cTabs.style.display = "flex";
   cFoot.style.display = "flex";
-  try {
-    cachedReqs = await fetchRequests();
-  } catch (e) {
-    console.error("fetchRequests", e);
-    cachedReqs = loadLocalReqs();
-  }
+  try { cachedReqs = await fetchRequests(); } catch (e) { cachedReqs = loadLocalReqs(); }
   updateBadges(cachedReqs);
   if (!currentPanel) currentPanel = "demandes";
   renderPanel(currentPanel);
@@ -3215,17 +2239,13 @@ async function showEditor() {
     };
   });
 }
-
-async function renderPanel(name) {
+function renderPanel(name) {
   if (name === "demandes") {
     try {
-      const panel = buildDemandesPanel();
-      cBody.innerHTML = `<p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Les demandes arrivent ici. Comparez les 3 créneaux avec Doctolib, puis répondez.</p>
-        <p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">${cachedReqs.length} demande(s) chargée(s)</p>` + panel;
+      cBody.innerHTML = '<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Demandes de rendez-vous</p><p style="font-size:.8rem;color:var(--soft);margin-bottom:.8rem">' + cachedReqs.length + ' demande(s)</p>' + buildDemandesPanel();
       bindDemandesEvents();
     } catch (e) {
-      console.error(e);
-      cBody.innerHTML = `<p style="color:#b91c1c">Erreur d’affichage des demandes : ${esc(String(e.message || e))}</p>`;
+      cBody.innerHTML = '<p style="color:#b91c1c">Erreur : ' + esc(e.message || e) + '</p>';
     }
     cFoot.style.display = "none";
     return;
@@ -3237,25 +2257,22 @@ async function renderPanel(name) {
   else if (name === "icones") html = buildIconesPanel();
   else if (name === "contact") html = buildContactPanel();
   cBody.innerHTML = html;
-
   cBody.querySelectorAll("[data-color]").forEach(input => {
     const key = input.dataset.color;
-    const text = cBody.querySelector(`[data-color-text="${key}"]`);
+    const text = cBody.querySelector('[data-color-text="' + key + '"]');
     input.oninput = () => { if (text) text.value = input.value; };
     if (text) text.oninput = () => { if (/^#[0-9a-fA-F]{6}$/.test(text.value)) input.value = text.value; };
   });
   cBody.querySelectorAll("[data-icon-for]").forEach(btn => {
     btn.onclick = () => {
       const key = btn.dataset.iconFor;
-      const icon = btn.dataset.icon;
-      const input = cBody.querySelector(`[data-edit="${key}"]`);
-      if (input) input.value = icon;
-      cBody.querySelectorAll(`[data-icon-for="${key}"]`).forEach(b => b.classList.remove("selected"));
+      const input = cBody.querySelector('[data-edit="' + key + '"]');
+      if (input) input.value = btn.dataset.icon;
+      cBody.querySelectorAll('[data-icon-for="' + key + '"]').forEach(b => b.classList.remove("selected"));
       btn.classList.add("selected");
     };
   });
 }
-
 function collectEdits() {
   cBody.querySelectorAll("[data-edit]").forEach(el => { cfg[el.dataset.edit] = el.value; });
   cBody.querySelectorAll("[data-color]").forEach(el => {
@@ -3273,15 +2290,8 @@ function collectEdits() {
 window.__openCreator = async () => {
   try {
     creator.classList.add("open");
-    if (unlocked) {
-      try { await showEditor(); }
-      catch (e) {
-        console.error("showEditor", e);
-        cBody.innerHTML = `<div class="login-box"><p style="color:#b91c1c">Erreur : ${esc(String(e.message || e))}</p><button class="btn btn-primary" type="button" id="cRetryLogin">Réessayer</button></div>`;
-        cTabs.style.display = "none";
-        document.getElementById("cRetryLogin")?.addEventListener("click", () => { unlocked = false; sessionStorage.removeItem("eo_creator_ok"); showLogin(); });
-      }
-    } else showLogin();
+    if (unlocked) await showEditor();
+    else showLogin();
   } catch (e) {
     console.error(e);
     alert("Espace créateur : " + (e.message || e));
@@ -3290,19 +2300,11 @@ window.__openCreator = async () => {
 document.getElementById("lockBtn").onclick = () => window.__openCreator();
 document.getElementById("cClose").onclick = (e) => {
   e.preventDefault();
-  e.stopPropagation();
-  try {
-    if (unlocked && currentPanel !== "demandes") collectEdits();
-  } catch (err) {}
+  try { if (unlocked && currentPanel !== "demandes") collectEdits(); } catch (err) {}
   creator.classList.remove("open");
 };
-
 document.getElementById("cLogout").onclick = (e) => {
   e.preventDefault();
-  e.stopPropagation();
-  try {
-    if (unlocked && currentPanel !== "demandes") collectEdits();
-  } catch (err) {}
   unlocked = false;
   sessionStorage.removeItem("eo_creator_ok");
   cachedReqs = [];
@@ -3312,7 +2314,6 @@ document.getElementById("cLogout").onclick = (e) => {
   cFoot.style.display = "none";
   cBody.innerHTML = "";
 };
-
 document.getElementById("cSave").onclick = () => {
   if (!unlocked) return;
   collectEdits();
@@ -3321,37 +2322,101 @@ document.getElementById("cSave").onclick = () => {
   document.getElementById("cMsg").textContent = "✓ Enregistré";
   setTimeout(() => document.getElementById("cMsg").textContent = "", 2000);
 };
-
 document.getElementById("cReset").onclick = () => {
-  if (!confirm("Remettre textes, couleurs et icônes par défaut ?")) return;
+  if (!confirm("Remettre les textes par défaut ?")) return;
   cfg = structuredClone(DEFAULTS);
   localStorage.removeItem(STORAGE);
   apply();
   renderPanel(currentPanel);
-  document.getElementById("cMsg").textContent = "Réinitialisé";
 };
 
+// Patient portal by email
+async function findByEmail(email) {
+  const em = (email || "").trim().toLowerCase();
+  if (!em) return [];
+  await ensureFirebase();
+  let list = [];
+  if (db) {
+    try {
+      const snap = await FS.getDocs(FS.collection(db, "rdv_requests"));
+      list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {}
+  }
+  if (!list.length) list = loadLocalReqs();
+  return list.filter(r => (r.email || "").trim().toLowerCase() === em);
+}
+function hasUnreadPsyReply(req) {
+  if (req.patientRead === true) return false;
+  const msgs = normalizeMessages(req);
+  return msgs.length && msgs[msgs.length - 1].from === "psy";
+}
+async function openPatientPortalByEmail(email) {
+  const portal = document.getElementById("patientPortal");
+  const body = document.getElementById("portalBody");
+  const foot = document.getElementById("portalFoot");
+  portal.classList.add("open");
+  body.innerHTML = "Recherche…";
+  foot.style.display = "none";
+  const list = await findByEmail(email);
+  if (!list.length) {
+    body.innerHTML = '<p style="color:#b91c1c">Aucune demande pour cet e-mail.</p>';
+    return;
+  }
+  const req = list[0];
+  window._portalReq = req;
+  const msgs = normalizeMessages(req);
+  const unread = hasUnreadPsyReply(req);
+  body.innerHTML = (unread ? '<div class="voyant new">Nouvelle réponse du cabinet</div>' : '<div class="voyant none">Pas de nouveau message</div>') +
+    '<div class="fiche-meta"><strong>' + esc(req.name || "") + '</strong></div><div id="portalChat">' + chatHtml(msgs) + '</div>';
+  foot.style.display = "flex";
+  if (unread) { req.patientRead = true; await persistFull(req); }
+}
+document.getElementById("portalClose")?.addEventListener("click", () => document.getElementById("patientPortal").classList.remove("open"));
+document.getElementById("portalSend")?.addEventListener("click", async () => {
+  const req = window._portalReq;
+  const text = document.getElementById("portalReply")?.value.trim();
+  if (!req || !text) return;
+  const msgs = normalizeMessages(req);
+  msgs.push({ from: "patient", text, at: new Date().toISOString() });
+  req.messages = msgs; req.status = "pending";
+  await persistFull(req);
+  document.getElementById("portalReply").value = "";
+  document.getElementById("portalChat").innerHTML = chatHtml(msgs);
+  document.getElementById("portalStatus").textContent = "Message envoyé.";
+  const toEmail = (cfg.notificationEmail || cfg.email || "").trim();
+  if (toEmail && location.protocol !== "file:") {
+    try {
+      await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
+        method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ _subject: "Message patient — " + (req.name || ""), _captcha: "false", name: req.name, email: req.email, message: text })
+      });
+    } catch (e) {}
+  }
+});
+document.getElementById("suiviOpenBtn")?.addEventListener("click", async () => {
+  const email = document.getElementById("suiviEmail")?.value.trim() || "";
+  const err = document.getElementById("suiviErr");
+  if (!email.includes("@")) { err.style.display = "block"; err.textContent = "Indiquez votre e-mail."; return; }
+  err.style.display = "none";
+  await openPatientPortalByEmail(email);
+});
 
-// Diaporama cabinet — 1 image toutes les 4s
-(function() {
+// Cabinet slideshow
+(function () {
   const stage = document.getElementById("cabinetStage");
   if (!stage) return;
   const slides = Array.from(stage.querySelectorAll("img"));
   const caption = document.getElementById("cabinetCaption");
   const dotsWrap = document.getElementById("cabinetDots");
-  let i = 0;
-  let timer = null;
-
+  let i = 0, timer = null;
   slides.forEach((_, idx) => {
     const b = document.createElement("button");
     b.type = "button";
-    b.setAttribute("aria-label", "Image " + (idx + 1));
     if (idx === 0) b.classList.add("active");
     b.addEventListener("click", () => go(idx, true));
-    dotsWrap.appendChild(b);
+    dotsWrap?.appendChild(b);
   });
-  const dots = Array.from(dotsWrap.querySelectorAll("button"));
-
+  const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll("button")) : [];
   function go(n, user) {
     i = (n + slides.length) % slides.length;
     slides.forEach((img, k) => img.classList.toggle("active", k === i));
@@ -3360,22 +2425,18 @@ document.getElementById("cReset").onclick = () => {
     if (user) restart();
   }
   function next() { go(i + 1); }
-  function prev() { go(i - 1, true); }
-  function restart() {
-    clearInterval(timer);
-    timer = setInterval(next, 4000);
-  }
+  function restart() { clearInterval(timer); timer = setInterval(next, 4000); }
   document.getElementById("cabNext")?.addEventListener("click", () => { next(); restart(); });
-  document.getElementById("cabPrev")?.addEventListener("click", prev);
+  document.getElementById("cabPrev")?.addEventListener("click", () => go(i - 1, true));
   stage.addEventListener("mouseenter", () => clearInterval(timer));
   stage.addEventListener("mouseleave", restart);
   restart();
 })();
 
-// Pas de badge public : les notifs RDV ne s'affichent qu'après déverrouillage créateur
-if (unlocked) {
-  fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
-}
+if (unlocked) fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
+
+document.getElementById("openLegal")?.addEventListener("click", e => { e.preventDefault(); document.getElementById("legalModal")?.classList.add("open"); });
+document.getElementById("closeLegal")?.addEventListener("click", () => document.getElementById("legalModal")?.classList.remove("open"));
 </script>
 
 <script>
