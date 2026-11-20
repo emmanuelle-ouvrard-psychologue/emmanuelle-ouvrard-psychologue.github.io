@@ -1742,7 +1742,7 @@ function apply() {
     if (el) el.textContent = cfg[k] != null ? cfg[k] : def;
   });
 }
-apply();
+try { apply(); } catch (e) { console.warn("apply", e); }
 const yEl = document.getElementById("y");
 if (yEl) yEl.textContent = new Date().getFullYear();
 
@@ -1980,7 +1980,9 @@ window.handleForm = async function(e) {
   form.reset();
   document.querySelectorAll(".flex-btn").forEach(b => b.classList.remove("active"));
   document.querySelectorAll('input[type="date"], input[type="time"]').forEach(inp => { inp.disabled = false; inp.dataset.flex = "0"; });
-  if (unlocked) fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
+  try { applyFonts(); applyCustomCode(); } catch (e) { console.warn(e); }
+if (unlocked) fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
+/* FONT_LIST ready apply */
   return false;
 };
 
@@ -2355,6 +2357,7 @@ const FONT_LIST = [
 ];
 
 function applyFonts() {
+  if (typeof FONT_LIST === "undefined" || !FONT_LIST) return;
   const id = cfg.fontId || "classic-pair";
   const f = FONT_LIST.find(x => x.id === id) || FONT_LIST.find(x => x.id === "classic-pair");
   if (!f) return;
@@ -2506,12 +2509,18 @@ function collectEdits() {
 
 window.__openCreator = async () => {
   try {
+    if (!creator || !cBody) {
+      alert("Panneau créateur introuvable.");
+      return;
+    }
     creator.classList.add("open");
     if (unlocked) await showEditor();
     else showLogin();
   } catch (e) {
     console.error(e);
-    alert("Espace créateur : " + (e.message || e));
+    try {
+      cBody.innerHTML = '<div class="login-box"><p style="color:#b91c1c">Erreur : ' + String(e.message || e) + '</p></div>';
+    } catch (e2) {}
   }
 };
 document.getElementById("lockBtn").onclick = () => window.__openCreator();
@@ -2650,7 +2659,9 @@ document.getElementById("suiviOpenBtn")?.addEventListener("click", async () => {
   restart();
 })();
 
+try { applyFonts(); applyCustomCode(); } catch (e) { console.warn(e); }
 if (unlocked) fetchRequests().then(list => { cachedReqs = list; updateBadges(list); });
+/* FONT_LIST ready apply */
 
 document.getElementById("openLegal")?.addEventListener("click", e => { e.preventDefault(); document.getElementById("legalModal")?.classList.add("open"); });
 document.getElementById("closeLegal")?.addEventListener("click", () => document.getElementById("legalModal")?.classList.remove("open"));
